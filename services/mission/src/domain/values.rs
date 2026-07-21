@@ -651,12 +651,16 @@ impl Duration {
             found: raw.to_owned(),
             reason: "expected a span such as `18m`, with unit s, m, h or d",
         };
-        let (digits, unit) = trimmed.split_at(trimmed.len() - 1);
-        let multiplier = match unit {
-            "s" => 1_u64,
-            "m" => 60,
-            "h" => 3_600,
-            "d" => 86_400,
+        // Take the final character rather than the final byte: `split_at` panics when the
+        // index falls inside a multi-byte character, and malformed input must return `Err`,
+        // never panic.
+        let unit_char = trimmed.chars().next_back().ok_or_else(malformed)?;
+        let digits = &trimmed[..trimmed.len() - unit_char.len_utf8()];
+        let multiplier = match unit_char {
+            's' => 1_u64,
+            'm' => 60,
+            'h' => 3_600,
+            'd' => 86_400,
             _ => return Err(malformed()),
         };
         if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {

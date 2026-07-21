@@ -300,6 +300,16 @@ fn duration_rejects_overflow() {
     );
 }
 
+#[test]
+fn duration_rejects_non_ascii_input_without_panicking() {
+    for input in ["18µ", "18€", "١٨m", "18\u{00A0}m"] {
+        assert!(
+            Duration::parse(input).is_err(),
+            "{input:?} must return Err, not panic"
+        );
+    }
+}
+
 // =====================================================================================
 // EffectClass
 // =====================================================================================

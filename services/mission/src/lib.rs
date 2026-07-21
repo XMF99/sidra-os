@@ -3,7 +3,7 @@
 //! The planning subsystem of Sidra OS. It owns Missions: durable intentions with plans
 //! attached — Objectives, Tasks, a dependency graph, policies, and verification specifications.
 //!
-//! The authoritative specification is `docs-v2/03-Intelligence/MISSION_ENGINE_ARCHITECTURE.md`. This crate implements
+//! The authoritative specification is `/MISSION_ENGINE_ARCHITECTURE.md`. This crate implements
 //! it; it does not amend it.
 //!
 //! ## The boundary
@@ -30,9 +30,14 @@
 //!
 //! ## Status
 //!
-//! Milestone M10, Epic E1, Task T1.1 — crate scaffold and dependency-direction enforcement.
-//! The domain model itself begins at T1.2. This crate currently exports no items by design;
-//! T1.1 delivers a buildable, CI-gated crate and nothing more.
+//! Milestone M15, Epic E1, through Task T1.2 — crate scaffold, dependency-direction
+//! enforcement, and the domain value objects in [`domain::values`].
+//!
+//! The aggregates that use those value objects begin at T1.3. Nothing is stubbed ahead of the
+//! task that owns it.
+//!
+//! (This crate was scaffolded under the label "M10"; the programme renumbered it to M15 —
+//! see `/MILESTONE_REGISTRY.md` and ADR-0032.)
 
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
@@ -46,5 +51,7 @@
 /// checker refer to the same literal, and so that a reader of the crate root learns the rule
 /// from the crate itself rather than only from a script.
 ///
-/// See ADR-0022 and `docs-v2/03-Intelligence/MISSION_ENGINE_ARCHITECTURE.md` §22.1.
+/// See ADR-0022 and `/MISSION_ENGINE_ARCHITECTURE.md` §22.1.
 pub const FORBIDDEN_DEPENDENCY: &str = "sidra-orchestrator";
+
+pub mod domain;
