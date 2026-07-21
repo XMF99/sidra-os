@@ -42,6 +42,16 @@ RULES: list[tuple[str, str, str]] = [
         "ADR-0022: the Mission Engine owns plans and must not be able to execute them. "
         "ARCH Appendix B.",
     ),
+    (
+        "sidra-connectors",
+        "sidra-orchestrator",
+        "AC12 / ADR-0011: Layer 1 framework sidra-connectors must not depend on sidra-orchestrator.",
+    ),
+    (
+        "sidra-connectors",
+        "sidra-mission",
+        "AC12 / ADR-0011: Layer 1 framework sidra-connectors must not depend on sidra-mission.",
+    ),
 ]
 
 DEP_TABLES = ("dependencies", "dev-dependencies", "build-dependencies")

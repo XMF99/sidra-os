@@ -9,7 +9,7 @@ is a defect to be reported.
 | Covers | M1 – M30 |
 | Supersedes | Milestone numbering in `/MASTER_IMPLEMENTATION_GUIDE.md` §5 and `/docs-v2/03-Intelligence/MISSION_ENGINE_IMPLEMENTATION_PLAN.md` §0.2 |
 | Decision record | ADR-0032 |
-| Status | M1–M15 documented · M16–M30 defined, not yet documented |
+| Status | M1–M16 documented · M17–M30 defined, not yet documented |
 
 ---
 
@@ -110,7 +110,7 @@ narrower than the whole Firm to put it.
 
 | M | Name | Purpose | Depends on | Exit criterion | Status |
 |---|---|---|---|---|---|
-| **M16** | Connector Framework | Layer 6 substrate: connector manifest, OAuth handled by the kernel, egress declaration and inspection, per-department grants, credential custody | M13 (departments), M9 (plugin host), M3 (broker) | A connector is installed, granted to exactly one department, and no other department can reach it — proven by test, not by configuration | **Defined** |
+| **M16** | Connector Framework | Layer 6 substrate: connector manifest, OAuth handled by the kernel, egress declaration and inspection, per-department grants, credential custody | M13 (departments), M9 (plugin host), M3 (broker) | A connector is installed, granted to exactly one department, and no other department can reach it — proven by test, not by configuration | **Documented** |
 | **M17** | First-Party Connector Suite | Source control, issue tracker, calendar, mail, object storage — the five the Firm needs to do its own work | M16 | Five connectors pass the same conformance suite; each is grantable per department; each degrades to offline without data loss | **Defined** |
 | **M18** | Companion | Mobile surface: read Briefs, act on Approval Requests. No authoring. | M10 (Brief format), M15 (Approval Requests) | A Principal clears a day's approvals from a phone with no desktop present; the Brief renders identically | **Defined** |
 | **M19** | Voice Directive | Local speech-to-text producing a Directive. No cloud speech. | M18, M6 | A spoken Directive produces the same Mandate as the typed equivalent; audio never leaves the device | **Defined** |

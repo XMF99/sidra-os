@@ -7,6 +7,11 @@ use ts_rs::TS;
 #[ts(export, export_to = "../../bindings/src/index.ts")]
 pub struct EngagementId(pub String);
 
+/// Strongly typed newtype identifier for a Department
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct DepartmentId(pub String);
+
 /// Operational status of the Sidra OS application
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../bindings/src/index.ts")]

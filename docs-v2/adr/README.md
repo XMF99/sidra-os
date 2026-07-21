@@ -20,6 +20,10 @@ behaviour needs a record.
 | [0031](0031-ci-workflows-split-from-ci-scripts.md) | CI workflows in `.github/`, checks in `infrastructure/ci/` | Accepted | Clarifies ADR-0011 |
 | [0032](0032-single-global-milestone-numbering.md) | Milestone numbering is single, global, permanent once documented | Accepted | "M10" label in the Mission Engine plan |
 | [0033](0033-charter-comparison-is-a-partial-order.md) | Charter comparison is a partial order, and `Incomparable` is treated as widening | Proposed | — |
+| [0034](0034-connector-credentials-held-by-the-kernel.md) | Connector credentials held by the kernel, never by the connector | Accepted | — |
+| [0035](0035-connectors-granted-to-a-department-not-the-firm.md) | A connector is granted to a department, never to the Firm | Accepted | — |
+| [0036](0036-egress-declared-in-manifest-enforced-by-kernel.md) | A connector's egress is declared in its manifest and enforced by the kernel | Accepted | — |
+| [0037](0037-oauth-is-a-kernel-capability.md) | OAuth authorization is a kernel capability, not a connector responsibility | Accepted | — |
 
 ## Format
 
