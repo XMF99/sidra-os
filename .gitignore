@@ -1,0 +1,19 @@
+# Rust
+target/
+**/*.rs.bk
+
+# Node / JS
+node_modules/
+dist/
+.pnpm-store/
+
+# Local runtime scratch (never committed)
+workspace/*
+!workspace/.gitignore
+
+# OS & IDE artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
