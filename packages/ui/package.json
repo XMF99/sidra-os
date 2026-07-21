@@ -1,0 +1,10 @@
+{
+  "name": "@sidra/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sidra OS shared UI component library",
+  "scripts": {
+    "build": "echo 'stub build'",
+    "test": "echo 'stub test'"
+  }
+}

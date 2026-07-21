@@ -1,0 +1,11 @@
+{
+  "name": "@sidra/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sidra OS Desktop Application Frontend (React 19, TypeScript)",
+  "scripts": {
+    "dev": "echo 'stub dev'",
+    "build": "echo 'stub build'",
+    "test": "echo 'stub test'"
+  }
+}

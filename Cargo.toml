@@ -1,7 +1,8 @@
 [workspace]
 resolver = "2"
 members = [
-  "apps/*",
+  "apps/cli",
+  "apps/desktop/src-tauri",
   "services/*",
   "packages/*",
 ]

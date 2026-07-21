@@ -1,0 +1,6 @@
+{
+  "name": "@sidra/bindings",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Generated TypeScript bindings from sidra-domain"
+}

@@ -1,0 +1,9 @@
+[package]
+name = "sidra-testkit"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+sidra-domain = { path = "../domain" }

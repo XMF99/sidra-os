@@ -1,0 +1,10 @@
+[package]
+name = "sidra-plugins"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+sidra-domain = { path = "../../packages/domain" }
+sidra-plugin-sdk = { path = "../../packages/plugin-sdk" }

@@ -1,0 +1,14 @@
+[package]
+name = "sidractl"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+sidra-domain = { path = "../../packages/domain" }
+sidra-kernel = { path = "../../services/kernel" }
+
+[[bin]]
+name = "sidractl"
+path = "src/main.rs"
