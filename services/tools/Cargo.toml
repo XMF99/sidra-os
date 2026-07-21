@@ -7,4 +7,13 @@ license.workspace = true
 
 [dependencies]
 sidra-domain = { path = "../../packages/domain" }
-sidra-tool-sdk = { path = "../../packages/tool-sdk" }
+sidra-store = { path = "../store" }
+sidra-security = { path = "../security" }
+sidra-memory = { path = "../memory" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+ulid = "1.1"
+
+[dev-dependencies]
+tempfile = "3.8"

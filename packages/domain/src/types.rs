@@ -254,3 +254,62 @@ pub struct CompletionResponse {
     pub usage: TokenUsage,
     pub provider_name: String,
 }
+
+// ==========================================
+// Milestone 6: Agent Runtime & Task Planner
+// ==========================================
+
+/// Task Status Lifecycle state per 08-agent-runtime-and-orchestration.md §2
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub enum TaskStatus {
+    Pending,
+    Planning,
+    Executing,
+    AwaitingApproval,
+    Completed,
+    Failed,
+}
+
+/// Agent Internal State Machine
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub enum AgentState {
+    Idle,
+    Thinking,
+    ExecutingTool,
+    WaitingForApproval,
+    Terminated,
+}
+
+/// Single Task Step in a Decomposed Plan
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct TaskStep {
+    pub step_id: String,
+    pub description: String,
+    pub assigned_role: String,
+    pub status: TaskStatus,
+    pub result: Option<String>,
+}
+
+/// Multi-Step Task Plan per ADR-0007
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct TaskPlan {
+    pub plan_id: String,
+    pub goal: String,
+    pub steps: Vec<TaskStep>,
+    pub status: TaskStatus,
+}
+
+/// Inter-Agent Message carrying provenance metadata per ADR-0007
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct AgentMessage {
+    pub message_id: String,
+    pub sender_id: String,
+    pub receiver_id: String,
+    pub content: String,
+    pub provenance: ProvenanceTag,
+}
