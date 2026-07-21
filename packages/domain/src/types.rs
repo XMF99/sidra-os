@@ -91,3 +91,72 @@ impl Event {
         format!("{:x}", hasher.finalize())
     }
 }
+
+// ==========================================
+// Milestone 3: Security & Capability Models
+// ==========================================
+
+/// Irreversibility & Effect Classes (0 - 3) per 07-security-model.md §2
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub enum EffectClass {
+    /// Class 0: Read-only / Query (Instant execution)
+    Class0_Read = 0,
+    /// Class 1: Reversible local write (Auto execution if capability granted)
+    Class1_ReversibleLocal = 1,
+    /// Class 2: Irreversible / External read-write (Requires Principal approval unless pre-approved by Fence)
+    Class2_IrreversibleExternal = 2,
+    /// Class 3: Financial / Destructive / Key movement (Requires explicit human signature on record)
+    Class3_CriticalHumanSignature = 3,
+}
+
+/// Explicit Capability Grant per ADR-0006
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct Capability {
+    pub capability_id: String,
+    pub grantee_agent_id: String,
+    pub resource: String,
+    pub max_effect_class: EffectClass,
+    pub is_revoked: bool,
+}
+
+/// Hard Autonomy Fence Rules per Principle 6 & 07-security-model.md §4
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct Fence {
+    pub allowed_directories: Vec<String>,
+    pub egress_allowlist: Vec<String>,
+    pub max_effect_class: EffectClass,
+    pub spend_ceiling_usd: f64,
+}
+
+/// Approval Request created when crossing a Fence boundary
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct ApprovalRequest {
+    pub request_id: String,
+    pub agent_id: String,
+    pub action: String,
+    pub resource: String,
+    pub effect_class: EffectClass,
+    pub reason: String,
+}
+
+/// Provenance Tag embedded in Message Envelopes per 07-security-model.md §6
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct ProvenanceTag {
+    pub author_agent_id: String,
+    pub author_role: String,
+    pub authorized_by_principal: bool,
+    pub capability_id: String,
+    pub effect_class: EffectClass,
+}
+
+/// Message Envelope carrying mandatory Provenance metadata
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Envelope<T> {
+    pub payload: T,
+    pub provenance: ProvenanceTag,
+}
