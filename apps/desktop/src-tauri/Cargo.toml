@@ -8,7 +8,16 @@ license.workspace = true
 [dependencies]
 sidra-domain = { path = "../../../packages/domain" }
 sidra-kernel = { path = "../../../services/kernel" }
+sidra-store = { path = "../../../services/store" }
+sidra-security = { path = "../../../services/security" }
+sidra-memory = { path = "../../../services/memory" }
+sidra-models = { path = "../../../services/models" }
+sidra-tools = { path = "../../../services/tools" }
+sidra-agents = { path = "../../../services/agents" }
+sidra-orchestrator = { path = "../../../services/orchestrator" }
+sidra-plugins = { path = "../../../services/plugins" }
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 tauri = { version = "2.0", features = [] }
 
 [[bin]]
