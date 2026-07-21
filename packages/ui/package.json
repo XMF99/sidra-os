@@ -3,8 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "description": "Sidra OS shared UI component library",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "build": "echo 'stub build'",
     "test": "echo 'stub test'"
+  },
+  "dependencies": {
+    "@radix-ui/react-tooltip": "^1.1.0",
+    "@sidra/design": "workspace:*",
+    "lucide-react": "^0.400.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
