@@ -100,13 +100,9 @@ impl Event {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../bindings/src/index.ts")]
 pub enum EffectClass {
-    /// Class 0: Read-only / Query (Instant execution)
     Class0_Read = 0,
-    /// Class 1: Reversible local write (Auto execution if capability granted)
     Class1_ReversibleLocal = 1,
-    /// Class 2: Irreversible / External read-write (Requires Principal approval unless pre-approved by Fence)
     Class2_IrreversibleExternal = 2,
-    /// Class 3: Financial / Destructive / Key movement (Requires explicit human signature on record)
     Class3_CriticalHumanSignature = 3,
 }
 
@@ -159,4 +155,39 @@ pub struct ProvenanceTag {
 pub struct Envelope<T> {
     pub payload: T,
     pub provenance: ProvenanceTag,
+}
+
+// ==========================================
+// Milestone 4: Memory Engine & Working Memory
+// ==========================================
+
+/// Single chunk of indexed text with vector embedding per ADR-0004
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct MemoryChunk {
+    pub chunk_id: String,
+    pub source_id: String,
+    pub content: String,
+    pub token_count: usize,
+    pub embedding: Vec<f32>,
+    pub created_at: String,
+}
+
+/// Hybrid search result item with RRF score and rank details
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct SearchResult {
+    pub chunk: MemoryChunk,
+    pub rrf_score: f32,
+    pub fts_rank: Option<usize>,
+    pub vector_rank: Option<usize>,
+}
+
+/// Assembled Context Window for LLM inference with token budgeting
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct ContextWindow {
+    pub items: Vec<MemoryChunk>,
+    pub total_tokens: usize,
+    pub max_token_budget: usize,
 }

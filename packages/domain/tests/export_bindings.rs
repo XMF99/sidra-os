@@ -1,6 +1,6 @@
 use sidra_domain::{
-    AppStatus, ApprovalRequest, BriefStatus, Capability, EffectClass, EngagementId, Event, Fence,
-    ProvenanceTag, SystemInfo,
+    AppStatus, ApprovalRequest, BriefStatus, Capability, ContextWindow, EffectClass, EngagementId,
+    Event, Fence, MemoryChunk, ProvenanceTag, SearchResult, SystemInfo,
 };
 use ts_rs::TS;
 
@@ -16,4 +16,7 @@ fn export_ts_bindings() {
     Fence::export_all().unwrap();
     ApprovalRequest::export_all().unwrap();
     ProvenanceTag::export_all().unwrap();
+    MemoryChunk::export_all().unwrap();
+    SearchResult::export_all().unwrap();
+    ContextWindow::export_all().unwrap();
 }
