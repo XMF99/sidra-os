@@ -2,10 +2,31 @@
   "name": "@sidra/desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "Sidra OS Desktop Application Frontend (React 19, TypeScript)",
+  "description": "Sidra OS Desktop Application (React 19, TypeScript, Tauri 2)",
+  "type": "module",
   "scripts": {
-    "dev": "echo 'stub dev'",
-    "build": "echo 'stub build'",
-    "test": "echo 'stub test'"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@radix-ui/react-tooltip": "^1.1.0",
+    "@sidra/bindings": "workspace:*",
+    "@sidra/design": "workspace:*",
+    "@sidra/ui": "workspace:*",
+    "@tanstack/react-query": "^5.0.0",
+    "@tauri-apps/api": "^2.0.0",
+    "lucide-react": "^0.400.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.0.0"
   }
 }

@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 sidra-domain = { path = "../../packages/domain" }
 sidra-kernel = { path = "../../services/kernel" }
+clap = { version = "4.4", features = ["derive"] }
 
 [[bin]]
 name = "sidractl"

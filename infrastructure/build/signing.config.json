@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0",
+  "macos": {
+    "signing_identity_env": "APPLE_IDENTITY",
+    "notarization_apple_id_env": "APPLE_ID",
+    "notarization_team_id_env": "APPLE_TEAM_ID",
+    "hardened_runtime": true
+  },
+  "windows": {
+    "certificate_env": "WINDOWS_CERTIFICATE",
+    "digest_algorithm": "sha256",
+    "timestamp_server": "http://timestamp.digicert.com"
+  },
+  "updater": {
+    "pubkey_path": "infrastructure/build/tauri.pub",
+    "privkey_env": "TAURI_PRIVATE_KEY"
+  }
+}
