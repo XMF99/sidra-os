@@ -1,19 +1,12 @@
-# Rust
-target/
+# Rust build output
+/target/
 **/*.rs.bk
 
-# Node / JS
-node_modules/
-dist/
-.pnpm-store/
+# Local runtime scratch — ADR-0011 §1.6: nothing in workspace/ is ever committed
+/workspace/
 
-# Local runtime scratch (never committed)
-workspace/*
-!workspace/.gitignore
-
-# OS & IDE artifacts
+# Editor and OS noise
 .DS_Store
-Thumbs.db
+*.swp
 .idea/
 .vscode/
-*.swp

@@ -1,14 +1,25 @@
+# Sidra OS — Rust workspace root.
+#
+# Layout and dependency direction are defined by ADR-0011 (seven-directory monorepo):
+#   packages/domain  <-  services/*  <-  apps/*
+#   infrastructure/ depends on everything; nothing depends on it.
+#
+# Members are listed explicitly rather than by glob. ADR-0011 describes the eventual
+# `members = apps/*, services/*, packages/*` form; explicit membership is used while
+# `services/mission` is the only crate, so that adding a member is a visible, reviewed
+# change rather than a side effect of creating a directory.
+
 [workspace]
 resolver = "2"
 members = [
-  "apps/cli",
-  "apps/desktop/src-tauri",
-  "services/*",
-  "packages/*",
+    "services/mission",
 ]
 
 [workspace.package]
-version = "0.1.0"
-edition = "2021"
-authors = ["Sidra Systems"]
-license = "MIT"
+edition      = "2021"
+rust-version = "1.77"
+license      = "MIT"
+repository   = "https://github.com/XMF99/sidra-os"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"

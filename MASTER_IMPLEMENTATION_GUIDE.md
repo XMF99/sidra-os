@@ -5,10 +5,10 @@ document you read first and return to when you are unsure what to do next.
 
 | | |
 |---|---|
-| Covers | Sidra OS 1.0 "Atrium" (`/docs`, 52 documents) and 2.0 "Concourse" (`/docs-v2`, 29 documents) |
+| Covers | Sidra OS 1.0 "Atrium" (`/docs`, 52 documents) and 2.0 "Concourse" (`/docs-v2`, 30 documents) |
 | Audience | The engineering team building it, and whoever is accountable for it shipping |
 | Status | No implementation has begun. That is correct and deliberate. |
-| Total design surface | 83 documents, ~92,000 words |
+| Total design surface | 88 documents, ~112,000 words |
 
 ---
 
@@ -39,8 +39,9 @@ this guide has a bug.
 document, the v1 document is correct and the v2 document is a defect to be reported. The only exceptions are
 the ten claims listed in `/docs-v2/00-overview/01-v1-review.md` §4, each of which carries an ADR.
 
-**Twenty-one ADRs** span both sets: 0001–0011 in `/docs/06-implementation/adr/`, 0012–0021 in
-`/docs-v2/adr/`. All twenty-one are accepted and none is superseded. Read the two indexes before writing
+**Thirty-two ADRs** span the programme: 0001–0011 in `/docs/06-implementation/adr/`, 0012–0021 and 0031–0032
+in `/docs-v2/adr/`, and 0022–0030 embedded in `/MISSION_ENGINE_ARCHITECTURE.md` §30. All thirty-two are
+accepted and none is superseded. Read the two indexes before writing
 anything; each ADR is one page and between them they explain most of the decisions that will otherwise look
 arbitrary.
 
@@ -137,7 +138,7 @@ comfort for a year of migration.
 | **M9** | Plugins | An external developer ships a working tool plugin in under a day from the spec alone | `02-architecture/08`, ADR-0006 |
 | **M10** | Hardening and 1.0 | Thirty days dogfooding, zero data loss, zero unlogged effects | `06-implementation/02` |
 
-### Milestones 11–14 · Version 2.0 "Concourse"
+### Milestones 11–15 · Version 2.0 "Concourse"
 
 | M | Name | Exit criterion | Authoritative documents |
 |---|---|---|---|
@@ -145,6 +146,11 @@ comfort for a year of migration.
 | **M12** | Structure | Eight Divisions, four Offices, Rail shows Divisions, vetoes work firm-wide | `/docs-v2/02-organization/*`, ADRs 0012, 0015 |
 | **M13** | Departments | Three departments installed from Packs, one Exchange request end to end | `/docs-v2/01-enterprise/04-department-catalog.md`, ADRs 0014, 0017 |
 | **M14** | Game Studio and Marketplace | The nine-item acceptance list, including uninstall-leaves-Firm-working | `/docs-v2/03-game-studio/*`, ADRs 0018, 0019 |
+| **M15** | Mission Engine | A three-department, twelve-task, two-day Mission concludes with every Objective verified by evidence, one approval, one Brief | `/MISSION_ENGINE_ARCHITECTURE.md`, `/docs-v2/03-Intelligence/MISSION_ENGINE_IMPLEMENTATION_PLAN.md`, ADRs 0022–0030 |
+
+**Milestone numbers are defined by [`/MILESTONE_REGISTRY.md`](MILESTONE_REGISTRY.md), not by this table.**
+The registry covers M1–M30 and is authoritative where the two disagree. It also records why the Mission
+Engine is M15 and not M10 (ADR-0032).
 
 ### Critical path
 
@@ -253,7 +259,13 @@ The routing table. One place for every question.
 | What am I building next? | `/docs/06-implementation/01-implementation-plan.md` |
 | How do I test this? | `/docs/06-implementation/02-testing-and-quality.md` |
 | When does this ship? | `/docs/06-implementation/03-roadmap.md` → `/docs-v2/04-migration/03-roadmap-changes.md` |
-| **What changed in v2?** | `/docs-v2/00-overview/01-v1-review.md` |
+| **Which milestone is this, exactly?** | `/MILESTONE_REGISTRY.md` — authoritative for M1–M30 |
+| What changed in v2? | `/docs-v2/00-overview/01-v1-review.md` |
+| **What is a Mission?** | `/MISSION_ENGINE_ARCHITECTURE.md` §1 |
+| Who owns the plan vs. the execution? | `/MISSION_ENGINE_ARCHITECTURE.md` §22, ADR-0022 |
+| How is progress calculated? | `/MISSION_ENGINE_ARCHITECTURE.md` §15, ADR-0025 |
+| When may a failed task be retried? | `/MISSION_ENGINE_ARCHITECTURE.md` §13, ADR-0028 |
+| What am I building in the Mission Engine? | `/docs-v2/03-Intelligence/MISSION_ENGINE_IMPLEMENTATION_PLAN.md` |
 | What is a Department, mechanically? | `/docs-v2/01-enterprise/03-department-architecture.md` |
 | Which departments exist? | `/docs-v2/01-enterprise/04-department-catalog.md` |
 | Can this layer be replaced? | `/docs-v2/01-enterprise/02-layer-model.md` §9 |

@@ -1,0 +1,59 @@
+# Sidra OS — Mission Engine CI  (M10 / E1 / T1.1)
+#
+# GitHub Actions requires workflows at .github/workflows/. ADR-0011 places CI under
+# infrastructure/ci/. Both are honoured: the workflow here is a thin trigger, and every
+# check it runs lives in infrastructure/ci/ where the ADR puts it.
+
+name: mission
+
+on:
+  push:
+    paths:
+      - 'Cargo.toml'
+      - 'services/mission/**'
+      - 'infrastructure/ci/**'
+      - '.github/workflows/mission.yml'
+  pull_request:
+    paths:
+      - 'Cargo.toml'
+      - 'services/mission/**'
+      - 'infrastructure/ci/**'
+      - '.github/workflows/mission.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-direction:
+    name: dependency direction (ADR-0022)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      # Runs with cargo present, so the check covers transitive dependencies.
+      - name: Enforce dependency direction
+        run: python3 infrastructure/ci/check_dependency_direction.py .
+      - name: Self-test the checker
+        run: bash infrastructure/ci/tests/test_check_dependency_direction.sh
+
+  build:
+    name: build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Build
+        run: cargo build --workspace --all-targets
+      - name: Test
+        run: cargo test --workspace
+      - name: Documentation
+        run: cargo doc --workspace --no-deps
+        env:
+          RUSTDOCFLAGS: -D warnings

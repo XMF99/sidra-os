@@ -1,0 +1,25 @@
+# sidra-mission — the Mission Engine.
+#
+# Owns plans. Does not execute them. See docs-v2/03-Intelligence/MISSION_ENGINE_ARCHITECTURE.md and ADR-0022.
+#
+# DEPENDENCY RULE (ARCH Appendix B, enforced by infrastructure/ci/check_dependency_direction.py):
+#   This crate MUST NOT depend on `sidra-orchestrator`, directly or transitively.
+#   The absence of that edge is what makes the planning/execution separation a
+#   compile-time property rather than a convention.
+
+[package]
+name        = "sidra-mission"
+version     = "0.1.0"
+description = "Mission Engine — the planning subsystem of Sidra OS."
+publish     = false
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+
+[dependencies]
+
+[dev-dependencies]
+
+[lints]
+workspace = true

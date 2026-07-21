@@ -57,15 +57,18 @@ sidra-os/
 │   ├── 01-enterprise/               enterprise architecture, layers, departments, catalog, marketplace
 │   ├── 02-organization/             org chart, agent architecture, executive cabinet
 │   ├── 03-game-studio/              repository analysis, department, integration plan
-│   ├── 03-Intelligence/             Mission Engine architecture & implementation plan
+│   ├── 03-Intelligence/             Mission Engine implementation plan
 │   ├── 04-migration/                migration strategy, implementation changes, roadmap changes
 │   ├── 05-risk/                     risk analysis
-│   └── adr/                         ADRs 0012–0021, 0031–0032
+│   └── adr/                         ADRs 0012–0021
+├── MISSION_ENGINE_ARCHITECTURE.md   Mission Engine — single source of truth
 ├── MILESTONE_REGISTRY.md            M1–M30 — authoritative milestone definitions
 │
 ├── Cargo.toml                       Rust workspace (ADR-0011)
 ├── services/
 │   └── mission/                     crate sidra-mission — the Mission Engine
+│       ├── src/domain/values.rs     value objects (T1.2)
+│       └── tests/
 └── infrastructure/
     └── ci/                          automated checks; workflows call these
 ```
@@ -108,7 +111,7 @@ Four more are added at v2 and lose every conflict against these ten by construct
 | | |
 |---|---|
 | Design | Complete for 1.0 and 2.0 |
-| Implementation | **Begun.** M10 (Mission Engine), Epic E1, task T1.1 of 113 |
+| Implementation | **Begun.** M15 (Mission Engine), Epic E1, tasks T1.1–T1.2 of 113 |
 | Design documents | 88 markdown files — 52 in `/docs`, 32 in `/docs-v2`, plus this file, the guide, the registry, and the Mission Engine architecture |
 | Decision records | 32, all accepted, none superseded |
 | Target | 1.0 "Atrium" → 2.0 "Concourse" → 3.0 "Chambers" → 4.0 "Continuum" |
