@@ -1,0 +1,85 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "spdxVersion": "SPDX-2.2",
+  "creationInfo": {
+    "created": "2026-07-21T13:13:17.008Z",
+    "creators": [
+      "Tool: Sidra-OS-SBOM-Generator-v1.0"
+    ]
+  },
+  "name": "Sidra-OS-Release-SBOM",
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://sidra.os/spdx/sbom-v1.0",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Domain",
+      "name": "@sidra/domain",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Store",
+      "name": "sidra-store",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Security",
+      "name": "sidra-security",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Memory",
+      "name": "sidra-memory",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Models",
+      "name": "sidra-models",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Tools",
+      "name": "sidra-tools",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Agents",
+      "name": "sidra-agents",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Orchestrator",
+      "name": "sidra-orchestrator",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Plugins",
+      "name": "sidra-plugins",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Sidra-OS-Desktop",
+      "name": "@sidra/desktop",
+      "versionInfo": "0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0"
+    }
+  ]
+}
