@@ -9,4 +9,5 @@
 //!
 //! Milestone M15, Epic E1. See `/docs-v2/03-Intelligence/MISSION_ENGINE_IMPLEMENTATION_PLAN.md`.
 
+pub mod charter;
 pub mod values;

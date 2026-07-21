@@ -12,7 +12,8 @@
 //! in CI.
 
 use sidra_mission::domain::values::{
-    Duration, EffectClass, IdempotencyKey, MissionId, Money, ObjectiveId, PriorityTier, TaskId,
+    AutonomyDepth, CalendarDate, DepartmentId, DirectiveId, Duration, EffectClass, Fence,
+    IdempotencyKey, MissionId, Money, ObjectiveId, PriorityTier, ReviewIntensity, TaskId,
     ValueError, Weight,
 };
 
@@ -311,6 +312,107 @@ fn duration_rejects_non_ascii_input_without_panicking() {
 }
 
 // =====================================================================================
+// DirectiveId, DepartmentId, Fence, AutonomyDepth, ReviewIntensity, CalendarDate (T1.3)
+// =====================================================================================
+
+#[test]
+fn directive_id_accepts_valid_form() {
+    let raw = format!("dir_{VALID_BODY}");
+    let id = DirectiveId::parse(&raw).expect("valid directive id");
+    assert_eq!(id.as_str(), raw);
+    assert_eq!(id.to_string(), raw);
+}
+
+#[test]
+fn directive_id_rejects_invalid_form() {
+    let bad = ["dir_short", "msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1C", "dir_01J8KQ4Z9F3B7T2Y6R8N0M5V1!"];
+    for b in bad {
+        assert!(DirectiveId::parse(b).is_err(), "should reject {b}");
+    }
+}
+
+#[test]
+fn department_id_validates_separator_and_chars() {
+    assert!(DepartmentId::parse("backend").is_ok());
+    assert!(DepartmentId::parse("incident-response").is_ok());
+
+    let invalid = ["", "-backend", "backend-", "BackEnd", "backend_service", "back.end"];
+    for inv in invalid {
+        assert!(DepartmentId::parse(inv).is_err(), "should reject department {inv}");
+    }
+}
+
+#[test]
+fn fence_validates_separator_and_chars() {
+    assert!(Fence::parse("no_production_writes").is_ok());
+    assert!(Fence::parse("read_only").is_ok());
+
+    let invalid = ["", "_no_writes", "no_writes_", "no-writes", "NoWrites", "no.writes"];
+    for inv in invalid {
+        assert!(Fence::parse(inv).is_err(), "should reject fence {inv}");
+    }
+}
+
+#[test]
+fn autonomy_depth_bounds() {
+    for depth in 0..=3 {
+        assert!(AutonomyDepth::new(depth).is_ok());
+        assert_eq!(AutonomyDepth::new(depth).unwrap().get(), depth);
+    }
+    assert!(AutonomyDepth::new(4).is_err());
+    assert!(AutonomyDepth::new(255).is_err());
+}
+
+#[test]
+fn review_intensity_ordering_and_parsing() {
+    assert!(ReviewIntensity::Full < ReviewIntensity::Standard);
+    assert!(ReviewIntensity::Standard < ReviewIntensity::Lean);
+    assert_eq!(ReviewIntensity::default(), ReviewIntensity::Standard);
+
+    for (s, expected) in [
+        ("full", ReviewIntensity::Full),
+        ("standard", ReviewIntensity::Standard),
+        ("lean", ReviewIntensity::Lean),
+    ] {
+        let parsed: ReviewIntensity = s.parse().expect("parse intensity");
+        assert_eq!(parsed, expected);
+        assert_eq!(parsed.to_string(), s);
+    }
+    assert!("invalid".parse::<ReviewIntensity>().is_err());
+}
+
+#[test]
+fn calendar_date_validation_and_parsing() {
+    // Valid
+    let d = CalendarDate::new(2026, 9, 15).expect("valid date");
+    assert_eq!(d.year(), 2026);
+    assert_eq!(d.month(), 9);
+    assert_eq!(d.day(), 15);
+    assert_eq!(d.to_string(), "2026-09-15");
+
+    // Leap year acceptance (Criterion l)
+    assert!(CalendarDate::new(2024, 2, 29).is_ok(), "2024-02-29 is a leap year");
+
+    // Invalid dates (Criterion l)
+    let invalid_dates = [
+        (2026, 2, 29),  // Not leap year
+        (2024, 2, 30),  // Feb 30 invalid
+        (2026, 13, 1),  // Month 13 invalid
+        (2026, 0, 10),  // Month 0 invalid
+        (2026, 4, 31),  // April has 30 days
+        (0, 1, 1),      // Year 0 invalid
+    ];
+    for (y, m, day) in invalid_dates {
+        assert!(CalendarDate::new(y, m, day).is_err(), "should reject {y}-{m}-{day}");
+    }
+
+    // ISO-8601 parsing
+    assert_eq!(CalendarDate::parse("2026-09-15").unwrap(), d);
+    assert!(CalendarDate::parse("2026/09/15").is_err());
+    assert!(CalendarDate::parse("2026-9-15").is_err());
+}
+
+// =====================================================================================
 // EffectClass
 // =====================================================================================
 
@@ -398,7 +500,8 @@ fn errors_name_the_offending_input() {
 
 mod properties {
     use super::{
-        Duration, EffectClass, MissionId, Money, PriorityTier, TaskId, Weight, VALID_BODY,
+        AutonomyDepth, CalendarDate, Duration, EffectClass, MissionId, Money, PriorityTier,
+        TaskId, Weight, VALID_BODY,
     };
 
     /// How many samples each property draws. Large enough to explore the space, small enough
@@ -557,6 +660,33 @@ mod properties {
                 TaskId::parse(raw.clone()).is_err(),
                 "{raw} contains uppercase and must be rejected"
             );
+        }
+    }
+
+    #[test]
+    fn autonomy_depth_accepts_exactly_zero_through_three() {
+        for depth in 0_u8..=255 {
+            assert_eq!(
+                AutonomyDepth::new(depth).is_ok(),
+                depth <= 3,
+                "AutonomyDepth::new({depth}) disagreed with 0..=3"
+            );
+        }
+    }
+
+    #[test]
+    fn calendar_date_round_trips_iso_8601() {
+        let mut rng = Lcg::new(0x5EED_0007);
+        for _ in 0..SAMPLES {
+            let year = (1 + rng.next_in(9999)) as u16;
+            let month = (1 + rng.next_in(12)) as u8;
+            let days_max = CalendarDate::days_in_month(year, month);
+            let day = (1 + rng.next_in(days_max as u64)) as u8;
+
+            let date = CalendarDate::new(year, month, day).expect("valid generated date");
+            let iso = date.to_string();
+            let parsed = CalendarDate::parse(&iso).expect("display must be parseable");
+            assert_eq!(date, parsed, "round trip failed for {iso}");
         }
     }
 }

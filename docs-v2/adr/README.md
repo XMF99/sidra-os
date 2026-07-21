@@ -19,6 +19,7 @@ behaviour needs a record.
 | [0021](0021-seats-defined-in-2-shipped-in-3.md) | Seats defined in 2.0, shipped in 3.0 | Accepted | — |
 | [0031](0031-ci-workflows-split-from-ci-scripts.md) | CI workflows in `.github/`, checks in `infrastructure/ci/` | Accepted | Clarifies ADR-0011 |
 | [0032](0032-single-global-milestone-numbering.md) | Milestone numbering is single, global, permanent once documented | Accepted | "M10" label in the Mission Engine plan |
+| [0033](0033-charter-comparison-is-a-partial-order.md) | Charter comparison is a partial order, and `Incomparable` is treated as widening | Proposed | — |
 
 ## Format
 

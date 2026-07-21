@@ -851,3 +851,398 @@ impl FromStr for PriorityTier {
         }
     }
 }
+
+// =====================================================================================
+// DirectiveId
+// =====================================================================================
+
+/// The identity of the Principal's originating Directive, e.g. `dir_01J8KQ4Z9F3B7T2Y6R8N0M5V1C`.
+///
+/// Opaque and generated, like [`MissionId`]. A Mission's Charter names the Directive it serves,
+/// so that any plan traces to the intention that caused it (`ARCH` §5.1).
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct DirectiveId(String);
+
+impl DirectiveId {
+    /// The required prefix, including its separator.
+    pub const PREFIX: &'static str = "dir_";
+
+    /// Parse and validate a Directive identifier.
+    ///
+    /// # Errors
+    /// Returns [`ValueError`] when the prefix is absent or the body is not 26 Crockford
+    /// base32 characters.
+    pub fn parse(raw: impl Into<String>) -> Result<Self, ValueError> {
+        let raw = raw.into();
+        validate_opaque("DirectiveId", Self::PREFIX, &raw)?;
+        Ok(Self(raw))
+    }
+
+    /// The identifier as a string slice.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl fmt::Display for DirectiveId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl FromStr for DirectiveId {
+    type Err = ValueError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s)
+    }
+}
+
+// =====================================================================================
+// DepartmentId
+// =====================================================================================
+
+/// A department slug, e.g. `backend` or `incident-response`.
+///
+/// Validated rather than a bare `String` because department identifiers are compared for set
+/// membership in the Charter's allowlist; two spellings of one department would silently
+/// weaken a boundary.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct DepartmentId(String);
+
+impl DepartmentId {
+    /// Parse and validate a department slug: lowercase ASCII alphanumeric and hyphen, no
+    /// leading or trailing hyphen.
+    ///
+    /// # Errors
+    /// Returns [`ValueError`] when the input is empty or contains a disallowed character.
+    pub fn parse(raw: impl Into<String>) -> Result<Self, ValueError> {
+        const KIND: &str = "DepartmentId";
+        let raw = raw.into();
+        if raw.is_empty() {
+            return Err(ValueError::Empty { kind: KIND });
+        }
+        if raw.starts_with('-') || raw.ends_with('-') {
+            return Err(ValueError::Malformed {
+                kind: KIND,
+                found: raw,
+                reason: "may not start or end with a hyphen",
+            });
+        }
+        if !raw
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+        {
+            return Err(ValueError::Malformed {
+                kind: KIND,
+                found: raw,
+                reason: "must be lowercase ASCII alphanumeric or hyphen",
+            });
+        }
+        Ok(Self(raw))
+    }
+
+    /// The slug as a string slice.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl fmt::Display for DepartmentId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl FromStr for DepartmentId {
+    type Err = ValueError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s)
+    }
+}
+
+// =====================================================================================
+// Fence
+// =====================================================================================
+
+/// A named hard boundary, e.g. `no_production_writes` (`ARCH` §5.1).
+///
+/// Fences are enumerated, never inferred (Principle 6). More fences is *more* constrained,
+/// which is why the Charter's partial order treats a superset of fences as a narrowing.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Fence(String);
+
+impl Fence {
+    /// Parse and validate a fence name: lowercase ASCII alphanumeric and underscore, no
+    /// leading or trailing underscore.
+    ///
+    /// # Errors
+    /// Returns [`ValueError`] when the input is empty or contains a disallowed character.
+    pub fn parse(raw: impl Into<String>) -> Result<Self, ValueError> {
+        const KIND: &str = "Fence";
+        let raw = raw.into();
+        if raw.is_empty() {
+            return Err(ValueError::Empty { kind: KIND });
+        }
+        if raw.starts_with('_') || raw.ends_with('_') {
+            return Err(ValueError::Malformed {
+                kind: KIND,
+                found: raw,
+                reason: "may not start or end with an underscore",
+            });
+        }
+        if !raw
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
+        {
+            return Err(ValueError::Malformed {
+                kind: KIND,
+                found: raw,
+                reason: "must be lowercase ASCII alphanumeric or underscore",
+            });
+        }
+        Ok(Self(raw))
+    }
+
+    /// The fence name as a string slice.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl fmt::Display for Fence {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl FromStr for Fence {
+    type Err = ValueError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s)
+    }
+}
+
+// =====================================================================================
+// AutonomyDepth
+// =====================================================================================
+
+/// Permitted delegation depth, `0..=3`.
+///
+/// ADR-0012 raised the autonomous delegation depth from 2 to 3:
+/// Kai → Division head → Department head → specialist. `0` means Kai delegates to nobody.
+/// Higher is *wider*.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct AutonomyDepth(u8);
+
+impl AutonomyDepth {
+    /// No delegation.
+    pub const NONE: Self = Self(0);
+    /// The v2 maximum (ADR-0012).
+    pub const MAX: Self = Self(3);
+
+    /// Construct from a depth.
+    ///
+    /// # Errors
+    /// Returns [`ValueError::OutOfRange`] above 3, the deepest chain the v2 org chart defines.
+    pub fn new(depth: u8) -> Result<Self, ValueError> {
+        if depth > 3 {
+            return Err(ValueError::OutOfRange {
+                kind: "AutonomyDepth",
+                found: format!("{depth}"),
+                permitted: "0..=3",
+            });
+        }
+        Ok(Self(depth))
+    }
+
+    /// The depth as a number.
+    #[must_use]
+    pub fn get(self) -> u8 {
+        self.0
+    }
+}
+
+impl fmt::Display for AutonomyDepth {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+// =====================================================================================
+// ReviewIntensity
+// =====================================================================================
+
+/// How much optional review runs (ADR-0018).
+///
+/// Ordering is by **permissiveness**, so `Full < Standard < Lean` and the most constrained
+/// variant sorts first. No intensity removes the independent reviewer required by ADR-0008,
+/// and Security Office reviews are not subject to intensity at all.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ReviewIntensity {
+    /// Every optional gate runs.
+    Full,
+    /// Office reviews plus stage gates. The default.
+    Standard,
+    /// Stage gates only; Office reviews where a manifest marks them required.
+    Lean,
+}
+
+impl Default for ReviewIntensity {
+    fn default() -> Self {
+        Self::Standard
+    }
+}
+
+impl fmt::Display for ReviewIntensity {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Full => "full",
+            Self::Standard => "standard",
+            Self::Lean => "lean",
+        })
+    }
+}
+
+impl FromStr for ReviewIntensity {
+    type Err = ValueError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "full" => Ok(Self::Full),
+            "standard" => Ok(Self::Standard),
+            "lean" => Ok(Self::Lean),
+            _ => Err(ValueError::Malformed {
+                kind: "ReviewIntensity",
+                found: s.to_owned(),
+                reason: "expected full, standard or lean",
+            }),
+        }
+    }
+}
+
+// =====================================================================================
+// CalendarDate
+// =====================================================================================
+
+/// A proleptic Gregorian calendar date. No time, no zone, no clock.
+///
+/// A Charter deadline is a date, not an instant (`ARCH` §5.1). Field order is
+/// year-month-day so that derived `Ord` gives chronological ordering.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct CalendarDate {
+    year: u16,
+    month: u8,
+    day: u8,
+}
+
+impl CalendarDate {
+    /// Construct a date.
+    ///
+    /// # Errors
+    /// Returns [`ValueError::OutOfRange`] for a year outside `1..=9999`, a month outside
+    /// `1..=12`, or a day outside the month's length in that year.
+    pub fn new(year: u16, month: u8, day: u8) -> Result<Self, ValueError> {
+        if !(1..=9999).contains(&year) {
+            return Err(ValueError::OutOfRange {
+                kind: "CalendarDate year",
+                found: format!("{year}"),
+                permitted: "1..=9999",
+            });
+        }
+        if !(1..=12).contains(&month) {
+            return Err(ValueError::OutOfRange {
+                kind: "CalendarDate month",
+                found: format!("{month}"),
+                permitted: "1..=12",
+            });
+        }
+        let limit = Self::days_in_month(year, month);
+        if day < 1 || day > limit {
+            return Err(ValueError::OutOfRange {
+                kind: "CalendarDate day",
+                found: format!("{day}"),
+                permitted: "1..=days in month",
+            });
+        }
+        Ok(Self { year, month, day })
+    }
+
+    /// Whether `year` is a leap year in the proleptic Gregorian calendar.
+    #[must_use]
+    pub fn is_leap_year(year: u16) -> bool {
+        (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+    }
+
+    /// The number of days in `month` of `year`. Returns 0 for an invalid month.
+    #[must_use]
+    pub fn days_in_month(year: u16, month: u8) -> u8 {
+        match month {
+            1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+            4 | 6 | 9 | 11 => 30,
+            2 if Self::is_leap_year(year) => 29,
+            2 => 28,
+            _ => 0,
+        }
+    }
+
+    /// The year.
+    #[must_use]
+    pub fn year(self) -> u16 {
+        self.year
+    }
+
+    /// The month, `1..=12`.
+    #[must_use]
+    pub fn month(self) -> u8 {
+        self.month
+    }
+
+    /// The day of month.
+    #[must_use]
+    pub fn day(self) -> u8 {
+        self.day
+    }
+
+    /// Parse an ISO-8601 calendar date, `YYYY-MM-DD`.
+    ///
+    /// # Errors
+    /// Returns [`ValueError`] when the shape is wrong or the date does not exist.
+    pub fn parse(raw: &str) -> Result<Self, ValueError> {
+        const KIND: &str = "CalendarDate";
+        let malformed = || ValueError::Malformed {
+            kind: KIND,
+            found: raw.to_owned(),
+            reason: "expected YYYY-MM-DD",
+        };
+        let bytes = raw.as_bytes();
+        if bytes.len() != 10 || bytes[4] != b'-' || bytes[7] != b'-' {
+            return Err(malformed());
+        }
+        if !bytes
+            .iter()
+            .enumerate()
+            .all(|(i, b)| i == 4 || i == 7 || b.is_ascii_digit())
+        {
+            return Err(malformed());
+        }
+        let year: u16 = raw[0..4].parse().map_err(|_| malformed())?;
+        let month: u8 = raw[5..7].parse().map_err(|_| malformed())?;
+        let day: u8 = raw[8..10].parse().map_err(|_| malformed())?;
+        Self::new(year, month, day)
+    }
+}
+
+impl fmt::Display for CalendarDate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:04}-{:02}-{:02}", self.year, self.month, self.day)
+    }
+}
+
+impl FromStr for CalendarDate {
+    type Err = ValueError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s)
+    }
+}

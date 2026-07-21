@@ -39,8 +39,8 @@ this guide has a bug.
 document, the v1 document is correct and the v2 document is a defect to be reported. The only exceptions are
 the ten claims listed in `/docs-v2/00-overview/01-v1-review.md` §4, each of which carries an ADR.
 
-**Thirty-two ADRs** span the programme: 0001–0011 in `/docs/06-implementation/adr/`, 0012–0021 and 0031–0032
-in `/docs-v2/adr/`, and 0022–0030 embedded in `/MISSION_ENGINE_ARCHITECTURE.md` §30. All thirty-two are
+**Thirty-three ADRs** span the programme: 0001–0011 in `/docs/06-implementation/adr/`, 0012–0021 and 0031–0033
+in `/docs-v2/adr/`, and 0022–0030 embedded in `/docs-v2/03-Intelligence/MISSION_ENGINE_ARCHITECTURE.md` §30. All thirty-three are
 accepted and none is superseded. Read the two indexes before writing
 anything; each ADR is one page and between them they explain most of the decisions that will otherwise look
 arbitrary.
