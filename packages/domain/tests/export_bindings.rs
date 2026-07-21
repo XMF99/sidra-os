@@ -1,4 +1,4 @@
-use sidra_domain::{AppStatus, BriefStatus, EngagementId, SystemInfo};
+use sidra_domain::{AppStatus, BriefStatus, EngagementId, Event, SystemInfo};
 use ts_rs::TS;
 
 #[test]
@@ -7,4 +7,5 @@ fn export_ts_bindings() {
     AppStatus::export_all().unwrap();
     BriefStatus::export_all().unwrap();
     SystemInfo::export_all().unwrap();
+    Event::export_all().unwrap();
 }
