@@ -1,8 +1,8 @@
 use sidra_domain::{
     AgentMessage, AgentState, AppStatus, ApprovalRequest, BriefStatus, Capability, ChatMessage,
     CompletionRequest, CompletionResponse, ContextWindow, EffectClass, EngagementId, Event, Fence,
-    MemoryChunk, ProvenanceTag, SearchResult, SystemInfo, TaskPlan, TaskStatus, TaskStep,
-    TokenUsage, ToolDefinition, ToolCall,
+    MemoryChunk, PluginInfo, PluginManifest, PluginStatus, ProvenanceTag, SearchResult, SystemInfo,
+    TaskPlan, TaskStatus, TaskStep, TokenUsage, ToolDefinition, ToolCall,
 };
 use ts_rs::TS;
 
@@ -32,4 +32,7 @@ fn export_ts_bindings() {
     TaskStep::export_all().unwrap();
     TaskPlan::export_all().unwrap();
     AgentMessage::export_all().unwrap();
+    PluginStatus::export_all().unwrap();
+    PluginManifest::export_all().unwrap();
+    PluginInfo::export_all().unwrap();
 }

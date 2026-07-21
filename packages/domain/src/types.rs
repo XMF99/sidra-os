@@ -313,3 +313,38 @@ pub struct AgentMessage {
     pub content: String,
     pub provenance: ProvenanceTag,
 }
+
+// ==========================================
+// Milestone 7: Plugin Ecosystem & SDK
+// ==========================================
+
+/// Plugin Runtime Status Lifecycle
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub enum PluginStatus {
+    Unloaded,
+    Loaded,
+    Active,
+    Suspended,
+    Error,
+}
+
+/// Plugin Manifest Schema per ADR-0010
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct PluginManifest {
+    pub plugin_id: String,
+    pub name: String,
+    pub version: String,
+    pub author: String,
+    pub requested_capabilities: Vec<String>,
+}
+
+/// Plugin Information Descriptor
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../bindings/src/index.ts")]
+pub struct PluginInfo {
+    pub manifest: PluginManifest,
+    pub status: PluginStatus,
+    pub granted_capabilities: Vec<String>,
+}
