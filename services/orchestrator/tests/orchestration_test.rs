@@ -8,7 +8,10 @@ use std::sync::Arc;
 
 #[test]
 fn test_m6_exit_criterion_multi_agent_cooperation_and_provenance_tracing() {
-    let vault = Vault::open_in_memory().unwrap();
+    let vault = match Vault::open_in_memory() {
+        Ok(v) => v,
+        Err(e) => panic!("Vault open failed: {:?}", e),
+    };
 
     // 1. Configure Model Router
     let mock_provider: Arc<dyn ModelProvider> = Arc::new(MockSuccessProvider::new("mock_llm"));
@@ -33,7 +36,7 @@ fn test_m6_exit_criterion_multi_agent_cooperation_and_provenance_tracing() {
         is_revoked: false,
     });
     broker.grant_capability(Capability {
-        capability_id: "cap_analyst_exec".to_string(),
+        capability_id: "cap_writer_exec".to_string(),
         grantee_agent_id: "agent_writer_01".to_string(),
         resource: "system".to_string(),
         max_effect_class: EffectClass::Class1_ReversibleLocal,
@@ -44,9 +47,10 @@ fn test_m6_exit_criterion_multi_agent_cooperation_and_provenance_tracing() {
 
     // 3. Execute multi-step task across Analyst and Writer agents
     let goal = "Ingest document, chunk, vector search, format executive brief";
-    let (plan, messages) = orchestrator
-        .execute_goal(vault.connection(), goal)
-        .expect("Multi-step task execution MUST succeed");
+    let (plan, messages) = match orchestrator.execute_goal(vault.connection(), goal) {
+        Ok(res) => res,
+        Err(e) => panic!("execute_goal failed: {:?}", e),
+    };
 
     // 4. Verify Plan Completion
     assert_eq!(plan.status, TaskStatus::Completed);

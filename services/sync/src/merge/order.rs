@@ -14,12 +14,13 @@ pub struct DeterministicOrderEngine;
 impl DeterministicOrderEngine {
     pub fn compute_order_key(event: &Event) -> DeterministicOrderKey {
         // Deterministic key derived from event fields and timestamp
+        let wall = event.timestamp.parse::<u64>().unwrap_or(0);
         DeterministicOrderKey {
-            hlc_wall: event.timestamp,
+            hlc_wall: wall,
             hlc_counter: 0,
-            device_id: event.actor.clone(),
-            device_seq: 0,
-            event_id: event.id.clone(),
+            device_id: event.aggregate_id.clone(),
+            device_seq: event.sequence as u64,
+            event_id: event.event_id.clone(),
         }
     }
 

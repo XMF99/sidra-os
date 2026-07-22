@@ -10,7 +10,7 @@ use sidra_seats::{
 
 #[test]
 fn test_exit_criterion_second_seat_no_history_rewritten_ac1_ac2_ac3() {
-    assert!(SeatsConformanceSuite::verify_exit_criterion().is_ok());
+    SeatsConformanceSuite::verify_exit_criterion().unwrap();
 }
 
 #[test]

@@ -100,15 +100,17 @@ impl CalibrationRunner {
         .map_err(|e| e.to_string())?;
 
         // 3. Emit CalibrationApplied event onto hash chain
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "founding_principal".to_string(),
+        let evt = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "CalibrationApplied".to_string(),
+            aggregate_type: "calibration".to_string(),
+            aggregate_id: run_id.clone(),
             payload: format!(
                 "Applied Calibration Run {} (Version {} -> {}) EE: {:.4} -> {:.4}",
                 run_id, current_params.version.0, new_version.0, metric_before.total_ee, metric_after.total_ee
             ),
+            metadata: r#"{"actor":"founding_principal"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
         EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
 

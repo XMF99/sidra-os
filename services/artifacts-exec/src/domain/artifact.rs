@@ -10,6 +10,7 @@ pub enum ExecStatus {
     Authored,
     Validated,
     Runnable,
+    Executing,
     Executed,
     Audited,
     Revoked,

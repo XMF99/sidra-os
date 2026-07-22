@@ -34,7 +34,10 @@ impl Vault {
              PRAGMA foreign_keys = ON;",
         )?;
 
-        embedded::migrations::runner().run(conn)?;
+        if let Err(err) = embedded::migrations::runner().run(conn) {
+            eprintln!("REFINERY MIGRATION ERROR: {:?}", err);
+            return Err(StoreError::Migration(err));
+        }
         Ok(())
     }
 

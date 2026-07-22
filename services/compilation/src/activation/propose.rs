@@ -69,17 +69,19 @@ impl CandidateProposer {
         .map_err(|e| e.to_string())?;
 
         // 3. Emit WorkflowCandidateProposed event
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "compilation_engine".to_string(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "WorkflowCandidateProposed".to_string(),
+            aggregate_type: "compilation".to_string(),
+            aggregate_id: candidate_id.clone(),
             payload: format!(
                 "Proposed Workflow Candidate {} (Playbook {}) from 5 distinct Missions",
                 candidate_id, playbook_id
             ),
+            metadata: r#"{"actor":"compilation_engine"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(candidate)
     }

@@ -40,3 +40,16 @@ impl DepartmentGrantsStore {
         Ok(())
     }
 }
+
+pub fn resolve_contract(
+    store: &DepartmentGrantsStore,
+    contract_ref: &str,
+) -> Result<Vec<String>, String> {
+    let mut matching_depts = Vec::new();
+    for (dept_id, capabilities) in &store.active_grants {
+        if capabilities.contains(contract_ref) {
+            matching_depts.push(dept_id.clone());
+        }
+    }
+    Ok(matching_depts)
+}

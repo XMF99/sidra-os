@@ -10,6 +10,9 @@ pub struct Capability(pub String);
 
 impl Capability {
     pub fn parse(cap_str: &str) -> Result<Self, String> {
+        if cap_str == "*" {
+            return Ok(Self(cap_str.to_string()));
+        }
         let parts: Vec<&str> = cap_str.split('.').collect();
         if parts.len() < 2 || parts[0].is_empty() || parts[1].is_empty() {
             return Err(format!("Invalid capability syntax '{}'", cap_str));

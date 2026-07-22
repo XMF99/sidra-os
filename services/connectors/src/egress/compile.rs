@@ -6,8 +6,8 @@ use sidra_security::EgressFilter;
 /// Compile `[egress].allow` into `EgressFilter` entry for (connector, department) (ADR-0036, T6.1)
 pub fn compile_egress(
     manifest: &ConnectorManifest,
-    department_id: &DepartmentId,
-    egress_filter: &EgressFilter,
+    _department_id: &DepartmentId,
+    egress_filter: &mut EgressFilter,
 ) -> Result<(), ConnectorError> {
     for host in &manifest.egress.allow {
         egress_filter.add_allowed_host(host);

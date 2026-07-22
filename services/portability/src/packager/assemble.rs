@@ -82,14 +82,16 @@ impl TemplatePackager {
         .map_err(|e| e.to_string())?;
 
         // Log TemplateExported event
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "founding_principal".to_string(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "TemplateExported".to_string(),
+            aggregate_type: "portability".to_string(),
+            aggregate_id: manifest.template_id.0.clone(),
             payload: format!("Exported Firm Template {}", manifest.template_id.0),
+            metadata: r#"{"actor":"founding_principal"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(firm_template)
     }

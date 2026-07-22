@@ -2,4 +2,7 @@
 -- Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §11.1, ADR-0057
 -- Additive covering index for read-time attribution join (events.actor) without modifying columns or rewriting rows.
 
+ALTER TABLE events ADD COLUMN actor TEXT;
+ALTER TABLE events ADD COLUMN seq INTEGER;
+
 CREATE INDEX IF NOT EXISTS idx_events_actor ON events (actor, seq);

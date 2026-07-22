@@ -1,9 +1,12 @@
+pub mod validate;
+
 use crate::domain::provenance::Provenance;
 use crate::domain::revision::CharterRevision;
 use crate::domain::status::RevisionStatus;
 use crate::domain::values::{ArchetypeId, CharterVersion, RevisionId};
 use crate::proposer::validate::ProposalValidator;
-use sidra_domain::{Charter, Event};
+use sidra_domain::EventInput;
+use sidra_mission::Charter;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -73,14 +76,16 @@ impl Proposer {
         .map_err(|e| e.to_string())?;
 
         // Emit CharterRevisionProposed event
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: proposed_by,
+        let input = EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "CharterRevisionProposed".to_string(),
+            aggregate_type: "evolution".to_string(),
+            aggregate_id: revision_id.0.clone(),
             payload: format!("Proposed Charter Revision {} for archetype {}", revision_id.0, archetype_id.0),
+            metadata: format!(r#"{{"actor":"{}"}}"#, proposed_by),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(revision)
     }

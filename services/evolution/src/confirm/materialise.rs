@@ -46,17 +46,19 @@ impl VersionMaterialiser {
         .map_err(|e| e.to_string())?;
 
         // Emit CharterRevisionConfirmed event
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: principal_actor.to_string(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "CharterRevisionConfirmed".to_string(),
+            aggregate_type: "evolution".to_string(),
+            aggregate_id: revision.revision_id.0.clone(),
             payload: format!(
                 "Confirmed Revision {} for archetype {} -> Version {} (Decision {})",
                 revision.revision_id.0, revision.archetype_id.0, new_ver_num, decision_id.0
             ),
+            metadata: format!(r#"{{"actor":"{}"}}"#, principal_actor),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(CharterVersion(new_ver_num))
     }

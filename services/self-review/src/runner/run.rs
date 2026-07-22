@@ -2,9 +2,9 @@ use crate::domain::health::AbsorbableVerdict;
 use crate::domain::proposal::StructureProposal;
 use crate::domain::review::{ReviewStatus, StructureReview};
 use crate::domain::values::{Confidence, DepartmentId, Quarter, QualityScore, ReviewId};
-use crate::health::AssessAssessor;
+use crate::health::assess::HealthAssessor;
 use crate::proposal::write::ProposalWriter;
-use sidra_domain::Event;
+use sidra_domain::EventInput;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -31,14 +31,16 @@ impl StructureReviewRunner {
         )
         .map_err(|e| e.to_string())?;
 
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "self_review_engine".to_string(),
+        let input = EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "StructureReviewStarted".to_string(),
+            aggregate_type: "self_review".to_string(),
+            aggregate_id: review_id.0.clone(),
             payload: format!("Started Structure Review {} for Quarter {}", review_id.0, q_val.0),
+            metadata: r#"{"actor":"self_review_engine"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
         drop(conn);
         drop(vault_guard);
 
@@ -108,17 +110,19 @@ impl StructureReviewRunner {
         )
         .map_err(|e| e.to_string())?;
 
-        let evt_conc = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "self_review_engine".to_string(),
+        let input_conc = EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "StructureReviewConcluded".to_string(),
+            aggregate_type: "self_review".to_string(),
+            aggregate_id: review_id.0.clone(),
             payload: format!(
                 "Concluded Structure Review {} with {} proposals raised",
                 review_id.0, proposals.len()
             ),
+            metadata: r#"{"actor":"self_review_engine"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt_conc).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input_conc).map_err(|e| e.to_string())?;
 
         let review = StructureReview {
             review_id,

@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Default capability grant for Sidra OS desktop renderer - deny ambient fs and http access","local":true,"windows":["main"],"permissions":["core:default","core:window:allow-start-dragging","core:event:default"]}}

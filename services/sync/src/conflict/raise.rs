@@ -1,6 +1,6 @@
 use crate::conflict::detect::DetectedFork;
-use crate::domain::conflict::{SyncConflict, ConflictStatus};
-use sidra_domain::Event;
+use crate::domain::conflict::SyncConflict;
+use sidra_domain::EventInput;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -31,8 +31,8 @@ impl ConflictDecisionEngine {
             &conflict_id,
             &decision_id,
             fork.cell.clone(),
-            &fork.event_a.id,
-            &fork.event_b.id,
+            &fork.event_a.event_id,
+            &fork.event_b.event_id,
             &fork.value_a, // Provisional winner
             timestamp,
         )
@@ -55,19 +55,21 @@ impl ConflictDecisionEngine {
         .map_err(|e| format!("Failed to record sync_conflict: {}", e))?;
 
         // 3. Emit ConflictDetected event to hash chain
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: fork.event_a.actor.clone(),
+        let input = EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "ConflictDetected".to_string(),
+            aggregate_type: "conflict".to_string(),
+            aggregate_id: sync_conflict.conflict_id.clone(),
             payload: format!(
                 "Conflict detected on cell {}: Decision {}",
                 fork.cell.to_key(),
                 sync_conflict.decision_id
             ),
+            metadata: format!(r#"{{"actor":"{}"}}"#, fork.event_a.aggregate_id),
+            timestamp: timestamp.to_string(),
         };
 
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(sync_conflict)
     }

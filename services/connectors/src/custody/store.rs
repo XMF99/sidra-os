@@ -1,7 +1,6 @@
 use crate::domain::errors::ConnectorError;
 use crate::domain::values::{ConnectorId, KeychainRef};
 use sidra_domain::DepartmentId;
-use sidra_security::KeychainManager;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
@@ -13,7 +12,6 @@ const KEYCHAIN_SERVICE_PREFIX: &str = "sidra.connector";
 /// Holds secrets in the OS keychain and returns opaque KeychainRefs.
 #[derive(Debug, Clone)]
 pub struct CustodyStore {
-    keychain: KeychainManager,
     // Ref mapping: (ConnectorId, DepartmentId) -> KeychainRef
     ref_map: Arc<Mutex<HashMap<(ConnectorId, DepartmentId), KeychainRef>>>,
     // In-memory fallback key-value store for platforms/tests: KeychainRef -> secret
@@ -29,7 +27,6 @@ impl Default for CustodyStore {
 impl CustodyStore {
     pub fn new() -> Self {
         Self {
-            keychain: KeychainManager::new(),
             ref_map: Arc::new(Mutex::new(HashMap::new())),
             memory_store: Arc::new(Mutex::new(HashMap::new())),
         }
@@ -47,7 +44,9 @@ impl CustodyStore {
         let keychain_ref = KeychainRef::new(&ref_key);
 
         // Attempt OS keychain write, with memory fallback
-        let _ = self.keychain.set_password(KEYCHAIN_SERVICE_PREFIX, &account_id, secret);
+        if let Ok(entry) = keyring::Entry::new(KEYCHAIN_SERVICE_PREFIX, &account_id) {
+            let _ = entry.set_password(secret);
+        }
         {
             let mut mem = self.memory_store.lock().unwrap();
             mem.insert(ref_key.clone(), secret.to_string());
@@ -75,8 +74,10 @@ impl CustodyStore {
         let parts: Vec<&str> = ref_str.split(':').collect();
         if parts.len() == 3 {
             let account_id = format!("{}:{}", parts[1], parts[2]);
-            if let Ok(secret) = self.keychain.get_password(KEYCHAIN_SERVICE_PREFIX, &account_id) {
-                return Ok(secret);
+            if let Ok(entry) = keyring::Entry::new(KEYCHAIN_SERVICE_PREFIX, &account_id) {
+                if let Ok(secret) = entry.get_password() {
+                    return Ok(secret);
+                }
             }
         }
 
@@ -95,7 +96,9 @@ impl CustodyStore {
         let account_id = format!("{}:{}", connector_id, department_id.0);
         let ref_key = format!("ref:{}:{}", connector_id, department_id.0);
 
-        let _ = self.keychain.delete_password(KEYCHAIN_SERVICE_PREFIX, &account_id);
+        if let Ok(entry) = keyring::Entry::new(KEYCHAIN_SERVICE_PREFIX, &account_id) {
+            let _ = entry.delete_password();
+        }
         {
             let mut mem = self.memory_store.lock().unwrap();
             mem.remove(&ref_key);

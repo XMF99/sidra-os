@@ -2,7 +2,7 @@ use crate::domain::provenance::Provenance;
 use crate::domain::status::RevisionStatus;
 use crate::domain::values::{ArchetypeId, CharterVersion, DecisionId, RevisionId};
 use serde::{Deserialize, Serialize};
-use sidra_domain::{Charter, Relation};
+use sidra_mission::{Charter, CharterRelation as Relation};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharterRevision {

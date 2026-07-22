@@ -7,8 +7,8 @@ use crate::domain::values::{Duration, Money};
 
 pub fn collect_estimate(_contract_ref: &str) -> TaskEstimate {
     TaskEstimate {
-        estimated_cost: Money(15.0),
-        estimated_duration: Duration(300),
+        estimated_cost: Money::from_minor_units(1500).unwrap(),
+        estimated_duration: Duration::from_seconds(300),
         source: "department".to_string(),
     }
 }

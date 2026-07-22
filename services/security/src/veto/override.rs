@@ -1,6 +1,6 @@
-//! Veto Override Actor Gate (ADR-0015, ADR-0042)
-//!
-//! Ref: STRUCTURE_ARCHITECTURE.md §5.3
+/// Veto Override Actor Gate (ADR-0015, ADR-0042)
+///
+/// Ref: STRUCTURE_ARCHITECTURE.md §5.3
 
 use sidra_domain::structure::{Veto, VetoScope, VetoVerdict};
 

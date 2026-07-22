@@ -1,7 +1,7 @@
 use crate::domain::values::{EvalRunId, EvalSetId, EvalSetVersion, Score};
 use crate::evalset::types::EvaluationSet;
 use serde::{Deserialize, Serialize};
-use sidra_domain::Charter;
+use sidra_mission::Charter;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SubjectKind {

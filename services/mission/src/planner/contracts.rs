@@ -2,8 +2,7 @@
 //!
 //! Ref: MISSION_ENGINE_ARCHITECTURE.md §6.3 rule 2, IMPLEMENTATION_PLAN.md T5.1
 
-use sidra_departments::registry::grant::DepartmentGrantsStore;
-use sidra_departments::registry::resolve::resolve_contract;
+use sidra_departments::registry::grant::{resolve_contract, DepartmentGrantsStore};
 
 pub struct ContractResolver;
 

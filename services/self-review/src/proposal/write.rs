@@ -72,17 +72,19 @@ impl ProposalWriter {
         .map_err(|e| e.to_string())?;
 
         // Emit StructureProposalRaised event
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "self_review_engine".to_string(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "StructureProposalRaised".to_string(),
+            aggregate_type: "self_review".to_string(),
+            aggregate_id: proposal_id.clone(),
             payload: format!(
                 "Raised Structure Proposal {} ({}) for department {}",
                 proposal_id, kind_str, health.department_id.0
             ),
+            metadata: r#"{"actor":"self_review_engine"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(Some(proposal))
     }

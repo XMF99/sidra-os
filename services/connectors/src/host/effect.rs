@@ -1,5 +1,6 @@
 use crate::domain::errors::ConnectorError;
 use crate::domain::operation::Operation;
+use rusqlite::Connection;
 use sidra_domain::{ApprovalRequest, EffectClass};
 use sidra_security::PermissionBroker;
 
@@ -17,12 +18,20 @@ pub enum InvocationVerdict {
 /// Class 2: reversible write -> Approval Request by default
 /// Class 3: irreversible/external -> ALWAYS Approval Request
 pub fn route_effect_policy(
+    conn: &Connection,
     agent_id: &str,
     connector_id: &str,
     operation: &Operation,
     broker: &PermissionBroker,
 ) -> Result<InvocationVerdict, ConnectorError> {
-    let auth_res = broker.authorize_action(agent_id, &operation.capability.0, operation.effect);
+    let auth_res = broker.authorize_action(
+        conn,
+        agent_id,
+        &operation.capability.0,
+        operation.name.as_str(),
+        &format!("{}:{}", connector_id, operation.name),
+        operation.effect,
+    );
 
     match operation.effect {
         EffectClass::Class0_Read => {
@@ -32,30 +41,16 @@ pub fn route_effect_policy(
                 details: "Network operations cannot be class 0".into(),
             })
         }
-        EffectClass::Class1_ReversibleLocal => {
-            if auth_res.is_allowed {
-                Ok(InvocationVerdict::Allowed)
-            } else {
-                Ok(InvocationVerdict::Fenced(auth_res.reason))
-            }
-        }
-        EffectClass::Class2_IrreversibleExternal => {
-            if auth_res.requires_approval {
-                let req = ApprovalRequest {
-                    request_id: format!("req_{}", ulid::Ulid::new()),
-                    agent_id: agent_id.to_string(),
-                    action: operation.name.as_str().to_string(),
-                    resource: format!("{}:{}", connector_id, operation.name),
-                    effect_class: operation.effect,
-                    reason: format!("Class 2 write operation '{}' requires approval", operation.name),
-                };
-                Ok(InvocationVerdict::NeedsApproval(req))
-            } else if auth_res.is_allowed {
-                Ok(InvocationVerdict::Allowed)
-            } else {
-                Ok(InvocationVerdict::Fenced(auth_res.reason))
-            }
-        }
+        EffectClass::Class1_ReversibleLocal => match auth_res {
+            Ok(None) => Ok(InvocationVerdict::Allowed),
+            Ok(Some(req)) => Ok(InvocationVerdict::NeedsApproval(req)),
+            Err(e) => Ok(InvocationVerdict::Fenced(e.to_string())),
+        },
+        EffectClass::Class2_IrreversibleExternal => match auth_res {
+            Ok(None) => Ok(InvocationVerdict::Allowed),
+            Ok(Some(req)) => Ok(InvocationVerdict::NeedsApproval(req)),
+            Err(e) => Ok(InvocationVerdict::Fenced(e.to_string())),
+        },
         EffectClass::Class3_CriticalHumanSignature => {
             // Class 3 ALWAYS requires approval
             let req = ApprovalRequest {

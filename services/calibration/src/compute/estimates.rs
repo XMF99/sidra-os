@@ -58,6 +58,7 @@ impl EstimateCalculator {
             s_spread: 1.5,
             sample_count: matched.len(),
             sample_ids,
+            clamped: is_clamped,
         }
     }
 }

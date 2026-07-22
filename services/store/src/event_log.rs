@@ -1,5 +1,5 @@
 use crate::errors::StoreError;
-use rusqlite::{params, Connection};
+use rusqlite::{params, Connection, OptionalExtension};
 use sidra_domain::{Event, EventInput, GENESIS_HASH};
 
 pub struct EventLogRepository;

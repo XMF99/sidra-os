@@ -4,6 +4,8 @@
 //! `append` is the single mutation path for Mission state, writing to Vault event log.
 
 use crate::domain::events::MissionEvent;
+use sidra_domain::EventInput;
+use sidra_store::EventLogRepository;
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]
@@ -38,10 +40,16 @@ impl MissionEventStore {
 
         // 1. Append to Vault event log if available
         if let Some(ref vault) = self.vault {
-            let evt_type = format!("mission.{}", event.event_type);
-            let _id = vault
-                .append_event(&evt_type, &payload_json, "mission_engine")
-                .map_err(|e| e.to_string())?;
+            let input = EventInput {
+                event_id: event.event_id.clone(),
+                event_type: "mission_event".to_string(),
+                aggregate_type: "mission".to_string(),
+                aggregate_id: event.mission_id.to_string(),
+                payload: payload_json,
+                metadata: format!(r#"{{"actor":"{}"}}"#, event.actor),
+                timestamp: event.timestamp.to_string(),
+            };
+            EventLogRepository::append(vault.connection(), &input).map_err(|e| e.to_string())?;
         }
 
         // 2. Maintain active memory cache

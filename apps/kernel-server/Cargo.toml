@@ -1,9 +1,10 @@
 [package]
 name = "sidra-kernel-server"
-version.workspace = true
+version = "0.1.0"
 edition.workspace = true
-authors.workspace = true
+rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 
 [dependencies]
 sidra-domain = { path = "../../packages/domain" }
@@ -14,10 +15,12 @@ sidra-seats = { path = "../../services/seats" }
 sidra-models = { path = "../../services/models" }
 sidra-orchestrator = { path = "../../services/orchestrator" }
 sidra-transport = { path = "../../packages/transport" }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-ulid = "1.0"
-thiserror = "1.0"
+
+rusqlite = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ulid = { workspace = true }
 
 [[bin]]
 name = "sidra-kernel-server"

@@ -57,17 +57,19 @@ impl EvalSetRegistrar {
         )
         .map_err(|e| e.to_string())?;
 
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: registered_by.clone(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "EvaluationSetRegistered".to_string(),
+            aggregate_type: "evolution".to_string(),
+            aggregate_id: eval_set_id.0.clone(),
             payload: format!(
                 "Registered Evaluation Set Version {} for archetype {}",
                 new_ver.0, archetype_id.0
             ),
+            metadata: format!(r#"{{"actor":"{}"}}"#, registered_by),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(EvaluationSet {
             eval_set_id,

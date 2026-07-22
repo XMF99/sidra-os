@@ -16,7 +16,10 @@ impl LocalHostFunctions {
     ) -> Result<(Vec<u8>, EffectRecord), String> {
         let required_cap = Capability::parse(&format!("fs.read:vault/{}", path))?;
         
-        let allowed = effective_grant.iter().any(|c| c.0 == required_cap.0 || c.0.starts_with("fs.read:vault/**"));
+        let allowed = effective_grant.iter().any(|c| {
+            c.0 == required_cap.0
+                || (c.0.ends_with("/**") && required_cap.0.starts_with(&c.0[..c.0.len() - 2]))
+        });
         let verdict = if allowed { "allowed" } else { "fenced" };
 
         let record = EffectRecord {
@@ -43,7 +46,10 @@ impl LocalHostFunctions {
     ) -> Result<EffectRecord, String> {
         let required_cap = Capability::parse(&format!("fs.write:vault/{}", path))?;
 
-        let allowed = effective_grant.iter().any(|c| c.0 == required_cap.0 || c.0.starts_with("fs.write:vault/**"));
+        let allowed = effective_grant.iter().any(|c| {
+            c.0 == required_cap.0
+                || (c.0.ends_with("/**") && required_cap.0.starts_with(&c.0[..c.0.len() - 2]))
+        });
         let verdict = if allowed { "allowed" } else { "fenced" };
 
         let record = EffectRecord {

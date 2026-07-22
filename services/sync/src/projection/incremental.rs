@@ -11,9 +11,10 @@ impl IncrementalProjectionRebuild {
         let conn = vault_guard.connection();
 
         let all_events = EventLogRepository::read_all(conn).map_err(|e| e.to_string())?;
+        let frontier_str = frontier_timestamp.to_string();
         let mut touched_events: Vec<Event> = all_events
             .into_iter()
-            .filter(|e| e.timestamp >= frontier_timestamp)
+            .filter(|e| e.timestamp >= frontier_str)
             .collect();
 
         DeterministicOrderEngine::sort_into_total_order(&mut touched_events);

@@ -44,7 +44,7 @@ impl TransportEnvelope {
         Self {
             correlation_id: format!("push_{}", Ulid::new()),
             client_id: None,
-            seat_id: Some(event.actor.clone()),
+            seat_id: Some(event.aggregate_id.clone()),
             payload: TransportPayload::EventPush(event),
         }
     }

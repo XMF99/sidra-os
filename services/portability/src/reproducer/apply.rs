@@ -77,14 +77,16 @@ impl FirmTemplateReproducer {
         }
 
         // Emit TemplateInstalled event (genesis event for target Vault)
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: installing_seat_id.to_string(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "TemplateInstalled".to_string(),
+            aggregate_type: "portability".to_string(),
+            aggregate_id: manifest.template_id.0.clone(),
             payload: format!("Installed Firm Template {}", manifest.template_id.0),
+            metadata: format!(r#"{{"actor":"{}"}}"#, installing_seat_id),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         conn.execute_batch("COMMIT;").map_err(|e| e.to_string())?;
         Ok(())

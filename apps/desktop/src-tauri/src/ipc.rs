@@ -93,26 +93,19 @@ impl AppState {
         let founding = materialize_founding(&mut seat_registry, 1700000000).expect("Founding seat");
 
         // Sample artifacts setup
-        let sample_artifact = ExecutableArtifact::create(
-            "Artifact: Financial Report Compiler",
-            "Compiles financial metrics into structured executive PDF",
-            "artifact_fin_01.wasm",
+        let art_id = sidra_artifacts_exec::ArtifactId("art_fin_01".to_string());
+        let mod_hash = sidra_artifacts_exec::ModuleHash("hash_fin_01".to_string());
+        let caps = std::collections::BTreeSet::new();
+        let limits = sidra_artifacts_exec::WasmLimits::default();
+        let sample_artifact = ExecutableArtifact::new(
+            art_id,
             "wo_9001",
-            "agent_analyst_01",
-            vec![
-                ArtifactCapabilityGrant {
-                    capability_id: "fs.read:vault/Sources/**".to_string(),
-                    resource: "vault/Sources".to_string(),
-                    granted: true,
-                },
-                ArtifactCapabilityGrant {
-                    capability_id: "net.fetch:api.sidra.os".to_string(),
-                    resource: "api.sidra.os".to_string(),
-                    granted: true,
-                },
-            ],
-            1000,
-        );
+            mod_hash,
+            "main",
+            caps,
+            limits,
+            "sig_fin_01",
+        ).expect("Sample artifact");
 
         let artifacts = vec![sample_artifact];
         let delegation_engine = DelegationEngine::new();
@@ -282,22 +275,33 @@ pub fn app_execute_artifact(state: State<'_, AppState>, artifact_id: String) -> 
     let artifacts = state.artifacts.lock().map_err(|e| e.to_string())?;
     let artifact = artifacts
         .iter()
-        .find(|a| a.id.0 == artifact_id)
+        .find(|a| a.artifact_id.0 == artifact_id)
         .ok_or_else(|| format!("Artifact '{}' not found", artifact_id))?;
 
-    let host = ArtifactRunHost::new();
-    let wo_grant = vec![
-        "fs.read:vault/Sources/**".to_string(),
-        "net.fetch:api.sidra.os".to_string(),
-    ];
+    let caps = std::collections::BTreeSet::new();
+    let grant = sidra_artifacts_exec::ArtifactCapabilityGrant::new_frozen(
+        artifact.artifact_id.clone(),
+        &artifact.producing_work_order_id,
+        &artifact.requested_capabilities,
+        &caps,
+        1700000000,
+        "founding_principal",
+    )?;
 
-    let result = host.execute_artifact(artifact, &wo_grant, 5000)?;
+    let run_res = ArtifactRunHost::execute(
+        artifact,
+        &grant,
+        &caps,
+        &caps,
+        "wo_9001",
+        "principal",
+        b"{}",
+        1700000000,
+    )?;
+
     Ok(format!(
-        "Artifact Execution Success!\nRun ID: {}\nFuel Consumed: {}\nMemory Used: {} KB\nLogs: [{}]",
-        result.run_id.0,
-        result.resource_usage.fuel_consumed,
-        result.resource_usage.peak_memory_kb,
-        result.logs.join("; ")
+        "Artifact Execution Success!\nRun ID: {}\nOutcome: {:?}",
+        run_res.id.0, run_res.outcome
     ))
 }
 

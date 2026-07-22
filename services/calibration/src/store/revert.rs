@@ -38,12 +38,14 @@ impl ParameterReverter {
         .map_err(|e| e.to_string())?;
 
         // Log CalibrationReverted event
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "founding_principal".to_string(),
+        let evt = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "CalibrationReverted".to_string(),
+            aggregate_type: "calibration".to_string(),
+            aggregate_id: to_version.0.to_string(),
             payload: format!("Reverted calibration parameters to Version {}", to_version.0),
+            metadata: r#"{"actor":"founding_principal"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
 
         EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;

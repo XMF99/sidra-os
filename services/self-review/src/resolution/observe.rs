@@ -23,17 +23,19 @@ impl ResolutionObserver {
         )
         .map_err(|e| e.to_string())?;
 
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: "self_review_engine".to_string(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "StructureProposalLinkedToDecision".to_string(),
+            aggregate_type: "self_review".to_string(),
+            aggregate_id: proposal_id.to_string(),
             payload: format!(
                 "Observed linkage of Proposal {} to Principal Decision {}",
                 proposal_id, decision_id
             ),
+            metadata: r#"{"actor":"self_review_engine"}"#.to_string(),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         Ok(())
     }

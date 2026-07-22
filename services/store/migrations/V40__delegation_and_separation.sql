@@ -1,6 +1,11 @@
 -- M22 Delegation and Separation of Duties: 0035_delegation_and_separation.sql
 -- Additive projections for seat delegations and self-approval refusal checks
 
+CREATE TABLE IF NOT EXISTS approval_requests (
+    id TEXT PRIMARY KEY,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+
 CREATE TABLE IF NOT EXISTS seat_delegations (
     delegation_id TEXT PRIMARY KEY NOT NULL,
     delegator_seat_id TEXT NOT NULL REFERENCES seats(seat_id),

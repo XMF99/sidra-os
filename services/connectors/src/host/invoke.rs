@@ -30,6 +30,7 @@ pub enum InvocationResult {
 /// 7. Dispatch via egress allowlist (ADR-0036 egress)
 /// 8. Transform response
 pub fn invoke_connector(
+    conn: &rusqlite::Connection,
     agent_id: &str,
     agent_department: &DepartmentId,
     connector_id: &ConnectorId,
@@ -86,7 +87,7 @@ pub fn invoke_connector(
     let (outbound_req, primary_host) = build_request(&manifest, op, params)?;
 
     // Stage 5: Permission Broker authorization & effect policy (T7.2)
-    let verdict = route_effect_policy(agent_id, connector_id.as_str(), op, broker)?;
+    let verdict = route_effect_policy(conn, agent_id, connector_id.as_str(), op, broker)?;
     match verdict {
         InvocationVerdict::NeedsApproval(req) => return Ok(InvocationResult::NeedsApproval(req)),
         InvocationVerdict::Fenced(reason) => return Ok(InvocationResult::Fenced(reason)),

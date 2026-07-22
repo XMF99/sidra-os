@@ -31,15 +31,16 @@ impl ConflictResolutionAppender {
         .map_err(|e| e.to_string())?;
 
         // 3. Append superseding ConflictResolved event to hash chain
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: acting_seat_id.to_string(),
+        let input = sidra_domain::EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "ConflictResolved".to_string(),
+            aggregate_type: "conflict".to_string(),
+            aggregate_id: conflict_id.to_string(),
             payload: format!("Conflict {} resolved with value '{}'", conflict_id, chosen_value),
+            metadata: format!(r#"{{"actor":"{}"}}"#, acting_seat_id),
+            timestamp: timestamp.to_string(),
         };
 
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
-        Ok(evt)
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())
     }
 }

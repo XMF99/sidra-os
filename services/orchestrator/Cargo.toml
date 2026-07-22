@@ -13,10 +13,11 @@ sidra-memory = { path = "../memory" }
 sidra-models = { path = "../models" }
 sidra-tools = { path = "../tools" }
 sidra-agents = { path = "../agents" }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-thiserror = "1.0"
-ulid = "1.1"
+rusqlite = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ulid = { workspace = true }
 
 [dev-dependencies]
 tempfile = "3.8"

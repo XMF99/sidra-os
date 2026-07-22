@@ -15,6 +15,9 @@ pub enum PluginError {
     #[error("WASM Sandbox Violation: Memory partition escape attempt by plugin '{plugin}' for path '{path}'")]
     SandboxMemoryViolation { plugin: String, path: String },
 
+    #[error("WASM Sandbox Execution Failed: plugin '{plugin}': {reason}")]
+    SandboxExecutionFailed { plugin: String, reason: String },
+
     #[error("Security Broker Denial: Plugin '{plugin}' capability request for '{resource}' was denied: {reason}")]
     CapabilityDenied {
         plugin: String,

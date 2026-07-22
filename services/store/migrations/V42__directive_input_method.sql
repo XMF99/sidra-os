@@ -2,4 +2,11 @@
 -- Additive input_method column on directives table defaulting to 'typed'
 -- Ref: VOICE_DIRECTIVE_ARCHITECTURE.md §11.1, ADR-0052, ADR-0053
 
+CREATE TABLE IF NOT EXISTS directives (
+    directive_id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    statement TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 ALTER TABLE directives ADD COLUMN input_method TEXT NOT NULL DEFAULT 'typed' CHECK (input_method IN ('typed', 'voice'));

@@ -1,7 +1,7 @@
 use crate::domain::activation::CandidateActivation;
 use crate::domain::candidate::CandidateStatus;
-use sidra_decisions::{Decision, DecisionEngineRepository, ReversibilityClass};
-use sidra_domain::Event;
+use sidra_decisions::{Decision, DecisionEngineRepository};
+use sidra_domain::EventInput;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -22,15 +22,12 @@ impl CandidateActivator {
         let decision_id = format!("dec_comp_{}", Ulid::new());
 
         // 1. Raise Decision record via Decision Engine
-        let decision = Decision {
-            id: decision_id.clone(),
-            principal_id: principal_actor.to_string(),
-            title: format!("Activate Compiled Workflow Candidate {}", candidate_id),
-            description: format!("Principal activation of candidate {}", candidate_id),
-            reversibility: ReversibilityClass::Class2ReversibleWithCost,
-            review_date: timestamp + (30 * 86400),
-            created_at: timestamp,
-        };
+        let decision = Decision::new(
+            decision_id.clone(),
+            format!("Activate Compiled Workflow Candidate {}", candidate_id),
+            format!("Principal activation of candidate {}", candidate_id),
+            principal_actor,
+        );
 
         let vault_guard = vault.lock().map_err(|e| e.to_string())?;
         let conn = vault_guard.connection();
@@ -77,17 +74,19 @@ impl CandidateActivator {
         .map_err(|e| e.to_string())?;
 
         // 6. Emit CandidateActivated event
-        let evt = Event {
-            id: format!("evt_{}", Ulid::new()),
-            timestamp,
-            actor: principal_actor.to_string(),
+        let input = EventInput {
+            event_id: format!("evt_{}", Ulid::new()),
             event_type: "CandidateActivated".to_string(),
+            aggregate_type: "compilation".to_string(),
+            aggregate_id: candidate_id.to_string(),
             payload: format!(
                 "Activated Workflow Candidate {} (Playbook {}) via Decision {}",
                 candidate_id, playbook_id, decision_id
             ),
+            metadata: format!(r#"{{"actor":"{}"}}"#, principal_actor),
+            timestamp: timestamp.to_string(),
         };
-        EventLogRepository::append(conn, &evt).map_err(|e| e.to_string())?;
+        EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
 
         let activation = CandidateActivation::new(
             activation_id,

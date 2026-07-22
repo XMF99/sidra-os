@@ -22,8 +22,27 @@ impl fmt::Display for ConnectorId {
 }
 
 /// Connector version wrapping SemVer
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConnectorVersion(pub semver::Version);
+
+impl Serialize for ConnectorVersion {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.0.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for ConnectorVersion {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        semver::Version::parse(&s).map(Self).map_err(serde::de::Error::custom)
+    }
+}
 
 impl ConnectorVersion {
     pub fn parse(v: &str) -> Result<Self, semver::Error> {

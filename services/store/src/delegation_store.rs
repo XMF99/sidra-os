@@ -1,8 +1,55 @@
 //! M22 Delegation and Separation of Duties Store Repository
 //! Ref: DELEGATION_AND_SEPARATION_ARCHITECTURE.md §7.1, ADR-0060, ADR-0061
 
+use crate::seat_store::SeatId;
 use rusqlite::{params, Connection, Result};
-use sidra_delegation::{ApprovalResolution, ApprovalVerdict, AuthoritySource, Delegation};
+use sidra_domain::Capability;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AuthoritySource {
+    OwnFence,
+    Delegation,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ApprovalVerdict {
+    Granted,
+    Denied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DelegationId(pub String);
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct DelegationScope {
+    pub capabilities: Vec<Capability>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Delegation {
+    pub id: DelegationId,
+    pub delegator: SeatId,
+    pub delegatee: SeatId,
+    pub scope: DelegationScope,
+    pub granted_at: u64,
+    pub expires_at: u64,
+    pub granted_by: SeatId,
+    pub decision_id: String,
+    pub revoked_at: Option<u64>,
+    pub revoked_by: Option<SeatId>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ApprovalResolution {
+    pub id: String,
+    pub request_id: String,
+    pub approver_seat_id: SeatId,
+    pub authority_source: AuthoritySource,
+    pub delegation_id: Option<DelegationId>,
+    pub verdict: ApprovalVerdict,
+    pub decision_id: String,
+    pub created_at: u64,
+}
 
 pub struct DelegationStoreRepository<'a> {
     conn: &'a Connection,

@@ -72,7 +72,7 @@ impl std::error::Error for CharterError {}
 // =====================================================================================
 
 /// How one Charter relates to another. A partial order — see ADR-0033.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CharterRelation {
     /// Identical in every field.
     Same,
@@ -248,7 +248,9 @@ pub struct CharterAmendment {
 ///
 /// Immutable. Every Objective, Task and Dispatch must fit inside it (`ARCH` §5.1). There is no
 /// widening operation — see the module documentation and ADR-0033.
-#[derive(Debug, Clone, PartialEq, Eq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Charter {
     mission_id: MissionId,
     directive_id: DirectiveId,

@@ -1,5 +1,5 @@
 use crate::domain::status::RefuseReason;
-use sidra_domain::{Charter, Relation};
+use sidra_mission::{Charter, CharterRelation as Relation};
 
 pub struct AuthorityComparator;
 

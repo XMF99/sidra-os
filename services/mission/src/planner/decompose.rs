@@ -7,28 +7,29 @@ use crate::domain::task::{Task, TaskConstraints, TaskEstimate, TaskPolicy};
 use crate::domain::values::{ContractRef, Duration, EffectClass, IdempotencyKey, Money, TaskId};
 
 pub fn decompose_objective(objective: &Objective) -> Result<Vec<Task>, String> {
-    let task_id = TaskId(format!("task_{}", objective.id.as_str()));
-    let contract_ref = ContractRef("capability.code-review".to_string());
+    let raw_task_id = format!("tsk.task_{}", objective.id.as_str().replace('.', "_"));
+    let task_id = TaskId::parse(&raw_task_id).map_err(|e| e.to_string())?;
+    let contract_ref = ContractRef::parse("contract.code_review").map_err(|e| e.to_string())?;
 
     let task = Task::new(
-        task_id,
+        task_id.clone(),
         contract_ref,
         vec![objective.id.clone()],
-        EffectClass(1),
+        EffectClass::Reversible,
         TaskConstraints {
-            max_cost: Money(100.0),
-            max_duration: Duration(3600),
+            max_cost: Money::from_minor_units(10000).map_err(|e| e.to_string())?,
+            max_duration: Duration::from_seconds(3600),
         },
         TaskPolicy {
             max_retries: 2,
             requires_checkpoint: false,
         },
         TaskEstimate {
-            estimated_cost: Money(20.0),
-            estimated_duration: Duration(600),
+            estimated_cost: Money::from_minor_units(2000).map_err(|e| e.to_string())?,
+            estimated_duration: Duration::from_seconds(600),
             source: "department".to_string(),
         },
-        Some(IdempotencyKey("idem_1".to_string())),
+        IdempotencyKey::parse(&format!("{}@v1", task_id)).ok(),
         Vec::new(),
     )?;
 

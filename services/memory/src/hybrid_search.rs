@@ -22,14 +22,14 @@ impl HybridSearchEngine {
     ) -> Vec<SearchResult> {
         let vector_results = self.vector_store.search_vector(query_vector, top_k * 2);
 
-        // Keyword matching rank simulation (exact & fuzzy matching on content)
+        let query_lower = query_text.to_lowercase();
+        let query_terms: Vec<&str> = query_lower.split_whitespace().collect();
         let mut keyword_candidates: Vec<MemoryChunk> = self
             .vector_store
             .search_vector(&[0.0; 0], usize::MAX) // Read stored chunks
             .into_iter()
             .map(|(_, chunk, _)| chunk)
             .filter(|chunk| {
-                let query_terms: Vec<&str> = query_text.to_lowercase().split_whitespace().collect();
                 let content_lower = chunk.content.to_lowercase();
                 query_terms.iter().any(|term| content_lower.contains(term))
             })

@@ -15,7 +15,7 @@ pub mod resolution;
 pub mod runner;
 
 pub use absorbability::{
-    calculator::AbsorbabilityCalculator, neighbours::DivisionNeighbourResolver,
+    compute::AbsorbabilityCalculator, neighbours::DivisionNeighbourResolver,
 };
 pub use domain::{
     absorbability::AbsorbabilityResult,

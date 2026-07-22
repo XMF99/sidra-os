@@ -3,10 +3,14 @@
 
 CREATE TABLE IF NOT EXISTS sync_devices (
     device_id TEXT PRIMARY KEY NOT NULL,
-    seat_id TEXT NOT NULL,
-    pubkey TEXT NOT NULL,
-    registered_at INTEGER NOT NULL
+    seat_id TEXT NOT NULL DEFAULT '',
+    pubkey TEXT NOT NULL DEFAULT '',
+    registered_at INTEGER NOT NULL DEFAULT 0
 );
+
+ALTER TABLE sync_devices ADD COLUMN seat_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE sync_devices ADD COLUMN pubkey TEXT NOT NULL DEFAULT '';
+ALTER TABLE sync_devices ADD COLUMN registered_at INTEGER NOT NULL DEFAULT 0;
 
 CREATE INDEX IF NOT EXISTS idx_sync_devices_seat ON sync_devices(seat_id);
 

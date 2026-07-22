@@ -3,7 +3,45 @@
 
 use crate::errors::StoreError;
 use rusqlite::{params, Connection};
-use sidra_voice::{CaptureId, InputMethod, RetentionPolicy, VoiceCaptureRecord};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InputMethod {
+    Typed,
+    Voice,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RetentionPolicy {
+    DiscardAfterTranscribe,
+    RetainLocal { audio_path: String },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AudioRef {
+    pub vault_path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CaptureId(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ModelId(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ModelVersion(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct VoiceCaptureRecord {
+    pub id: CaptureId,
+    pub directive_id: String,
+    pub model_id: ModelId,
+    pub model_version: ModelVersion,
+    pub transcript_hash: String,
+    pub retention_mode: RetentionPolicy,
+    pub audio_ref: Option<AudioRef>,
+    pub purge_at: u64,
+    pub started_at: u64,
+}
 
 pub struct VoiceStoreRepository;
 

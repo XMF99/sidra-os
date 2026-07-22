@@ -9,8 +9,8 @@ pub fn evaluate_phase_gate(mission: &Mission, target_phase: &str) -> Result<(), 
 
     match target_phase {
         "PLANNING" => {
-            if mission.charter.max_cost.as_f64() <= 0.0 {
-                errors.push("PLANNING gate failed: Charter max_cost must be > 0".to_string());
+            if mission.charter.budget().minor_units() <= 0 {
+                errors.push("PLANNING gate failed: Charter budget must be > 0".to_string());
             }
         }
         "AWAITING_AUTH" => {

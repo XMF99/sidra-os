@@ -10,6 +10,7 @@ sidra-domain = { path = "../../packages/domain" }
 sidra-store = { path = "../store" }
 sidra-security = { path = "../security" }
 sidra-plugin-sdk = { path = "../../packages/plugin-sdk" }
+rusqlite = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 semver = "1.0"

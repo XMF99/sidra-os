@@ -2,11 +2,68 @@
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §11.1, ADR-0054, ADR-0056
 
 use rusqlite::{params, Connection, Result};
-use sidra_artifacts_exec::{
-    ArtifactCapabilityGrant, ArtifactId, ArtifactRun, Capability, ExecStatus, ExecutableArtifact,
-    ModuleHash, WasmLimits,
-};
-use std::collections::BTreeSet;
+use sidra_domain::Capability;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ExecStatus {
+    Authored,
+    Validated,
+    Runnable,
+    Executing,
+    Executed,
+    Audited,
+    Revoked,
+    Purged,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ArtifactId(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ModuleHash(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct WasmLimits {
+    pub max_memory_pages: u32,
+    pub max_fuel: u64,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ExecutableArtifact {
+    pub artifact_id: ArtifactId,
+    pub producing_work_order_id: String,
+    pub module_hash: ModuleHash,
+    pub entrypoint: String,
+    pub requested_capabilities: Vec<Capability>,
+    pub limits: WasmLimits,
+    pub api_version: String,
+    pub signature: String,
+    pub status: ExecStatus,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ArtifactCapabilityGrant {
+    pub artifact_id: ArtifactId,
+    pub derived_from_work_order: String,
+    pub frozen_grant: Vec<Capability>,
+    pub computed_at: u64,
+    pub computed_by: String,
+    pub revoked_at: Option<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ArtifactRun {
+    pub id: ArtifactId,
+    pub artifact_id: ArtifactId,
+    pub invoked_by: String,
+    pub invoking_context_work_order: String,
+    pub effective_grant: Vec<Capability>,
+    pub fuel_used: u64,
+    pub wall_ms: u64,
+    pub outcome: String,
+    pub effects: Vec<String>,
+    pub at: u64,
+}
 
 pub struct ArtifactExecStoreRepository<'a> {
     conn: &'a Connection,

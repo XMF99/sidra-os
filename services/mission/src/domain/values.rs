@@ -34,6 +34,7 @@
 
 use core::fmt;
 use core::str::FromStr;
+use serde::{Deserialize, Serialize};
 
 // =====================================================================================
 // Errors
@@ -210,7 +211,7 @@ fn validate_dotted(kind: &'static str, prefix: &'static str, raw: &str) -> Resul
 /// Opaque and generated, unlike [`TaskId`] and [`ObjectiveId`], which are authored. A Mission
 /// is created by the system; a Task is named by a planner, and the difference in form is a
 /// deliberate signal about which is which.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct MissionId(String);
 
 impl MissionId {
@@ -256,7 +257,7 @@ impl FromStr for MissionId {
 /// The identity of an Objective within a Mission, for example `obj.failover`.
 ///
 /// Authored, not generated. Unique within its Mission, not globally.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct ObjectiveId(String);
 
 impl ObjectiveId {
@@ -301,7 +302,7 @@ impl FromStr for ObjectiveId {
 /// The identity of a Task within a Mission, for example `tsk.failover.runbook`.
 ///
 /// Authored, not generated. Unique within its Mission, not globally.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct TaskId(String);
 
 impl TaskId {
@@ -349,7 +350,7 @@ impl FromStr for TaskId {
 /// (`ARCH` §6.3 rule 4). Its absence makes a Task ineligible for retry regardless of policy,
 /// which is why the type exists rather than a bare string: an unparseable key is a Task that
 /// must not be retried, and that should be visible at construction.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct IdempotencyKey {
     task: TaskId,
     version: u32,
@@ -437,7 +438,7 @@ impl FromStr for IdempotencyKey {
 /// trivial Tasks do not outweigh one hard one (`ARCH` §15.2). That the weights of a Mission's
 /// Objectives sum to 1.0 is an invariant of the Objective collection, checked where that
 /// collection is assembled, not here.
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub struct Weight(f64);
 
 impl Weight {
@@ -486,7 +487,7 @@ impl fmt::Display for Weight {
 /// Rendered as `$45.00`. Non-negative: budgets, reservations and actual costs are all
 /// non-negative in this domain, and a negative amount would mean a ceiling had been credited,
 /// which nothing in `ARCH` §16.3 permits.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct Money {
     minor_units: i64,
 }
@@ -605,7 +606,7 @@ impl FromStr for Money {
 /// matching the estimates in `ARCH` §6.1. Named `Duration` per the implementation plan; it
 /// shadows [`core::time::Duration`] within this module, so import it by path where both are
 /// in scope.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct Duration {
     seconds: u64,
 }
@@ -710,7 +711,7 @@ impl FromStr for Duration {
 ///
 /// The v1 effect classes, unchanged. A Task's class may not exceed its Mission Charter's
 /// ceiling (`ARCH` §5.1), and class 3 never retries automatically (`ARCH` §13.3 rule 2).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum EffectClass {
     /// Class 0 — reads only. No change to any state.
     ReadOnly,
@@ -860,7 +861,7 @@ impl FromStr for PriorityTier {
 ///
 /// Opaque and generated, like [`MissionId`]. A Mission's Charter names the Directive it serves,
 /// so that any plan traces to the intention that caused it (`ARCH` §5.1).
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct DirectiveId(String);
 
 impl DirectiveId {
@@ -907,7 +908,7 @@ impl FromStr for DirectiveId {
 /// Validated rather than a bare `String` because department identifiers are compared for set
 /// membership in the Charter's allowlist; two spellings of one department would silently
 /// weaken a boundary.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct DepartmentId(String);
 
 impl DepartmentId {
@@ -970,7 +971,7 @@ impl FromStr for DepartmentId {
 ///
 /// Fences are enumerated, never inferred (Principle 6). More fences is *more* constrained,
 /// which is why the Charter's partial order treats a superset of fences as a narrowing.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct Fence(String);
 
 impl Fence {
@@ -1034,7 +1035,7 @@ impl FromStr for Fence {
 /// ADR-0012 raised the autonomous delegation depth from 2 to 3:
 /// Kai → Division head → Department head → specialist. `0` means Kai delegates to nobody.
 /// Higher is *wider*.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct AutonomyDepth(u8);
 
 impl AutonomyDepth {
@@ -1080,7 +1081,7 @@ impl fmt::Display for AutonomyDepth {
 /// Ordering is by **permissiveness**, so `Full < Standard < Lean` and the most constrained
 /// variant sorts first. No intensity removes the independent reviewer required by ADR-0008,
 /// and Security Office reviews are not subject to intensity at all.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum ReviewIntensity {
     /// Every optional gate runs.
     Full,
@@ -1130,7 +1131,7 @@ impl FromStr for ReviewIntensity {
 ///
 /// A Charter deadline is a date, not an instant (`ARCH` §5.1). Field order is
 /// year-month-day so that derived `Ord` gives chronological ordering.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct CalendarDate {
     year: u16,
     month: u8,
@@ -1246,3 +1247,40 @@ impl FromStr for CalendarDate {
         Self::parse(s)
     }
 }
+
+// =====================================================================================
+// ContractRef
+// =====================================================================================
+
+/// Reference to a Department Capability Contract.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+pub struct ContractRef(pub String);
+
+impl ContractRef {
+    pub fn parse(raw: impl Into<String>) -> Result<Self, ValueError> {
+        let raw = raw.into();
+        if raw.is_empty() {
+            return Err(ValueError::Empty { kind: "ContractRef" });
+        }
+        Ok(Self(raw))
+    }
+
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl fmt::Display for ContractRef {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl FromStr for ContractRef {
+    type Err = ValueError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s)
+    }
+}
+

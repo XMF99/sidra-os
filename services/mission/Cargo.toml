@@ -12,10 +12,12 @@ license.workspace      = true
 repository.workspace   = true
 
 [dependencies]
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
+sidra-domain = { path = "../../packages/domain" }
 sidra-departments = { path = "../departments" }
 sidra-store = { path = "../store" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+ulid = { workspace = true }
 
 [dev-dependencies]
 

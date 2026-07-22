@@ -2,7 +2,61 @@
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §11.1, ADR-0057, ADR-0058, ADR-0059
 
 use rusqlite::{params, Connection, Result};
-use sidra_seats::{Seat, SeatBudget, SeatFence, SeatStatus, SeatWorkingMemory};
+use sidra_domain::Capability;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SeatStatus {
+    Invited,
+    Created,
+    Active,
+    Suspended,
+    Retired,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SeatId(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ActorValue(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DisplayName(pub String);
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Seat {
+    pub id: SeatId,
+    pub actor_value: ActorValue,
+    pub display_name: DisplayName,
+    pub status: SeatStatus,
+    pub is_founding: bool,
+    pub invited_by: Option<SeatId>,
+    pub created_at: u64,
+    pub retired_at: Option<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct SeatFence {
+    pub seat_id: SeatId,
+    pub capabilities: Vec<Capability>,
+    pub set_by: SeatId,
+    pub set_at: u64,
+    pub active: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SeatBudget {
+    pub seat_id: SeatId,
+    pub period: String,
+    pub ceiling_cents: u64,
+    pub spent_cents: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SeatWorkingMemory {
+    pub seat_id: SeatId,
+    pub namespace: SeatId,
+    pub sealed: bool,
+}
 
 pub struct SeatStoreRepository<'a> {
     conn: &'a Connection,

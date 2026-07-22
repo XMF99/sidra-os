@@ -22,7 +22,7 @@ impl ForkDetector {
         val_b: &str,
     ) -> Option<DetectedFork> {
         // Different actors/devices concurrently writing different values to same cell
-        if event_a.actor != event_b.actor && val_a != val_b {
+        if event_a.aggregate_id != event_b.aggregate_id && val_a != val_b {
             Some(DetectedFork {
                 cell,
                 event_a,

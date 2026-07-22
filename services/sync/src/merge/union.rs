@@ -8,11 +8,11 @@ impl EventUnionEngine {
         let mut map = BTreeMap::new();
 
         for evt in local_events {
-            map.insert(evt.id.clone(), evt.clone());
+            map.insert(evt.event_id.clone(), evt.clone());
         }
 
         for evt in peer_events {
-            map.insert(evt.id.clone(), evt.clone());
+            map.insert(evt.event_id.clone(), evt.clone());
         }
 
         map.into_values().collect()

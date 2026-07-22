@@ -16,7 +16,7 @@ pub struct BriefSection {
     pub nodes: Vec<BriefNode>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BriefRenderPayload {
     pub brief_id: String,
     pub sections: Vec<BriefSection>, // 6 sections in fixed order: situation, actions, findings, recommendation, the_ask, confidence

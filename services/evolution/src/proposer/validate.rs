@@ -1,6 +1,6 @@
 use crate::domain::provenance::Provenance;
 use crate::domain::values::ArchetypeId;
-use sidra_domain::Charter;
+use sidra_mission::Charter;
 
 pub struct ProposalValidator;
 
@@ -12,7 +12,7 @@ impl ProposalValidator {
         proposed_by: &str,
     ) -> Result<(), String> {
         // Check 1: Well-formed charter
-        if charter.name.trim().is_empty() {
+        if charter.statement().trim().is_empty() {
             return Err("Charter name cannot be empty".to_string());
         }
 

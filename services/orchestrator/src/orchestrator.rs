@@ -1,5 +1,5 @@
 use rusqlite::Connection;
-use sidra_agents::{AnalystAgent, WriterAgent};
+use sidra_agents::{Agent, AnalystAgent, WriterAgent};
 use sidra_domain::{
     AgentMessage, Capability, EffectClass, EventInput, ProvenanceTag, TaskPlan, TaskStatus,
 };
