@@ -1,0 +1,24 @@
+[package]
+name = "sidra-kernel-server"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+sidra-domain = { path = "../../packages/domain" }
+sidra-kernel = { path = "../../services/kernel" }
+sidra-store = { path = "../../services/store" }
+sidra-security = { path = "../../services/security" }
+sidra-seats = { path = "../../services/seats" }
+sidra-models = { path = "../../services/models" }
+sidra-orchestrator = { path = "../../services/orchestrator" }
+sidra-transport = { path = "../../packages/transport" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+ulid = "1.0"
+thiserror = "1.0"
+
+[[bin]]
+name = "sidra-kernel-server"
+path = "src/main.rs"
