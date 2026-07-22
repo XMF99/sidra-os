@@ -1,0 +1,6 @@
+# Corvus Executive Charter (Security Office Head / CISO)
+agent_id = "agent.ciso"
+name = "Corvus"
+role = "Security Office Head"
+division = "security_office"
+tools = ["retrieve", "delegate", "convene", "decide", "report"] # Exactly 5 tools per ADR-0004

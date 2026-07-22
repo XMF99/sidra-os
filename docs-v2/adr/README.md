@@ -24,6 +24,37 @@ behaviour needs a record.
 | [0035](0035-connectors-granted-to-a-department-not-the-firm.md) | A connector is granted to a department, never to the Firm | Accepted | — |
 | [0036](0036-egress-declared-in-manifest-enforced-by-kernel.md) | A connector's egress is declared in its manifest and enforced by the kernel | Accepted | — |
 | [0037](0037-oauth-is-a-kernel-capability.md) | OAuth authorization is a kernel capability, not a connector responsibility | Accepted | — |
+| [0038](0038-release-gate-is-a-proof-obligation-not-a-date.md) | The 1.0 release gate is a proof obligation, not a date | Accepted | — |
+| [0039](0039-hardening-adds-no-authoritative-tables.md) | Hardening adds no authoritative tables; release bookkeeping is a projection | Accepted | — |
+| [0040](0040-implicit-default-department-as-migration-bridge.md) | The implicit default department as the migration bridge | Accepted | — |
+| [0041](0041-replay-equivalence-as-the-substrate-exit-gate.md) | Replay equivalence as the substrate's exit gate | Accepted | — |
+| [0042](0042-firm-wide-veto-enforced-as-a-blocking-guard-at-the-choke-point.md) | A firm-wide veto is enforced as a non-downgradable blocking Guard at the choke point | Accepted | — |
+| [0043](0043-exchange-contract-resolution.md) | Exchange contract resolution is deterministic, and ambiguity is refused | Accepted | — |
+| [0044](0044-three-department-conformance-set.md) | The exit-criterion conformance set is Backend, Cybersecurity, and Software Engineering | Accepted | — |
+| [0045](0045-marketplace-is-distribution-only.md) | The Marketplace is distribution-only; it reuses the M13 install path and adds no install or trust mechanism | Accepted | — |
+| [0046](0046-the-concrete-five-connector-set.md) | The concrete five-connector set and their effect-class maps | Accepted | — |
+| [0047](0047-per-connector-offline-degradation-contract.md) | Per-connector offline degradation contract | Accepted | — |
+| [0048](0048-object-storage-addressing-and-chunking.md) | Object-storage addressing, streaming, and chunking contract | Accepted | — |
+| [0049](0049-no-desktop-present-sync-and-idempotent-reconciliation.md) | No-desktop-present sync and idempotent reconciliation | Accepted | — |
+| [0050](0050-companion-is-a-paired-untrusted-client.md) | The Companion is a paired, untrusted client | Accepted | — |
+| [0051](0051-brief-travels-as-a-canonical-render-payload.md) | The Brief travels as a canonical render payload; the Companion displays, never re-renders or authors | Accepted | — |
+| [0052](0052-speech-to-text-is-local-audio-never-leaves-the-device.md) | Speech-to-text is local-only; audio never leaves the device; voice produces a normal Directive | Accepted | — |
+| [0053](0053-transcript-is-confirmed-before-submit.md) | The transcript is confirmed before submit; equivalence is defined against the confirmed text | Accepted | — |
+| [0054](0054-executable-artifact-grant-subset-of-work-order.md) | An executable artifact's capability grant is a strict subset of its producing Work Order's grant | Accepted | — |
+| [0055](0055-executable-artifacts-reuse-the-m9-wasm-host.md) | Executable artifacts reuse the M9 Wasm host; there is no new sandbox | Accepted | — |
+| [0056](0056-executable-artifact-provenance-is-recorded-and-is-the-grant-source.md) | An executable artifact's provenance is recorded and is the source of its grant | Accepted | — |
+| [0057](0057-seat-is-a-first-class-human-identity.md) | A Seat is a first-class human identity, keyed on the existing actor field | Accepted | — |
+| [0058](0058-per-seat-fence-and-budget-nest-under-firm-ceilings.md) | Per-Seat Fence and budget nest under the firm ceilings, enforced by the one Broker | Accepted | — |
+| [0059](0059-per-seat-working-memory-namespace.md) | Per-Seat working memory is an isolated namespace, default-deny at the human layer | Accepted | — |
+| [0060](0060-self-approval-refused-structurally.md) | A Seat cannot approve its own Approval Request, and the refusal is structural | Accepted | — |
+| [0061](0061-delegation-bounded-by-delegator-fence.md) | A delegation cannot exceed the delegator's Fence, and is time-boxed and logged | Accepted | — |
+| [0062](0062-kernel-extracted-as-a-hosted-process-behind-a-new-apps-binary.md) | The kernel is extracted as a hosted process behind a new `apps/` binary, with the transport as the only change | Accepted | — |
+| [0063](0063-client-kernel-transport-is-a-typed-rpc-preserving-the-command-query-surface.md) | The client↔kernel transport is a typed RPC that preserves the existing command/query surface and the Broker choke point | Accepted | — |
+| [0064](0064-convergence-merges-append-only-event-streams.md) | Convergence merges append-only event streams under a deterministic total order | Accepted | — |
+| [0065](0065-projection-conflict-surfaces-as-a-decision.md) | A projection conflict surfaces as a Decision, never auto-resolved | Accepted | — |
+| [0066](0066-hash-chain-across-branches-reconciliation.md) | The hash chain is preserved across branches by per-device provenance; a merge rewrites no event | Accepted | — |
+| [0067](0067-firm-template-carries-structure-never-data.md) | A Firm Template carries structure, never data — the boundary is defined and enforced | Accepted | — |
+| [0068](0068-firm-templates-distribute-through-marketplace-install-grants-nothing.md) | Firm Templates distribute through the existing Marketplace trust chain, and installation grants nothing | Accepted | — |
 
 ## Format
 

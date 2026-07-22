@@ -1,0 +1,49 @@
+# Gmail Mail Connector Manifest (M17 E5)
+# Ref: CONNECTOR_SUITE_ARCHITECTURE.md §4.4, ADR-0046, ADR-0047
+
+id = "conn.mail"
+name = "Gmail Mail Connector"
+version = "1.0.0"
+provider = "Claude-Code-Game-Studios"
+primary_department = "dept.customer-success"
+grantable_departments = ["dept.sales", "dept.marketing"]
+
+[egress]
+allow = ["gmail.googleapis.com", "oauth2.googleapis.com", "accounts.google.com"]
+
+[auth]
+kind = "oauth2"
+authorize_url = "https://accounts.google.com/o/oauth2/v2/auth"
+token_url = "https://oauth2.googleapis.com/token"
+scopes = ["https://www.googleapis.com/auth/gmail.modify"]
+pkce = true
+
+[[operations]]
+name = "list_messages"
+path = "/gmail/v1/users/me/messages"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "get_message"
+path = "/gmail/v1/users/me/messages/{id}"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "search_messages"
+path = "/gmail/v1/users/me/messages?q={query}"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "create_draft"
+path = "/gmail/v1/users/me/drafts"
+method = "POST"
+effect_class = 2
+
+[[operations]]
+name = "send_message"
+path = "/gmail/v1/users/me/messages/send"
+method = "POST"
+effect_class = 3 # Irreversible external send, ALWAYS ASKS

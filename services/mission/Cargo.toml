@@ -1,11 +1,6 @@
 # sidra-mission — the Mission Engine.
 #
-# Owns plans. Does not execute them. See docs-v2/03-Intelligence/MISSION_ENGINE_ARCHITECTURE.md and ADR-0022.
-#
-# DEPENDENCY RULE (ARCH Appendix B, enforced by infrastructure/ci/check_dependency_direction.py):
-#   This crate MUST NOT depend on `sidra-orchestrator`, directly or transitively.
-#   The absence of that edge is what makes the planning/execution separation a
-#   compile-time property rather than a convention.
+# Ref: docs-v2/03-Intelligence/MISSION_ENGINE_ARCHITECTURE.md
 
 [package]
 name        = "sidra-mission"
@@ -18,6 +13,9 @@ license.workspace      = true
 repository.workspace   = true
 
 [dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sidra-departments = { path = "../departments" }
 
 [dev-dependencies]
 
