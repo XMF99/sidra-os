@@ -25,6 +25,7 @@ members = [
     "apps/kernel-server",
     "packages/transport",
     "services/sync",
+    "services/portability",
 ]
 
 [workspace.package]
