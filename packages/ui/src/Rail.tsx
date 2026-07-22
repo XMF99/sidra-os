@@ -2,27 +2,42 @@ import React from "react";
 import { Tooltip, TooltipProvider } from "./Tooltip";
 import {
   LayoutDashboard,
+  MessageSquare,
   Users,
-  Building2,
-  Archive,
+  Cpu,
+  Mic,
+  Activity,
+  HeartPulse,
   Database,
   Terminal,
   Settings,
+  FolderLock,
+  RefreshCw,
+  FileCode,
 } from "lucide-react";
 
 export type RoomId =
   | "lobby"
   | "boardroom"
+  | "seats"
+  | "artifacts"
+  | "voice"
+  | "events"
+  | "health"
   | "department"
   | "archive"
   | "vault"
   | "console"
-  | "settings";
+  | "settings"
+  | "projects"
+  | "sync"
+  | "templates";
 
 export interface RailItemConfig {
   id: RoomId;
   label: string;
   icon: React.ComponentType<{ size?: number }>;
+  isFuture?: boolean;
 }
 
 export interface RailProps {
@@ -33,14 +48,20 @@ export interface RailProps {
 }
 
 export const defaultPrimaryRooms: RailItemConfig[] = [
-  { id: "lobby", label: "Lobby", icon: LayoutDashboard },
-  { id: "boardroom", label: "Boardroom", icon: Users },
-  { id: "department", label: "Department", icon: Building2 },
-  { id: "archive", label: "Archive", icon: Archive },
-  { id: "vault", label: "Vault", icon: Database },
+  { id: "lobby", label: "Dashboard", icon: LayoutDashboard },
+  { id: "boardroom", label: "Chat", icon: MessageSquare },
+  { id: "seats", label: "Seats (M21)", icon: Users },
+  { id: "artifacts", label: "Artifacts (M20)", icon: Cpu },
+  { id: "voice", label: "Voice (M19)", icon: Mic },
+  { id: "events", label: "Audit & Events", icon: Activity },
+  { id: "health", label: "System Health", icon: HeartPulse },
+  { id: "projects", label: "Projects (Future M23)", icon: FolderLock, isFuture: true },
+  { id: "sync", label: "Sync & Offline (Future M24)", icon: RefreshCw, isFuture: true },
+  { id: "templates", label: "Firm Templates (Future M25)", icon: FileCode, isFuture: true },
 ];
 
 export const defaultUtilityRooms: RailItemConfig[] = [
+  { id: "vault", label: "Vault", icon: Database },
   { id: "console", label: "Console", icon: Terminal },
   { id: "settings", label: "Settings", icon: Settings },
 ];
@@ -55,7 +76,9 @@ export const Rail: React.FC<RailProps> = ({
     <TooltipProvider>
       <nav aria-label="Primary Navigation" className="sd-rail">
         {/* Top Brand Indicator */}
-        <div className="sd-rail-brand">S</div>
+        <div className="sd-rail-brand" style={{ fontWeight: "bold", letterSpacing: "1px" }}>
+          S
+        </div>
 
         {/* Primary Navigation Group */}
         <div className="sd-rail-group">
@@ -63,12 +86,21 @@ export const Rail: React.FC<RailProps> = ({
             const Icon = room.icon;
             const isActive = activeRoom === room.id;
             return (
-              <Tooltip key={room.id} content={room.label} side="right">
+              <Tooltip
+                key={room.id}
+                content={room.isFuture ? `${room.label} (Available in future milestone)` : room.label}
+                side="right"
+              >
                 <button
-                  onClick={() => onSelectRoom(room.id)}
+                  onClick={() => !room.isFuture && onSelectRoom(room.id)}
                   aria-label={room.label}
                   aria-current={isActive ? "page" : undefined}
                   className={`sd-rail-item ${isActive ? "sd-rail-item-active" : ""}`}
+                  style={{
+                    opacity: room.isFuture ? 0.4 : 1,
+                    cursor: room.isFuture ? "not-allowed" : "pointer",
+                    position: "relative",
+                  }}
                 >
                   <Icon size={20} />
                   {isActive && <span className="sd-rail-indicator" />}

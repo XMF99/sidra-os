@@ -17,6 +17,9 @@ sidra-agents = { path = "../../../services/agents" }
 sidra-orchestrator = { path = "../../../services/orchestrator" }
 sidra-plugins = { path = "../../../services/plugins" }
 sidra-voice = { path = "../../../services/voice" }
+sidra-seats = { path = "../../../services/seats" }
+sidra-artifacts-exec = { path = "../../../services/artifacts-exec" }
+sidra-delegation = { path = "../../../services/delegation" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tauri = { version = "2.0", features = [] }
