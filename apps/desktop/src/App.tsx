@@ -33,7 +33,7 @@ export const App: React.FC = () => {
           backgroundColor: 'var(--sd-color-surface-base)',
         }}
       >
-        <Rail activeRoom={activeRoom} onSelectRoom={(room) => setActiveRoom(room as RoomId)} />
+        <Rail activeRoom={activeRoom} onSelectRoom={(room: RoomId) => setActiveRoom(room)} />
 
         {activeRoom === 'lobby' && <DashboardRoom />}
         {activeRoom === 'boardroom' && <Boardroom />}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { getArtifacts, executeArtifact, ExecutableArtifactDTO } from '../lib/api';
+import { getArtifacts, executeArtifact } from '../lib/api';
 import { Cpu, Play, Terminal, Shield, FileCode, CheckCircle2 } from 'lucide-react';
 
 export const ArtifactsRoom: React.FC = () => {
@@ -19,7 +19,10 @@ export const ArtifactsRoom: React.FC = () => {
     },
   });
 
-  const selectedArtifact = artifacts?.find((a) => a.id[0] === selectedArtifactId || a.id === selectedArtifactId);
+  const selectedArtifact = artifacts?.find((a) => {
+    const artId = typeof a.id === 'object' ? a.id[0] : (a.id as unknown as string);
+    return artId === selectedArtifactId;
+  });
 
   return (
     <div

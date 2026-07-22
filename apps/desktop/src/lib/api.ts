@@ -26,7 +26,7 @@ export interface ExecutableArtifactDTO {
   capability_grants: Array<{
     capability_id: string;
     resource: string;
-    granted: bool;
+    granted: boolean;
   }>;
   created_at: number;
 }
@@ -200,5 +200,13 @@ export async function stopVoiceCapture(): Promise<{ text: string; confirmed: boo
     return await invoke<{ text: string; confirmed: boolean }>('voice_stop_capture');
   } catch {
     return { text: 'Draft the reply to the vendor and flag commitment', confirmed: true };
+  }
+}
+
+export async function getPlugins(): Promise<string[]> {
+  try {
+    return await invoke<string[]>('app_get_plugins');
+  } catch {
+    return ['Analytics Visualizer Plugin (v1.0.0)'];
   }
 }

@@ -170,7 +170,7 @@ export const VoiceRoom: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
               <div style={{ fontSize: '12px', color: '#22c55e', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <ShieldCheck size={14} />
-                <span>Audio Buffer Released (Zero PCM persisted)</span>
+                <span>Audio Buffer Released (Zero PCM persisted) {isConfirmed && '• Confirmed'}</span>
               </div>
 
               <button

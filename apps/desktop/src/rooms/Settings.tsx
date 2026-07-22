@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getPlugins } from '../lib/api';
 
 export const Settings: React.FC = () => {
-  const { data: plugins } = useQuery({
+  const { data: plugins } = useQuery<string[]>({
     queryKey: ['pluginsList'],
     queryFn: getPlugins,
   });
@@ -15,14 +15,14 @@ export const Settings: React.FC = () => {
 
       <div style={{ backgroundColor: 'var(--sd-color-surface-raised)', padding: '16px', borderRadius: '8px', border: '1px solid var(--sd-color-border-subtle)', marginBottom: '16px' }}>
         <h3>Security Fences (ADR-0006)</h3>
-        <p style={{ fontSize: '13px', color: 'var(--sd-color-text-muted)' }}>Allowed Path Scopes: /workspace/app</p>
-        <p style={{ fontSize: '13px', color: 'var(--sd-color-text-muted)' }}>Network Egress Allowlist: api.sidra.os, github.com</p>
-        <p style={{ fontSize: '13px', color: 'var(--sd-color-text-muted)' }}>Spend Ceiling: $100.00 / month</p>
+        <p style={{ fontSize: '13px', color: 'var(--sd-color-text-secondary)' }}>Allowed Path Scopes: /workspace/app</p>
+        <p style={{ fontSize: '13px', color: 'var(--sd-color-text-secondary)' }}>Network Egress Allowlist: api.sidra.os, github.com</p>
+        <p style={{ fontSize: '13px', color: 'var(--sd-color-text-secondary)' }}>Spend Ceiling: $100.00 / month</p>
       </div>
 
       <div style={{ backgroundColor: 'var(--sd-color-surface-raised)', padding: '16px', borderRadius: '8px', border: '1px solid var(--sd-color-border-subtle)' }}>
         <h3>Installed WASM Plugins (M7)</h3>
-        {plugins?.map((p, i) => (
+        {Array.isArray(plugins) && plugins.map((p: string, i: number) => (
           <div key={i} style={{ fontSize: '13px', color: 'var(--sd-color-text-primary)' }}>
             ● {p}
           </div>
