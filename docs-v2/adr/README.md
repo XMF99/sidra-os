@@ -24,6 +24,8 @@ behaviour needs a record.
 | [0035](0035-connectors-granted-to-a-department-not-the-firm.md) | A connector is granted to a department, never to the Firm | Accepted | — |
 | [0036](0036-egress-declared-in-manifest-enforced-by-kernel.md) | A connector's egress is declared in its manifest and enforced by the kernel | Accepted | — |
 | [0037](0037-oauth-is-a-kernel-capability.md) | OAuth authorization is a kernel capability, not a connector responsibility | Accepted | — |
+| [0038](0038-release-gate-is-a-proof-obligation-not-a-date.md) | The 1.0 release gate is a proof obligation, not a date | Accepted | — |
+| [0039](0039-hardening-adds-no-authoritative-tables.md) | Hardening adds no authoritative tables; release bookkeeping is a projection | Accepted | — |
 
 ## Format
 
