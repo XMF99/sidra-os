@@ -111,7 +111,7 @@ holds ADR-0078 and ADR-0079. Status: `Proposed`.
 ## 7. Testing & CI
 
 - [x] Every hardening claim is a permanent CI gate or a recorded Decision — nothing rests on manual verification
-      (G10; §4, §18)
+      (G10; §4, §17)
 - [x] The eight new permanent gates (EVO-1…EVO-4, rate-bound, revert, evidence, circuit-breaker) each ship a
       fixture, an oracle, and a demonstrated failing case; a gate that cannot fail is not a gate (plan §0.2)
 - [x] The four bound gates are proven under sustained *simultaneous* load with all four loops active (the

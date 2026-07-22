@@ -270,7 +270,7 @@ For each Mission `m`, the estimate error attributed to it uses the calibration p
 just before `m` concluded**, i.e. computed only from Missions that concluded earlier. A calibration that could
 see `m`'s actual before scoring `m` would trivially "narrow" error and prove nothing.
 
-The exit criterion is then a comparison of two disjoint trailing windows of size `W` (default `W = 25`, so the
+The exit criterion is then a comparison of two disjoint windows of size `W` (default `W = 25`, so the
 first and last halves of 50):
 
 ```
@@ -296,27 +296,29 @@ versioned (§8); the *run* moves through these states and terminates.
         run_calibration(window)          ← Night Shift, or a Principal-triggered Decision
   ─────────────────────────────────►  GATHERING
                                           │  read concluded-Mission outcome records → error samples
-                                          ▼
-                                       COMPUTING
-                                          │  candidate parameter set: corrections, novelty map, risk weights
-                                          │  (clamped; signatures with < M_min samples held at prior)
-                                          ▼
-                                      BACKTESTING
-                                          │  walk-forward EE(before) vs EE(after) on held-out Missions
-                                          ▼
                               ┌───────────┴────────────┐
-                    narrows by ≥ δ                not narrowed / worse
+                  ≥ 1 estimand reaches M_min      too few outcomes (no estimand ≥ M_min)
                               ▼                          ▼
-                          APPLIED                    REJECTED
-                   (new active version)      (candidate recorded, NOT activated;
-                              │                prior version stays active)
-                              ▼                          │
-                        INSPECTABLE ◄───────────────────┘   (both outcomes are inspectable)
-                              │
-                              │  revert_calibration(prior)   ← a Principal Decision
+                          COMPUTING                  INSUFFICIENT
+                              │                     (terminal; nothing computed,
+                              │                      identity retained — §7.5, F1)
+                              │  candidate parameter set: corrections, novelty map, risk weights
+                              │  (clamped; signatures with < M_min samples held at prior)
                               ▼
-                          REVERTED
-                   (prior version re-activated, exactly)
+                          BACKTESTING
+                              │  walk-forward EE(before) vs EE(after) on held-out Missions
+                              ▼
+                  ┌───────────┴────────────┐
+        narrows by ≥ δ                not narrowed / worse
+                  ▼                          ▼
+              APPLIED                    REJECTED
+       (new active version)      (candidate recorded, NOT activated;
+                  │                prior version stays active)
+                  ▼                          │
+            INSPECTABLE ◄───────────────────┘   (both outcomes are inspectable)
+
+  Later, a separate Principal Decision may revert an APPLIED version:
+              APPLIED ──── revert_calibration(prior) ───► REVERTED   (prior version re-activated, exactly)
 ```
 
 ### 5.2 Transition table
@@ -324,12 +326,13 @@ versioned (§8); the *run* moves through these states and terminates.
 | From | Event | To | Guard |
 |---|---|---|---|
 | — | `run_calibration` | Gathering | ≥ 1 concluded Mission with an outcome record exists |
-| Gathering | samples materialised | Computing | at least one estimand has ≥ 1 sample |
+| Gathering | samples materialised | Computing | at least one estimand reaches `M_min` samples |
+| Gathering | too few outcomes | Insufficient | no estimand reaches `M_min`; terminal, nothing computed, the identity is retained (§7.5, F1) — records `Insufficient{needed, had}` |
 | Computing | candidate built | Backtesting | candidate is well-formed; clamps applied; `M_min` respected |
 | Backtesting | `EE(after) ≤ (1−δ)·EE(before)` | Applied | held-out error narrows by the declared margin |
 | Backtesting | otherwise | Rejected | candidate does **not** narrow held-out error — not activated |
-| Applied \| Rejected | (record provenance) | Inspectable | run + adjustments + metrics written to the log |
-| Applied | `revert_calibration(v)` | Reverted | a prior version `v` exists; a Principal Decision |
+| Applied \| Rejected \| Insufficient | (record provenance) | Inspectable | run + adjustments + metrics written to the log |
+| Applied | `revert_calibration(v)` | Reverted | a prior version `v` exists; a separate Principal Decision |
 
 ### 5.3 Invariants
 
@@ -372,7 +375,7 @@ projection (§20.2). Calibration consumes it and never mutates it.
 | `task_signatures` | the comparable-signature keys the Tasks matched |
 | `novelty_at_plan` | the novelty score each Task carried at APPRAISING |
 
-### 6.3 `EstimateErrorSample` (materialised per concluded Mission, per estimand)
+### 6.3 `EstimateErrorSample` (materialised per concluded Mission × estimand × Task signature)
 
 ```
 EstimateErrorSample {
@@ -392,7 +395,10 @@ EstimateErrorSample {
 ```
 
 One `EstimateErrorSample` is the atom of both the metric (§4) and the provenance (§8): every adjustment cites
-the sample ids it aggregated.
+the sample ids it aggregated. A sample's **id is its natural composite key** —
+`(mission_id, plan_version, estimand, task_signature)` — which is deterministic and stable under rebuild
+(AC12), so "the sample ids an adjustment aggregated" is reproducible without a synthetic identifier. A Mission
+that ran the same task signature more than once contributes one sample per (estimand, task_signature) pair.
 
 ### 6.4 `CalibrationParameterSet` — versioned, the thing planning reads
 
@@ -524,8 +530,9 @@ which is exactly the pre-M26 state (F1).
 
 The active `CalibrationParameterSet` is a **projection** derived from two append-only sources: the outcome
 records (owned by M15) and the `CalibrationRun` log (owned here). It is state in the same sense the `missions`
-table is state — "a convenience for querying; the truth is the events" (§19.1). Nothing mutates a parameter in
+table is state — "a convenience for querying; the truth is the events" (ADR-0002). Nothing mutates a parameter in
 place; a calibration appends a new version and moves the `active` pointer, and a revert moves the pointer back.
+(The "truth is the events" discipline is the append-only event log of ADR-0002.)
 
 ### 8.2 Applying a version
 
@@ -663,7 +670,7 @@ Principal cannot force an unproven candidate active, because "narrows measurably
 ## 11. Events
 
 Every event carries `actor`, `run_id`, `from_version`/`to_version` where applicable, and lands on the existing
-hash chain (ADR-0002). No new log; no event kind is ever removed or redefined (§19.3 rule 5).
+hash chain (ADR-0002). No new log; no event kind is ever removed or redefined (ADR-0002; the Mission Engine's projection-discipline rule).
 
 | Event | Payload highlights |
 |---|---|
@@ -689,10 +696,10 @@ additive migrations occupy **`0057`–`0060`**.
 
 | Migration | Table | Purpose |
 |---|---|---|
-| `0057_calibration_parameters.sql` | `calibration_parameters` | versioned parameter sets: version, supersedes, active, created_by, run_id, estimate corrections, novelty mapping, risk weights. **The revertible projection.** |
-| `0058_estimate_error_samples.sql` | `estimate_error_samples` | one row per concluded Mission × estimand: plan_version, estimand, signature, source, p50/p90, actual, signed/abs error, within_band, concluded_at. Rebuildable from `mission_outcomes`. |
+| `0057_calibration_parameters.sql` | `calibration_parameters` | versioned parameter sets: version, supersedes, active, created_by, run_id, estimate corrections (JSON `Map<TaskSignature,{c,s,count}>`), the inline `novelty_mapping` (`[f64;4]`) and `risk_weights` (four floats). **The authoritative, revertible projection** — the store of record for a parameter version (§6.4). |
+| `0058_estimate_error_samples.sql` | `estimate_error_samples` | one row per concluded Mission × estimand × Task signature: plan_version, estimand, task signature, source, p50/p90, actual, signed/abs error, within_band, concluded_at. Natural key `(mission_id, plan_version, estimand, task_signature)`. Rebuildable from `mission_outcomes`. |
 | `0059_calibration_runs.sql` | `calibration_runs` + `calibration_adjustments` | inspectable provenance: run, window, from/to version, outcome, metric before/after; per-adjustment old/new/statistic/sample_count and the sample ids that drove it. |
-| `0060_calibration_weights.sql` | `calibration_weights` | the versioned novelty mapping and per-risk-dimension weight store, referenced by a parameter version (the numeric novelty/risk-weight store). |
+| `0060_calibration_weights.sql` | `calibration_weights` | a **denormalized read-projection** over the active parameter set — one row per `(version, risk dimension)` and per novelty breakpoint — for per-dimension inspection and version-to-version diffing. Derived from `0057`; `calibration_parameters` (§6.4) remains the single source of truth, never a second authoritative copy. |
 
 All projections. All additive. No existing column changes meaning, no event kind is removed. Version 0 (the
 identity) is seeded by `0057` so `active_parameters()` is well-defined from the first boot — a Firm with no

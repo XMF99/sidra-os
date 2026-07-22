@@ -1,6 +1,6 @@
 # ADR-0053 — The transcript is confirmed before submit; equivalence is defined against the confirmed text
 
-**Status:** Proposed · **Date:** M19 design phase · **Supersedes:** —
+**Status:** Accepted · **Date:** M19 design phase · **Supersedes:** —
 
 ## Context
 

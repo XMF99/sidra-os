@@ -234,7 +234,7 @@ In: migrations `0061`–`0063` (with the provenance child folded into `0061`), t
 variants on the hash chain, the Vault mirror writer. Out: business logic (E1–E4).
 
 ### Dependencies
-`sidra-store`; the M25 migrations end at `0060`, so evolution migrations start at `0061` (architecture §11.1,
+`sidra-store`; the M26 migrations end at `0060`, so evolution migrations start at `0061` (architecture §11.1,
 Appendix B). `sidra-domain`/`sidra-security` (event actor, redaction).
 
 ### Acceptance criteria

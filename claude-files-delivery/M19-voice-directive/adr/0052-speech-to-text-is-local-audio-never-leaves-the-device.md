@@ -1,6 +1,6 @@
 # ADR-0052 — Speech-to-text is local-only; audio never leaves the device; voice produces a normal Directive
 
-**Status:** Proposed · **Date:** M19 design phase · **Supersedes:** —
+**Status:** Accepted · **Date:** M19 design phase · **Supersedes:** —
 
 ## Context
 

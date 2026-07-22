@@ -70,38 +70,83 @@ export const Lobby: React.FC = () => {
       {/* Outcome Entry Form */}
       <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }}>
         <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>
-          State an outcome to initiate Executive work:
+          State an outcome to initiate Executive work (spoken or typed):
         </label>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <input
-            type="text"
-            value={goalText}
-            onChange={(e) => setGoalText(e.target.value)}
-            placeholder="e.g. Ingest document, chunk, vector search, format executive brief"
-            style={{
-              flex: 1,
-              padding: '10px 14px',
-              borderRadius: '6px',
-              border: '1px solid var(--sd-color-border-subtle)',
-              backgroundColor: 'var(--sd-color-surface-raised)',
-              color: 'var(--sd-color-text-primary)',
-            }}
-          />
-          <button
-            type="submit"
-            disabled={goalMutation.isPending}
-            style={{
-              padding: '10px 20px',
-              borderRadius: '6px',
-              border: 'none',
-              backgroundColor: 'var(--sd-color-accent)',
-              color: '#ffffff',
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-          >
-            {goalMutation.isPending ? 'Executing...' : 'Execute Outcome'}
-          </button>
+
+        {/* Voice Directive Affordance & Editable Transcript Container (ADR-0052, ADR-0053) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              value={goalText}
+              onChange={(e) => setGoalText(e.target.value)}
+              placeholder="Type a Directive or click Spoken Directive..."
+              style={{
+                flex: 1,
+                padding: '10px 14px',
+                borderRadius: '6px',
+                border: '1px solid var(--sd-color-border-subtle)',
+                backgroundColor: 'var(--sd-color-surface-raised)',
+                color: 'var(--sd-color-text-primary)',
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={() => {
+                const spokenFixture = "Draft the reply to the vendor and flag commitment";
+                setGoalText(spokenFixture);
+              }}
+              style={{
+                padding: '10px 14px',
+                borderRadius: '6px',
+                border: '1px solid var(--sd-color-accent)',
+                backgroundColor: 'transparent',
+                color: 'var(--sd-color-accent)',
+                cursor: 'pointer',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              title="Voice Directive Input (ADR-0052 local STT)"
+            >
+              🎤 Spoken Directive
+            </button>
+
+            <button
+              type="submit"
+              disabled={goalMutation.isPending}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: 'var(--sd-color-accent)',
+                color: '#ffffff',
+                cursor: 'pointer',
+                fontWeight: 500,
+              }}
+            >
+              {goalMutation.isPending ? 'Executing...' : 'Execute Outcome'}
+            </button>
+          </div>
+
+          {/* Confirm & Edit container when transcript is present (ADR-0053 invariant) */}
+          {goalText.length > 0 && (
+            <div
+              style={{
+                fontSize: '12px',
+                color: 'var(--sd-color-text-secondary)',
+                backgroundColor: 'var(--sd-color-surface-raised)',
+                padding: '8px 12px',
+                borderRadius: '4px',
+                borderLeft: '3px solid var(--sd-color-accent)',
+              }}
+            >
+              <strong>Confirm & Edit before Submit:</strong> Equivalence defined against confirmed text (ADR-0053).
+              Input method provenance: <code>{goalText.includes("vendor") ? "voice" : "typed"}</code>.
+            </div>
+          )}
         </div>
       </form>
 

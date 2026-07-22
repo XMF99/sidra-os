@@ -167,7 +167,7 @@ gains a feature; no schema gains a table.
 | G7 | **The four loops stay off the hot path and within budget under sustained self-improvement** | §7; the performance gates re-run with all loops active; AC14 |
 | G8 | **The release gate is a demonstrated proof obligation, not a date; hardening adds no evolution feature** | §3, §10; ADR-0078; AC16 |
 | G9 | **M30 is strictly additive** — no new crate, no new authoritative table; only `infrastructure/ci/` + `infrastructure/testing/` | ADR-0079; Appendix B; §11 |
-| G10 | **Every hardening claim is a permanent CI gate or a recorded Decision** — nothing rests on manual verification | §4, §18; the four evolution-path gates (GUIDE §7); AC4, AC15 |
+| G10 | **Every hardening claim is a permanent CI gate or a recorded Decision** — nothing rests on manual verification | §4, §17; the four evolution-path gates (GUIDE §7); AC4, AC15 |
 
 ---
 
@@ -797,6 +797,64 @@ AntiGravity.** Each maps to a task in the Implementation Plan.
 | AC14 | The four loops stay off the hot path and within budget under sustained self-improvement: cold start ≤1.2 s, 60 fps, idle ≤400 MB, Directive-to-Brief latency unchanged loops-on vs loops-off | the Performance gates re-run with loops active + the latency-parity test (§7) | T7.1 |
 | AC15 | Every loop action is an audited event on the hash chain; `audit.verify` shows every capability/Standard/org-chart change has a Principal Decision antecedent, with no gap over the window | the escalation-authorship invariant + `audit.verify` over the window (§8.2, §8.3; SR-7) | T6.2 |
 | AC16 | **Ninety consecutive dogfood days with the loops active, zero escalation-without-a-Decision, zero run-away; every open defect fixed or accepted in writing; the release-gate Decision recorded and demonstrated to someone who does not trust the author** | the dogfood acceptance harness + the release-gate Decision (§10; registry §4; GUIDE §6; ADR-0078) — **the last thing to go green; there is no M31** | T7.4 |
+
+---
+
+## 17. Testing strategy and CI requirements
+
+M30 writes almost no new behaviour; its deliverable *is* testing and CI. The harnesses and gates are specified
+in detail in §4–§10; this section consolidates them so the strategy and the permanent gate set can be read in
+one place. Nothing here is new content — it indexes what those sections define.
+
+### 17.1 Testing strategy
+
+- **Per-loop bounding harnesses (§4.1–§4.4, §6.1).** Each evolution loop (M26–M29) ships an assertion/oracle
+  set: property tests on extreme inputs, an apply → revert → rebuild-from-events → **diff-zero** proof, effect-
+  class-invariance tests, and the loop's own state-machine tests. These prove each loop stays inside its
+  declared bounds.
+- **The four-loop sustained-load harness (§6.3).** All four loops run simultaneously under sustained
+  self-improvement; the bounding gates (§6.2) must hold under contention, not only in isolation.
+- **The escalation-refusal red-team corpus (§5.2).** A corpus of attempted escalations — a calibration that
+  tries to widen a capability, a charter revision that tries to relax a Standard, a compiled workflow that
+  tries to auto-activate, a self-review that tries to enact — each of which must be **refused *and* surfaced**
+  as an audited event (§5.1 threat table E1–E12).
+- **The no-escalation proof (§8.1–§8.3).** The `(loop × target)` escalation-coverage enumeration plus
+  `audit.verify` over the dogfood window, asserting every capability/Standard/org-chart change has a Principal
+  Decision antecedent with no gap (the Decision-authorship invariant).
+- **The ninety-day dogfood acceptance protocol (§10).** The release-gate harness: ninety consecutive days with
+  all loops active, mechanical definitions of an *escalation-without-a-Decision* incident and a *run-away*
+  incident, zero of each, and the release-gate Decision recorded and demonstrated to someone who does not trust
+  the author (AC16 — the last thing to go green).
+- **Performance parity (§7).** The Performance gates re-run with loops active, plus the loops-on vs loops-off
+  Directive-to-Brief latency-parity test (AC14).
+
+All harnesses are placed under `infrastructure/testing/` (Appendix B); AC1–AC16 each map to a named task in the
+implementation plan (E1–E7).
+
+### 17.2 CI requirements — the permanent 4.0 gate set
+
+Every row is a **permanent** build-failing gate (ADR-0079: gates are first-class objects under
+`infrastructure/ci/gates/`); a gate is never removed (§3.3 invariant 4).
+
+| Gate | Fails the build when |
+|---|---|
+| **EVO-1 Calibration-bounded** (§4.1) | a calibration step changes an effect class, widens a capability, or exceeds its per-window rate bound |
+| **EVO-2 Charter-eval-gated** (§4.2) | a charter revision merges past a regressing eval, or relaxes a Standard without a Decision |
+| **EVO-3 Compilation-propose-only** (§4.3) | a compiled Workflow auto-activates, or a proposal lacks its ≥5-Mission citations |
+| **EVO-4 Self-review-no-enact** (§4.4) | a self-review enacts a structural change, or any admin path alters the org chart without a Decision |
+| **Rate-bound** (§6.2) | any loop applies changes faster than its declared per-window rate |
+| **Revert** (§6.2) | a loop's apply → revert → rebuild does not diff to zero (a change is not exactly revertible) |
+| **Evidence** (§6.2) | a loop acts on evidence below its declared floor |
+| **Circuit-breaker** (§6.2) | a feedback-injection loop is not halted by its breaker under sustained load |
+| **Escalation-coverage** (§8.1) | the `(loop × target)` enumeration is incomplete, or any change lacks a Principal-Decision antecedent (`audit.verify`) |
+| **Locality / zero-egress** (§9; ADR-0009) | any outbound learning-data emission appears with the loops active over the window |
+| **Supply-chain** (§5.3) | `cargo audit`/`cargo deny`/`npm audit` report a known-critical, a lockfile is uncommitted, or the build is not reproducible |
+| **Scope-freeze** (T1.1) | a fifth loop, a new authoritative table, or a new crate is introduced under the banner of hardening |
+
+The four EVO gates plus the four bound gates (rate-bound, revert, evidence, circuit-breaker) are the **eight
+loop-bounding gates** counted as the release-gate quorum (§6.2; README); the escalation-coverage, locality-
+egress, supply-chain, and scope-freeze gates are the additional standing gates the second security review (E6)
+and the additive-scope discipline (E1) contribute.
 
 ---
 

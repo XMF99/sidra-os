@@ -45,9 +45,11 @@ runs of one procedure are detectably equal and two different procedures are dete
 1. **Projection.** Each dispatched Work Order becomes a `NormalizedStep`:
 
    ```
-   NormalizedStep = ( task_kind, role_archetype_id, effect_class, contract_shape_id )
+   NormalizedStep = ( task_kind, role_archetype_id, effect_class, contract_shape_id [, child_template] )
    ```
 
+   `child_template` is present **only** for `fanout` steps (the per-child `NormalizedStep`, step 3) and absent
+   otherwise; when present it is part of the serialized step and therefore part of the hash.
    `task_kind` is the Workflow step kind (`work_order | meeting | gate | fanout | join | …`,
    `/docs/01-workflow-engine.md` §1). `role_archetype_id` is the **resolved role**, never the agent instance —
    a role, not a person (M13, ADR-0014). `effect_class` is the declared class (security model §5).
@@ -62,9 +64,15 @@ runs of one procedure are detectably equal and two different procedures are dete
    template**, not expanded to N steps — otherwise the same procedure over three documents and over five
    documents would have different signatures, which it must not (the collection size is data, not procedure).
 
-4. **Canonicalization and hashing.** The normalized vector is serialized in a fixed deterministic encoding and
-   hashed to a `SignatureHash`. Two concluded Missions have the same procedure **iff** their `SignatureHash`
-   values are equal.
+4. **Canonicalization and hashing.** The normalized vector is serialized in a fixed, canonical deterministic
+   encoding and hashed with **SHA-256** to the 32-byte `SignatureHash` (the same hash M25 §4.8 pins for the
+   Firm-Template digest). The encoding is pinned so the digest is identical across conformant implementations
+   and across time: each `NormalizedStep` field is emitted in declared order as a length-prefixed big-endian
+   field, with `task_kind` and `effect_class` as fixed integer codes, `role_archetype_id`/`contract_shape_id`
+   as UTF-8 length-prefixed strings, and `child_template` encoded recursively (a zero-length marker when
+   absent); the `edges` set is sorted ascending by `(from, to)` before emission; and a one-byte **encoding
+   version** prefixes the buffer so any future re-normalization is detectable, never silent. Two concluded
+   Missions have the same procedure **iff** their `SignatureHash` values are equal.
 
 The signature is **conservative**: it preserves order, effect class, role, and contract shape, so two
 procedures differing in *any* of those differ in signature. The normalized `steps`/`edges` are retained

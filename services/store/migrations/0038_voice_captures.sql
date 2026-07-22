@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS voice_captures (
     directive_id TEXT,
     model_id TEXT NOT NULL,
     model_version TEXT NOT NULL,
-    transcript_hash TEXT NOT NULL,
+    transcript_hash TEXT,
     retention_mode TEXT NOT NULL DEFAULT 'DiscardAfterTranscribe' CHECK (retention_mode IN ('DiscardAfterTranscribe', 'RetainLocal')),
     audio_ref TEXT,
     purge_at INTEGER,

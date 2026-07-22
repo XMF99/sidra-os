@@ -47,7 +47,7 @@ cost) and is `Status: Proposed`. Numbering continues the sequence after ADR-0071
 - [x] M3 (Permission Broker, redaction) — `confirm` passes the Broker; the charter redaction scan
 - [x] M2 (event log) — revision events land on the existing hash chain
 - [x] Dependency direction preserved: `packages/domain ← services/evolution ← apps/*`; depends on
-      `services/security`, `services/store`, `services/departments`, `services/decisions`, `services/domain`,
+      `services/security`, `services/store`, `services/departments`, `services/decisions`, `packages/domain`,
       `services/calibration`; **no** edge to `services/orchestrator` or `services/mission` (CI-enforced, AC12)
 
 ## 4. Consistency with authoritative sources

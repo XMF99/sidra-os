@@ -688,7 +688,7 @@ Caller        sidra-self-review
 | # | Scenario | Handling |
 |---|---|---|
 | F1 | A proposal is drafted with no measured evidence | Not raised. The proposal writer refuses any `StructureProposal` with an empty evidence set (ADR-0077, invariant §3.3.3); the assessment records the department as `InsufficientEvidence`, not as absorbable |
-| F2 | A caller attempts to enact a proposal | Refused structurally — no `enact`/`apply`/`merge` verb exists and the crate holds no structural-write capability (§7). The refusal is a missing method, not a runtime deny (F13.3) |
+| F2 | A caller attempts to enact a proposal | Refused structurally — no `enact`/`apply`/`merge` verb exists and the crate holds no structural-write capability (§7). The refusal is a missing method, not a runtime deny (§13.3) |
 | F3 | M26 data is too thin to judge a department | The health line is emitted with `confidence` below the floor and verdict `insufficient_evidence`; no proposal follows (G4, §10) — an honest "cannot tell this quarter" |
 | F4 | A department has no Division neighbour (a Division of one, e.g. Cybersecurity) | Never `Absorbable`; the absorbability engine returns `NotAbsorbable` with the reason "no neighbour," correctly, since such a department reports to Kai by design (§5) |
 | F5 | Two consecutive quarters both propose retiring the same department | Two independent proposals in two immutable reviews; neither enacts anything. The recurrence is itself signal for the Principal, surfaced in the Brief; the org chart is unchanged until a Decision |
@@ -781,6 +781,49 @@ may propose, never enact"* — decomposed into testable claims. **These are the 
 evidence; AC7 proves a proposal alone changes nothing; AC8 proves there is no path by which it could. The last
 of these to go green (§ the implementation plan's final task) is the department-health-assessment /
 propose-never-enact proof.
+
+---
+
+## 18. Testing strategy and CI requirements
+
+### 18.1 Testing strategy
+
+- **The propose-never-enact harness (the exit criterion).** Stand up a fixture Firm with a known org chart and
+  an installed department roster, seed M26 outcome records and budget-ledger rows for a quarter, run a full
+  Structure Review that raises a Merge (or Retire) proposal, then assert the org chart, the `departments`
+  table, and every Pack are **byte-identical before and after** (AC7). The proposal must exist and cite its
+  evidence, yet nothing structural moved. This is the load-bearing acceptance test; AC8 (below) proves there is
+  no path by which it *could* move.
+- **Absorbability fixtures.** (a) A neighbour-at-least-as-good fixture — a Division neighbour whose measured
+  quality on comparable Work Orders is ≥ the target department's — must yield `Absorbable` with
+  `quality_drop ≤ 0` and non-empty evidence (AC3). (b) A single-department-Division fixture (a Division of one,
+  e.g. Cybersecurity) must yield `NotAbsorbable` with reason "no neighbour," never `Absorbable` (AC5, F4).
+- **Evidence-floor / thin-evidence fixture.** A department with too few concluded Missions this quarter must be
+  emitted with `confidence` below the floor and verdict `InsufficientEvidence`, and must raise **no** proposal
+  (AC4, §10, F3) — an honest "cannot tell," never an invented score.
+- **Evidence-mandatory fixture.** Every `DepartmentHealth` line names the M26 records / ledger rows it came
+  from; a line whose evidence set would be empty is refused, not written (AC2, ADR-0077, invariant §3.3.3).
+- **Decision-linkage fixture.** A proposal later cited by a Principal Decision is marked resolved
+  (`EnactedByPrincipal`) by reading the `decisions` link only — M29 never writes a Decision and never enacts
+  one (AC9).
+- **Determinism / null-review.** Given the same concluded Missions and ledgers, a re-run produces the identical
+  verdicts (ADR-0077 Consequences); a Firm that never runs a review behaves exactly as pre-M29, and migrations
+  `0067`–`0069` are additive, idempotent, and independently deployable (AC13).
+
+The harnesses live under `infrastructure/testing/self-review/` (Appendix B); each acceptance criterion AC1–AC13
+maps to a named test in the implementation plan (E7).
+
+### 18.2 CI requirements
+
+| Check | Fails the build when |
+|---|---|
+| **No-structural-write-path** | `services/self-review` holds a structural-write capability, takes a non-read-only store handle to `departments`/`agents`/Packs, or gains a dependency edge to any structural-mutation path. This is the load-bearing gate: *if any path could write structure, CI is red* (§7, ADR-0076, AC8). |
+| **No-enact-verb** | the public surface exposes any `enact`/`apply`/`merge`/`retire` command, or any code flips a `StructureProposal` to an enacted structural state without a Principal `DecisionId` (§7, AC8). |
+| **Absorbability-uses-M26-metrics** | the absorbability inputs are anything other than measured M26 outcome records / catalogue-KPI samples / budget-ledger rows — e.g. a novel or model-derived "importance score" reaching the verdict (ADR-0077, SR-4). |
+| **No-`StructureChanged`-event** | M29 emits any event kind that asserts a structural change occurred (only proposal/assessment/link events exist; §11.2, level 4). |
+| **Kernel-neutrality grep** | a department identifier is hard-coded in the kernel path (M11's neutrality rule, G8, SR-5, AC12). |
+| **Locality / zero-egress** | any network or egress edge appears on the review path (ADR-0009, AC11). |
+| **Dependency-direction** | `packages/domain ← services/self-review ← apps/*` is violated, or an edge to `services/orchestrator`/`services/mission` appears (ADR-0011, §6). |
 
 ---
 

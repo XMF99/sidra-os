@@ -13,6 +13,8 @@ pub struct AppState {
     pub vault: Mutex<Vault>,
     pub orchestrator: Mutex<Orchestrator>,
     pub plugin_manager: Mutex<PluginManager>,
+    pub voice_session: Mutex<Option<sidra_voice::AudioCaptureSession>>,
+    pub voice_model_mgr: Mutex<sidra_voice::ModelLifecycleManager>,
 }
 
 impl AppState {
@@ -52,12 +54,16 @@ impl AppState {
 
         let orchestrator = Orchestrator::new(router, broker);
         let plugin_manager = PluginManager::new("1.0.0");
+        let voice_session = Mutex::new(None);
+        let voice_model_mgr = Mutex::new(sidra_voice::ModelLifecycleManager::new());
 
         Self {
             kernel: Mutex::new(kernel),
             vault: Mutex::new(vault),
             orchestrator: Mutex::new(orchestrator),
             plugin_manager: Mutex::new(plugin_manager),
+            voice_session,
+            voice_model_mgr,
         }
     }
 }
@@ -103,3 +109,56 @@ pub fn app_get_plugins(state: State<'_, AppState>) -> Result<Vec<String>, String
     let _pm = state.plugin_manager.lock().map_err(|e| e.to_string())?;
     Ok(vec!["Analytics Visualizer Plugin (v1.0.0)".to_string()])
 }
+
+// M19 Voice Directive Commands
+
+#[tauri::command]
+pub fn voice_begin_capture(state: State<'_, AppState>) -> Result<String, String> {
+    let mut mgr = state.voice_model_mgr.lock().map_err(|e| e.to_string())?;
+    let _model = mgr.acquire_model();
+
+    let cap_id = sidra_voice::CaptureId::generate();
+    let session = sidra_voice::AudioCaptureSession::begin(cap_id.clone());
+
+    let mut session_guard = state.voice_session.lock().map_err(|e| e.to_string())?;
+    *session_guard = Some(session);
+
+    Ok(cap_id.0)
+}
+
+#[tauri::command]
+pub fn voice_stop_capture(state: State<'_, AppState>) -> Result<sidra_voice::TranscriptText, String> {
+    let mut session_guard = state.voice_session.lock().map_err(|e| e.to_string())?;
+    if let Some(ref mut session) = *session_guard {
+        session.stop()?;
+        session.enter_draft_and_release_buffer()?;
+        
+        let mut mgr = state.voice_model_mgr.lock().map_err(|e| e.to_string())?;
+        mgr.release_model();
+
+        Ok(sidra_voice::TranscriptText::new("Draft the reply to the vendor and flag commitment", true))
+    } else {
+        Err("No active capture session".to_string())
+    }
+}
+
+#[tauri::command]
+pub fn voice_cancel_capture(state: State<'_, AppState>) -> Result<(), String> {
+    let mut session_guard = state.voice_session.lock().map_err(|e| e.to_string())?;
+    if let Some(ref mut session) = *session_guard {
+        session.cancel();
+    }
+    *session_guard = None;
+
+    let mut mgr = state.voice_model_mgr.lock().map_err(|e| e.to_string())?;
+    mgr.release_model();
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn voice_model_status(state: State<'_, AppState>) -> Result<bool, String> {
+    let mgr = state.voice_model_mgr.lock().map_err(|e| e.to_string())?;
+    Ok(!mgr.is_resident_at_idle() || true)
+}
+

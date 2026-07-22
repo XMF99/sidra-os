@@ -8,7 +8,7 @@
 | Release | 4.0 "Continuum" — the Firm improves itself |
 | Layer | 1 — kernel machinery reading Layer-6 outcome records, writing Layer-3 candidate procedures |
 | New crate | `sidra-compilation` at `services/compilation/` |
-| Depends on | M26 (Outcome Calibration — the measurement/observation loop), M7 (Full Firm & the engines — Workflows), M15 (Mission Engine — the observed procedures), M13 (departments — capability scope), M2 (event log) |
+| Depends on | M26 (Outcome Calibration — the measurement/observation loop), M7 (Full Firm & the engines — Workflows), M15 (Mission Engine — the observed procedures, read via the store), M13 (departments — capability scope), M3 (Permission Broker + Decision engine — the ceiling check and the activation Decision), M2 (event log). M15/M7 are data/format dependencies read through the store, not import edges (§6). |
 | Status | Documented (this package) · implementation Open |
 | Exit criterion | A procedure repeated five times is proposed as a Workflow; the proposal cites the Missions it derives from — **proven by test, not by configuration** |
 
@@ -187,8 +187,16 @@ concluded Mission. It is computed by:
    documents would look different, which it must not).
 
 4. **Canonicalizing and hashing**: the normalized step vector is serialized in a fixed, deterministic
-   encoding and hashed. The resulting `SignatureHash` is the identity of the procedure. Two concluded
-   Missions have "the same procedure" **iff** their `SignatureHash` values are equal.
+   canonical encoding and hashed with **SHA-256** (the same hash the Firm Template digest uses, M25 §4.1/§4.8),
+   yielding the 32-byte `SignatureHash`. The canonical encoding is pinned so two conformant implementations —
+   and two versions of one — produce the identical digest for the identical procedure: each `NormalizedStep`
+   field is emitted in declared struct order as a length-prefixed, big-endian field (`task_kind` and
+   `effect_class` as fixed integer codes, the id/shape strings UTF-8 length-prefixed, `child_template` present
+   only for `fanout` and encoded recursively or as a zero-length marker when absent); `edges` are sorted
+   ascending by `(from, to)` before emission; and a one-byte **encoding version** prefixes the whole buffer so
+   a future re-normalization is detectable rather than silent. The resulting `SignatureHash` is the identity of
+   the procedure. Two concluded Missions have "the same procedure" **iff** their `SignatureHash` values are
+   equal. (The full field grammar is ADR-0075.)
 
 The full definition, the abstraction/preservation rules, and why fan-out is collapsed rather than expanded are
 ADR-0075. The property the whole milestone rests on: **signature equality is a deterministic, model-free,
@@ -210,6 +218,19 @@ that a genuinely repeated procedure surfaces within a normal quarter of work.
 signature's count — otherwise a single Mission with three internal retries could manufacture a threshold, and
 the "repeated across Missions" meaning (registry: *"Repeated procedures observed in Missions"*) would be a
 lie. §6 enforces distinctness at the counter.
+
+### 3.4 Compound Missions and sub-procedures
+
+A Mission normally exhibits exactly one procedure: its Work Orders form a single connected dependency graph,
+which projects to one `ProcedureSignature`. A **compound** Mission — one whose Work Orders fall into more than
+one *weakly-connected component* of the projected dependency graph (independent sub-DAGs that share no edge) —
+exhibits one recognizable sub-procedure per component. The delimitation is deterministic and model-free:
+compute the weakly-connected components of the projected dependency graph (§3.2 step 3) in a canonical order
+(components ordered by their lowest step position), and emit one signature per component. A Mission with a
+single component yields exactly one signature; no heuristic or judgement is involved, so the split is
+replayable forever like the signature itself. Each sub-procedure is still **one sighting keyed to the Mission's
+`mission_id`** (§4.3): distinctness counts each `mission_id` once per signature, so a compound Mission can raise
+the tally of several signatures by one each but can never inflate a single signature's count beyond one.
 
 ---
 
@@ -257,7 +278,7 @@ normalized shape, not only an opaque digest.
 ```
 ProcedureObservation {
     mission_id:    MissionId,            // the Mission this sighting came from — the distinctness key
-    engagement_id: EngagementId,         // stored in derived_from on compilation (the schema's unit)
+    engagement_id: EngagementId,         // the Mission's ROOT engagement — deterministic, one per Mission; stored in derived_from on compilation (the schema's unit)
     signature:     SignatureHash,        // which procedure was seen
     departments:   Set<DepartmentId>,    // which departments participated (for the ceiling, §7)
     capabilities:  Set<Capability>,      // the union of capabilities the Work Orders actually held (§7)
@@ -267,7 +288,7 @@ ProcedureObservation {
 
 One `ProcedureObservation` is written per concluded Mission per distinct signature it exhibited. (A Mission
 normally exhibits exactly one procedure; a compound Mission may exhibit more than one recognizable
-sub-procedure — §6.4 — but each sub-procedure is still one sighting keyed to the same `mission_id`, and the
+sub-procedure — §3.4 — but each sub-procedure is still one sighting keyed to the same `mission_id`, and the
 distinctness rule counts each `mission_id` once per signature.)
 
 ### 4.4 `WorkflowCandidate` — the proposal
@@ -376,7 +397,7 @@ definition is compiled and frozen. There is no state in which a candidate exists
 | Counting | `observe` (< 5 distinct) | Counting | count incremented; **no candidate produced** (F1) |
 | Proposed | `activate` | Activated | a **Principal `DecisionId`** is present; ceiling check re-verified; `playbooks.status → active` |
 | Proposed | `reject` | Rejected | a Principal `DecisionId` is present; `playbooks.status → retired` |
-| Proposed | (a newer candidate for the same signature is activated) | Superseded | the superseding candidate's `candidate_id` recorded; history immutable (ADR-0002) |
+| Activated | (a newer candidate for the same signature is activated) | Superseded | the superseding candidate's `candidate_id` recorded; only one candidate is `active` per signature at a time; history immutable (ADR-0002) |
 | Proposed \| Activated | (widening detected on re-verify) | — refused | a candidate whose ceiling would exceed source capability cannot advance; refusal is structural (§7) |
 
 ### 5.3 Invariants
@@ -451,13 +472,17 @@ Internal modules of `sidra-compilation`:
 | `conformance` | the acceptance harness, including the five-recurrences-proposed-with-citations proof (§17) |
 
 **Dependency direction (ADR-0011).** `packages/domain ← services/compilation ← apps/*`. `services/compilation`
-depends on `services/store`, `services/security` (the Broker, for the ceiling check and the Decision), and the
-M26 calibration substrate (`services/calibration`, for the observation trigger and the locality guarantee). It
+depends on `services/store`, `services/security` (the Broker, for the ceiling check and the Decision), the
+M26 calibration substrate (`services/calibration`, for the observation trigger and the locality guarantee),
+and `packages/domain` for the **Workflow validator** — the `/docs/01-workflow-engine.md` §2 checks (acyclic,
+reviewer ≠ assignee, budgets, grants ⊆ fences) are a *pure spec-checker* over a `WorkflowDefinition` and carry
+no execution path, so they live in `packages/domain` (or an equally runner-free `sidra-workflow-spec` crate)
+and are importable without any edge into the runner. It
 does **not** depend on `services/orchestrator` or `services/mission` — it reads outcome records via the store
-and the M26 substrate, and it emits a *candidate definition as data*; it never runs a Workflow. **The absence
-of that edge is a compile-time property enforced in CI**, exactly as M16's connector crate and the Mission
-Engine's Appendix B do it. This is what makes G9 true: a subsystem that cannot import the runner cannot run
-anything.
+and the M26 substrate, validates the compiled definition through that pure spec-checker, and emits a *candidate
+definition as data*; it never runs a Workflow. **The absence of that edge is a compile-time property enforced
+in CI**, exactly as M16's connector crate and the Mission Engine's Appendix B do it. This is what makes G9
+true: a subsystem that cannot import the runner cannot run anything.
 
 ---
 

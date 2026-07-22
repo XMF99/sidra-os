@@ -55,7 +55,7 @@ a Decision the Principal confirmed — proven by test, not by configuration.
 - Copy the two ADRs to `docs-v2/adr/`, add rows to `docs-v2/adr/README.md`, mark `Accepted` on approval.
   Recommended in the same pass: promote ADR-0033 `Proposed → Accepted`, since M27 makes it load-bearing at a
   second site.
-- Migrations begin at `0061_` (M25 migrations end at `0060_`): `0061_charter_revisions.sql`,
+- Migrations begin at `0061_` (M26 migrations end at `0060_`): `0061_charter_revisions.sql`,
   `0062_evaluation_sets.sql`, `0063_evaluation_runs.sql`, all forward-only.
 - **Propose, never enact.** The engine has no write edge to `agent_versions` outside `confirm`; `confirm`
   requires a Principal Decision id. Both absences are CI-enforced (AC7, AC12).

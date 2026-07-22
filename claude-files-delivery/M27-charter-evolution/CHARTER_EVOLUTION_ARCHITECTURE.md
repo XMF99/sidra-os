@@ -226,8 +226,8 @@ The whole proposal in one record, mirroring the "everything the gate needs is he
 | `proposed_at`, `resolved_at` | `Timestamp` | lifecycle stamps |
 
 `proposed_charter` is data, not code — exactly the JSON shape already stored in `agent_versions.charter`
-(purpose, responsibilities, refusals), `.decision_bounds`, `.kpis`, `.capabilities` (the standing fence), plus
-the four archetype fields ADR-0014 adds (`model_class`, `capabilities`, `standards`, `instantiation`).
+(purpose, responsibilities, refusals), `.decision_bounds`, `.kpis`, `.capabilities` (the standing fence — itself one of
+the four archetype fields ADR-0014 formalizes: `model_class`, `capabilities`, `standards`, `instantiation`).
 
 ### 4.3 `Provenance` — why the proposal exists
 
@@ -320,8 +320,8 @@ proposed_charter = {
   personality, memory, goals[], routine, knowledge,
   kpis[]:            [{id, name, target, window}],
   decision_bounds:   {can_decide[], must_escalate[], never[]},
-  capabilities[]:    ["..."],                         # the standing fence — authority-bearing
-  model_class, standards[], instantiation             # the four archetype fields (ADR-0014)
+  capabilities[]:    ["..."],                         # the standing fence — authority-bearing (1 of the 4 archetype fields)
+  model_class, standards[], instantiation             # the other 3 archetype fields (ADR-0014)
 }
 ```
 
@@ -415,7 +415,7 @@ Internal modules of `sidra-evolution`:
 
 **Dependency direction (ADR-0011).** `packages/domain ← services/evolution ← apps/*`. `services/evolution`
 depends on `services/security` (Broker, actor/Seat), `services/store`, `services/departments` (archetypes,
-Registrar), the Decision engine (`services/decisions`), `services/domain` (the `Charter` type and
+Registrar), the Decision engine (`services/decisions`), `packages/domain` (the `Charter` type and
 `Charter::relation_to` from ADR-0033), and the M26 outcome-record **read** surface (working name
 `services/calibration`). It does **not** depend on `services/orchestrator` or `services/mission`, and it has
 **no write edge to `agent_versions` outside `confirm`** — both absences are compile/CI properties (§18).
@@ -625,7 +625,7 @@ traceable answer (Principle 14).
 | `run_evaluation(revision) -> RevisionVerdict` | Evaluating → Refused \| AwaitingPrincipal | runs candidate + baseline over the eval set@version; the §8 gate; a Refused verdict is terminal |
 | `confirm_revision(revision, principal) -> DecisionId` | Confirmed | a Principal **Decision**; requires a Principal Seat actor; the **only** version-writer (§9) |
 | `reject_revision(revision, principal, reason)` | Rejected | a Principal Seat records a reason; the motivating outcome data persists |
-| `register_evaluation_set(archetype, cases, scoring) -> EvalSetVersion` | — | registers/versions the gate corpus; a logged act; author ≠ reviewer applies (an archetype cannot author the set that gates it) |
+| `register_evaluation_set(archetype, cases, scoring) -> EvalSetVersion` | — | registers/versions the gate corpus; a logged act requiring a **Principal Seat actor through the Broker** (like `confirm`). Author ≠ reviewer is enforced at registration time by comparing the registering actor's identity to the target `archetype`: an actor that *is* an instance of the gated archetype (or acting on its behalf) is refused — an archetype cannot author the set that gates its own revisions |
 
 ### 12.2 Queries
 
@@ -864,7 +864,7 @@ infrastructure/testing/
 ```
 
 Dependency direction (ADR-0011): `packages/domain ← services/evolution ← apps/*`. `services/evolution` depends
-on `services/security`, `services/store`, `services/departments`, `services/decisions`, `services/domain`
+on `services/security`, `services/store`, `services/departments`, `services/decisions`, `packages/domain`
 (`Charter::relation_to`), and the M26 read surface (`services/calibration`); it does **not** depend on
 `services/orchestrator` or `services/mission`, and it has **no write edge to `agent_versions` outside
 `confirm`**.
