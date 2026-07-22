@@ -1,6 +1,6 @@
 # ADR-0056 — An executable artifact's provenance is recorded and is the source of its grant
 
-**Status:** Proposed · **Date:** M20 architecture phase · **Supersedes:** — · **Milestone:** M20 (Executable Artifacts, 2.5 "Field")
+**Status:** Accepted · **Date:** M20 architecture phase · **Supersedes:** — · **Milestone:** M20 (Executable Artifacts, 2.5 "Field")
 
 ## Context
 

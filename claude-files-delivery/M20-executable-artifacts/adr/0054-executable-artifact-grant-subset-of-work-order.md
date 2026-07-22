@@ -1,6 +1,6 @@
 # ADR-0054 — An executable artifact's capability grant is a strict subset of its producing Work Order's grant
 
-**Status:** Proposed · **Date:** M20 architecture phase · **Supersedes:** — · **Milestone:** M20 (Executable Artifacts, 2.5 "Field")
+**Status:** Accepted · **Date:** M20 architecture phase · **Supersedes:** — · **Milestone:** M20 (Executable Artifacts, 2.5 "Field")
 
 ## Context
 

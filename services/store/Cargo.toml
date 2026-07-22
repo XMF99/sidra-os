@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 sidra-domain = { path = "../../packages/domain" }
 sidra-voice = { path = "../voice" }
+sidra-artifacts-exec = { path = "../artifacts-exec" }
 rusqlite = { version = "0.31", features = ["bundled"] }
 refinery = { version = "0.8", features = ["rusqlite"] }
 serde = { version = "1.0", features = ["derive"] }

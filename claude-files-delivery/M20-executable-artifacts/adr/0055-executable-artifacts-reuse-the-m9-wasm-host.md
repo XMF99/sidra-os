@@ -1,6 +1,6 @@
 # ADR-0055 — Executable artifacts reuse the M9 Wasm host; there is no new sandbox
 
-**Status:** Proposed · **Date:** M20 architecture phase · **Supersedes:** — · **Milestone:** M20 (Executable Artifacts, 2.5 "Field")
+**Status:** Accepted · **Date:** M20 architecture phase · **Supersedes:** — · **Milestone:** M20 (Executable Artifacts, 2.5 "Field")
 
 ## Context
 

@@ -19,6 +19,7 @@ members = [
     "services/companion",
     "apps/companion",
     "services/voice",
+    "services/artifacts-exec",
 ]
 
 [workspace.package]
