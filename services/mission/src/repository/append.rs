@@ -1,22 +1,50 @@
 //! Event Append Path (T2.5)
 //!
 //! Ref: MISSION_ENGINE_ARCHITECTURE.md §18.2, IMPLEMENTATION_PLAN.md T2.5
-//! `append` is the single mutation path for Mission state.
+//! `append` is the single mutation path for Mission state, writing to Vault event log.
 
 use crate::domain::events::MissionEvent;
 use std::sync::{Arc, Mutex};
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct MissionEventStore {
     events: Arc<Mutex<Vec<MissionEvent>>>,
+    vault: Option<Arc<sidra_store::Vault>>,
+}
+
+impl Default for MissionEventStore {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl MissionEventStore {
     pub fn new() -> Self {
-        Self::default()
+        Self {
+            events: Arc::new(Mutex::new(Vec::new())),
+            vault: None,
+        }
+    }
+
+    pub fn with_vault(vault: Arc<sidra_store::Vault>) -> Self {
+        Self {
+            events: Arc::new(Mutex::new(Vec::new())),
+            vault: Some(vault),
+        }
     }
 
     pub fn append(&self, event: MissionEvent) -> Result<(), String> {
+        let payload_json = serde_json::to_string(&event).map_err(|e| e.to_string())?;
+
+        // 1. Append to Vault event log if available
+        if let Some(ref vault) = self.vault {
+            let evt_type = format!("mission.{}", event.event_type);
+            let _id = vault
+                .append_event(&evt_type, &payload_json, "mission_engine")
+                .map_err(|e| e.to_string())?;
+        }
+
+        // 2. Maintain active memory cache
         let mut lock = self.events.lock().map_err(|e| e.to_string())?;
         lock.push(event);
         Ok(())

@@ -37,7 +37,10 @@ pub struct AppState {
 impl AppState {
     pub fn new() -> Self {
         let kernel = Kernel::new();
-        let vault = Vault::open_in_memory().expect("Failed to open Vault in memory");
+        let db_dir = dirs::home_dir().unwrap_or_else(|| std::path::PathBuf::from(".")).join(".sidra");
+        let _ = std::fs::create_dir_all(&db_dir);
+        let vault_path = db_dir.join("vault.db");
+        let vault = Vault::open(&vault_path).unwrap_or_else(|_| Vault::open_in_memory().expect("Failed to open fallback Vault"));
 
         // 1. Production Model Router (Milestone M4 Model Router & Fallback Chain)
         let openai_key = std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| "sk-sidra-prod-key".to_string());

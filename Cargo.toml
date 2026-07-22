@@ -1,42 +1,64 @@
 # Sidra OS — Rust workspace root.
-#
 # Layout and dependency direction are defined by ADR-0011 (seven-directory monorepo):
 #   packages/domain  <-  services/*  <-  apps/*
-#   infrastructure/ depends on everything; nothing depends on it.
-#
-# Members are listed explicitly rather than by glob. ADR-0011 describes the eventual
-# `members = apps/*, services/*, packages/*` form; explicit membership is used while
-# `services/mission` is the only crate, so that adding a member is a visible, reviewed
-# change rather than a side effect of creating a directory.
 
 [workspace]
 resolver = "2"
 members = [
-    "services/mission",
-    "services/connectors",
+    "packages/domain",
+    "packages/transport",
+    "services/store",
+    "services/security",
+    "services/models",
+    "services/memory",
+    "services/orchestrator",
+    "services/agents",
+    "services/tools",
+    "services/plugins",
+    "services/ingest",
+    "services/kernel",
     "services/departments",
     "services/registry",
+    "services/mission",
+    "services/connectors",
     "services/companion",
-    "apps/companion",
     "services/voice",
     "services/artifacts-exec",
     "services/seats",
     "services/delegation",
-    "apps/kernel-server",
-    "packages/transport",
     "services/sync",
     "services/portability",
     "services/calibration",
     "services/evolution",
     "services/compilation",
     "services/self-review",
+    "services/decisions",
+    "apps/companion",
+    "apps/kernel-server",
+    "apps/desktop/src-tauri",
 ]
 
 [workspace.package]
+version      = "0.1.0"
+authors      = ["Sidra Systems"]
 edition      = "2021"
 rust-version = "1.77"
 license      = "MIT"
 repository   = "https://github.com/XMF99/sidra-os"
+
+[workspace.dependencies]
+serde        = { version = "1.0", features = ["derive"] }
+serde_json   = "1.0"
+tokio        = { version = "1.35", features = ["full"] }
+rusqlite     = { version = "0.31", features = ["bundled"] }
+refinery     = { version = "0.8", features = ["rusqlite"] }
+thiserror    = "1.0"
+tracing      = "0.1"
+anyhow       = "1.0"
+ulid         = "1.1"
+sha2         = "0.10"
+chrono       = "0.4"
+tempfile     = "3.8"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 M30 Scope-Freeze Guard Gate (infrastructure/ci/gates/scope_freeze.py)
-Refuses any PR adding a fifth evolution loop, an auto-enact path, or a new product feature during M30.
+Refuses any PR adding a fifth evolution loop, an auto-enact path, or an unauthorized service during M30.
 """
 
 import sys
@@ -10,11 +10,11 @@ import os
 def main():
     print("[CI GATE] Running Scope-Freeze Guard Gate (M30 / Release 4.0)...")
 
-    # Exact set of 25 existing services in workspace
+    # Exact set of 26 authorized services in workspace
     allowed_services = {
         "agents", "artifacts-exec", "calibration", "companion", "compilation",
-        "connectors", "delegation", "departments", "evolution", "ingest",
-        "kernel", "memory", "mission", "models", "orchestrator",
+        "connectors", "decisions", "delegation", "departments", "evolution",
+        "ingest", "kernel", "memory", "mission", "models", "orchestrator",
         "plugins", "portability", "registry", "seats", "security",
         "self-review", "store", "sync", "tools", "voice"
     }

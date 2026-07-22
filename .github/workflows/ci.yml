@@ -41,6 +41,31 @@ jobs:
       - name: Verify Bindings Synchronization
         run: node infrastructure/scripts/check-bindings-drift.js
 
+      - name: Verify Architectural Invariants
+        run: node infrastructure/scripts/verify-all-invariants.js
+
+      - name: Run Permanent Enforcement Gates (Python)
+        run: |
+          python3 infrastructure/ci/gates/scope_freeze.py
+          python3 infrastructure/ci/gates/evo1_calibration_bounded.py
+          python3 infrastructure/ci/gates/evo2_charter_eval_gated.py
+          python3 infrastructure/ci/gates/evo3_compilation_propose_only.py
+          python3 infrastructure/ci/gates/evo4_self_review_no_enact.py
+          python3 infrastructure/ci/gates/escalation_coverage.py
+          python3 infrastructure/ci/gates/locality_egress.py
+          python3 infrastructure/ci/gates/audit_coverage_gate.py
+          python3 infrastructure/ci/gates/build_gate.py
+          python3 infrastructure/ci/gates/chaos_gate.py
+          python3 infrastructure/ci/gates/domain_purity_gate.py
+          python3 infrastructure/ci/gates/evaluation_sets_gate.py
+          python3 infrastructure/ci/gates/generated_bindings_gate.py
+          python3 infrastructure/ci/gates/supply_chain_gate.py
+          python3 infrastructure/ci/check_dependency_direction.py .
+          python3 infrastructure/ci/five_tool_check.py
+          python3 infrastructure/ci/guard_corpus.py
+          python3 infrastructure/ci/kernel_neutrality.py
+          python3 infrastructure/ci/replay_gate.py
+
   matrix-test:
     name: Cross-Platform Test Matrix (${{ matrix.os }})
     needs: lint-and-audit

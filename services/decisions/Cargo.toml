@@ -1,5 +1,5 @@
 [package]
-name = "sidra-plugins"
+name = "sidra-decisions"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -7,15 +7,9 @@ license.workspace = true
 
 [dependencies]
 sidra-domain = { path = "../../packages/domain" }
-sidra-store = { path = "../store" }
-sidra-security = { path = "../security" }
-sidra-plugin-sdk = { path = "../../packages/plugin-sdk" }
 serde = { workspace = true }
 serde_json = { workspace = true }
-semver = "1.0"
-thiserror = { workspace = true }
 ulid = { workspace = true }
-wasmi = "0.31"
-
-[dev-dependencies]
-tempfile = "3.8"
+thiserror = { workspace = true }
+rusqlite = { workspace = true }
+chrono = { workspace = true }
