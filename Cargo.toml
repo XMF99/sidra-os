@@ -21,6 +21,7 @@ members = [
     "services/voice",
     "services/artifacts-exec",
     "services/seats",
+    "services/delegation",
 ]
 
 [workspace.package]

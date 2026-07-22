@@ -1,6 +1,6 @@
 # ADR-0061 — A delegation cannot exceed the delegator's Fence, and is time-boxed and logged
 
-**Status:** Proposed · **Date:** 3.0 "Chambers" design phase · **Supersedes:** —
+**Status:** Accepted · **Date:** 3.0 "Chambers" design phase · **Supersedes:** —
 
 ## Context
 

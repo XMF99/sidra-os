@@ -1,0 +1,21 @@
+[package]
+name = "sidra-delegation"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+sidra-domain = { path = "../../packages/domain" }
+sidra-security = { path = "../security" }
+sidra-store = { path = "../store" }
+sidra-seats = { path = "../seats" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+ulid = "1.1"
+thiserror = "1.0"
+
+[lints]
+workspace = true

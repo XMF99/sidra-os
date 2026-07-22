@@ -1,6 +1,6 @@
 # ADR-0060 — A Seat cannot approve its own Approval Request, and the refusal is structural
 
-**Status:** Proposed · **Date:** 3.0 "Chambers" design phase · **Supersedes:** —
+**Status:** Accepted · **Date:** 3.0 "Chambers" design phase · **Supersedes:** —
 
 ## Context
 
