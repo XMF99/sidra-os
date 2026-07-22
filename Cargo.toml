@@ -15,6 +15,7 @@ members = [
     "services/mission",
     "services/connectors",
     "services/departments",
+    "services/registry",
 ]
 
 [workspace.package]

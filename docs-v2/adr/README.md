@@ -29,6 +29,8 @@ behaviour needs a record.
 | [0040](0040-implicit-default-department-as-migration-bridge.md) | The implicit default department as the migration bridge | Accepted | — |
 | [0041](0041-replay-equivalence-as-the-substrate-exit-gate.md) | Replay equivalence as the substrate's exit gate | Accepted | — |
 | [0042](0042-firm-wide-veto-enforced-as-a-blocking-guard-at-the-choke-point.md) | A firm-wide veto is enforced as a non-downgradable blocking Guard at the choke point | Accepted | — |
+| [0043](0043-exchange-contract-resolution.md) | Exchange contract resolution is deterministic, and ambiguity is refused | Accepted | — |
+| [0044](0044-three-department-conformance-set.md) | The exit-criterion conformance set is Backend, Cybersecurity, and Software Engineering | Accepted | — |
 
 ## Format
 
