@@ -57,6 +57,8 @@ behaviour needs a record.
 | [0068](0068-firm-templates-distribute-through-marketplace-install-grants-nothing.md) | Firm Templates distribute through the existing Marketplace trust chain, and installation grants nothing | Accepted | — |
 | [0076](0076-self-review-proposes-never-enacts.md) | The self-review proposes and never enacts; structural change remains a Principal Decision | Accepted | — |
 | [0077](0077-absorbability-test-is-computed-over-m26-metrics.md) | The absorbability test is Principle 13's test computed over M26 measured metrics, never an opinion | Accepted | — |
+| [0078](0078-the-4.0-release-gate-is-a-proof-obligation-not-a-date.md) | The 4.0 release gate is a proof obligation, not a date | Accepted | — |
+| [0079](0079-every-evolution-path-is-a-permanent-ci-gate.md) | Every evolution path is a permanent CI gate proving no escalation without a Principal Decision | Accepted | — |
 
 ## Format
 
