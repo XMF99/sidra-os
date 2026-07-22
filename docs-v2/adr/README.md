@@ -32,6 +32,9 @@ behaviour needs a record.
 | [0043](0043-exchange-contract-resolution.md) | Exchange contract resolution is deterministic, and ambiguity is refused | Accepted | — |
 | [0044](0044-three-department-conformance-set.md) | The exit-criterion conformance set is Backend, Cybersecurity, and Software Engineering | Accepted | — |
 | [0045](0045-marketplace-is-distribution-only.md) | The Marketplace is distribution-only; it reuses the M13 install path and adds no install or trust mechanism | Accepted | — |
+| [0046](0046-the-concrete-five-connector-set.md) | The concrete five-connector set and their effect-class maps | Accepted | — |
+| [0047](0047-per-connector-offline-degradation-contract.md) | Per-connector offline degradation contract | Accepted | — |
+| [0048](0048-object-storage-addressing-and-chunking.md) | Object-storage addressing, streaming, and chunking contract | Accepted | — |
 
 ## Format
 

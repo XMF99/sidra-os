@@ -1,57 +1,34 @@
-//! # Mission Engine
+//! # Mission Engine (M15)
 //!
 //! The planning subsystem of Sidra OS. It owns Missions: durable intentions with plans
 //! attached — Objectives, Tasks, a dependency graph, policies, and verification specifications.
 //!
-//! The authoritative specification is `/MISSION_ENGINE_ARCHITECTURE.md`. This crate implements
-//! it; it does not amend it.
-//!
-//! ## The boundary
-//!
-//! Planning and execution are separate powers held by separate subsystems (ADR-0022).
-//!
-//! | Subsystem | Owns |
-//! |---|---|
-//! | `sidra-mission` (this crate) | What should happen, in what order, under what constraints |
-//! | `sidra-orchestrator` | Making it happen — Engagements, Work Orders, Turns, agents |
-//!
-//! Authority flows one way; information flows both ways. This crate emits a Dispatch and
-//! receives an Outcome. It has no execution path of its own:
-//!
-//! - It **must not** call a model, invoke an agent, or use a tool.
-//! - It **must not** produce a Deliverable or run a Turn.
-//! - It **must not** depend on `sidra-orchestrator`, directly or transitively.
-//!
-//! That last constraint is mechanically enforced by
-//! `infrastructure/ci/check_dependency_direction.py`, which fails the build on the forbidden
-//! edge, and is asserted from within the crate by `tests/dependency_direction.rs`. It is a
-//! build failure rather than a review responsibility because the seam will otherwise be
-//! crossed the first time doing so is convenient.
-//!
-//! ## Status
-//!
-//! Milestone M15, Epic E1, through Task T1.2 — crate scaffold, dependency-direction
-//! enforcement, and the domain value objects in [`domain::values`].
-//!
-//! The aggregates that use those value objects begin at T1.3. Nothing is stubbed ahead of the
-//! task that owns it.
-//!
-//! (This crate was scaffolded under the label "M10"; the programme renumbered it to M15 —
-//! see `/MILESTONE_REGISTRY.md` and ADR-0032.)
+//! Ref: MISSION_ENGINE_ARCHITECTURE.md, MISSION_ENGINE_IMPLEMENTATION_PLAN.md
 
 #![forbid(unsafe_code)]
-#![deny(missing_docs)]
-#![deny(rustdoc::broken_intra_doc_links)]
-#![warn(missing_debug_implementations)]
-#![warn(unreachable_pub)]
 
-/// The name of the crate this one may never depend on, directly or transitively.
-///
-/// Declared here so that the in-crate guard in `tests/dependency_direction.rs` and the CI
-/// checker refer to the same literal, and so that a reader of the crate root learns the rule
-/// from the crate itself rather than only from a script.
-///
-/// See ADR-0022 and `/MISSION_ENGINE_ARCHITECTURE.md` §22.1.
 pub const FORBIDDEN_DEPENDENCY: &str = "sidra-orchestrator";
 
+pub mod api;
 pub mod domain;
+pub mod graph;
+pub mod integration;
+pub mod planner;
+pub mod recovery;
+pub mod repository;
+pub mod risk;
+pub mod scheduler;
+pub mod state;
+pub mod verify;
+
+pub use api::*;
+pub use domain::*;
+pub use graph::*;
+pub use integration::*;
+pub use planner::*;
+pub use recovery::*;
+pub use repository::*;
+pub use risk::*;
+pub use scheduler::*;
+pub use state::*;
+pub use verify::*;

@@ -1,0 +1,51 @@
+# Linear Issue Tracker Connector Manifest (M17 E3)
+# Ref: CONNECTOR_SUITE_ARCHITECTURE.md §4.2, ADR-0046
+
+id = "conn.issues"
+name = "Linear Issue Tracker"
+version = "1.0.0"
+provider = "Claude-Code-Game-Studios"
+primary_department = "dept.software-engineering"
+grantable_departments = ["dept.product-design"]
+
+[egress]
+allow = ["api.linear.app"]
+
+[auth]
+kind = "api_key"
+
+[[operations]]
+name = "list_issues"
+path = "/graphql"
+method = "POST"
+effect_class = 1 # Declared class 1 though POST!
+
+[[operations]]
+name = "get_issue"
+path = "/graphql"
+method = "POST"
+effect_class = 1
+
+[[operations]]
+name = "create_issue"
+path = "/graphql"
+method = "POST"
+effect_class = 2
+
+[[operations]]
+name = "update_issue"
+path = "/graphql"
+method = "POST"
+effect_class = 2
+
+[[operations]]
+name = "add_comment"
+path = "/graphql"
+method = "POST"
+effect_class = 2
+
+[[operations]]
+name = "delete_issue"
+path = "/graphql"
+method = "POST"
+effect_class = 3 # Always asks

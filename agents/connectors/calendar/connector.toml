@@ -1,0 +1,55 @@
+# Google Calendar Connector Manifest (M17 E4)
+# Ref: CONNECTOR_SUITE_ARCHITECTURE.md §4.3, ADR-0046
+
+id = "conn.calendar"
+name = "Google Calendar"
+version = "1.0.0"
+provider = "Claude-Code-Game-Studios"
+primary_department = "dept.sales"
+grantable_departments = ["dept.customer-success"]
+
+[egress]
+allow = ["www.googleapis.com", "oauth2.googleapis.com", "accounts.google.com"]
+
+[auth]
+kind = "oauth2"
+authorize_url = "https://accounts.google.com/o/oauth2/v2/auth"
+token_url = "https://oauth2.googleapis.com/token"
+scopes = ["https://www.googleapis.com/auth/calendar.events"]
+pkce = true
+
+[[operations]]
+name = "list_events"
+path = "/calendar/v3/calendars/primary/events"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "get_event"
+path = "/calendar/v3/calendars/primary/events/{eventId}"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "create_event"
+path = "/calendar/v3/calendars/primary/events"
+method = "POST"
+effect_class = 2
+
+[[operations]]
+name = "update_event"
+path = "/calendar/v3/calendars/primary/events/{eventId}"
+method = "PUT"
+effect_class = 2
+
+[[operations]]
+name = "cancel_event"
+path = "/calendar/v3/calendars/primary/events/{eventId}"
+method = "DELETE"
+effect_class = 2
+
+[[operations]]
+name = "send_invitation"
+path = "/calendar/v3/calendars/primary/events/{eventId}/sendUpdates"
+method = "POST"
+effect_class = 3 # Always asks (external invitation)

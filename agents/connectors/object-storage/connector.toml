@@ -1,0 +1,49 @@
+# S3-Compatible Object Storage Connector Manifest (M17 E6)
+# Ref: CONNECTOR_SUITE_ARCHITECTURE.md §4.5, ADR-0046, ADR-0048
+
+id = "conn.object-storage"
+name = "S3 Object Storage"
+version = "1.0.0"
+provider = "Claude-Code-Game-Studios"
+primary_department = "dept.data-engineering"
+grantable_departments = ["dept.infrastructure", "dept.cloud"]
+
+[egress]
+allow = ["s3.amazonaws.com"] # Single declared host path-style (ADR-0048)
+
+[auth]
+kind = "api_key" # Kernel holds AWS key & secret, signs SigV4 (ADR-0034, ADR-0048)
+
+[streaming]
+max_chunk_size = 8388608 # 8 MiB bounded chunks
+multipart_abort_on_failure = true
+
+[[operations]]
+name = "list_objects"
+path = "/{bucket}"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "get_object"
+path = "/{bucket}/{key}"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "head_object"
+path = "/{bucket}/{key}"
+method = "HEAD"
+effect_class = 1
+
+[[operations]]
+name = "put_object"
+path = "/{bucket}/{key}"
+method = "PUT"
+effect_class = 2
+
+[[operations]]
+name = "delete_object"
+path = "/{bucket}/{key}"
+method = "DELETE"
+effect_class = 3 # Always asks

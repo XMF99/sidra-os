@@ -1,0 +1,67 @@
+# Git / GitHub Source Control Connector Manifest (M17 E2)
+# Ref: CONNECTOR_SUITE_ARCHITECTURE.md §4.1, ADR-0046
+
+id = "conn.git"
+name = "GitHub Source Control"
+version = "1.0.0"
+provider = "Claude-Code-Game-Studios"
+primary_department = "dept.software-engineering"
+grantable_departments = ["dept.backend", "dept.frontend", "dept.mobile"]
+
+[egress]
+allow = ["api.github.com", "github.com"]
+
+[auth]
+kind = "oauth2"
+authorize_url = "https://github.com/login/oauth/authorize"
+token_url = "https://github.com/login/oauth/access_token"
+scopes = ["repo"]
+pkce = true
+
+[[operations]]
+name = "list_repositories"
+path = "/user/repos"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "get_file"
+path = "/repos/{owner}/{repo}/contents/{path}"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "list_commits"
+path = "/repos/{owner}/{repo}/commits"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "list_pull_requests"
+path = "/repos/{owner}/{repo}/pulls"
+method = "GET"
+effect_class = 1
+
+[[operations]]
+name = "open_pull_request"
+path = "/repos/{owner}/{repo}/pulls"
+method = "POST"
+effect_class = 2
+
+[[operations]]
+name = "comment_on_pull_request"
+path = "/repos/{owner}/{repo}/issues/{issue_number}/comments"
+method = "POST"
+effect_class = 2
+
+[[operations]]
+name = "merge_pull_request"
+path = "/repos/{owner}/{repo}/pulls/{pull_number}/merge"
+method = "PUT"
+effect_class = 3 # Always asks
+
+[[operations]]
+name = "delete_branch"
+path = "/repos/{owner}/{repo}/git/refs/heads/{ref}"
+method = "DELETE"
+effect_class = 3 # Always asks

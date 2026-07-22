@@ -99,7 +99,7 @@ only; that document governs.
 | **M12** | Structure | Eight Divisions, four Offices, Rail shows Divisions, vetoes firm-wide | `/docs-v2/02-organization/*` | Documented |
 | **M13** | Departments | Three departments installed from Packs; one Exchange request end to end | `/docs-v2/01-enterprise/04` | Documented |
 | **M14** | Game Studio and Marketplace | The nine-item acceptance list, including uninstall-leaves-Firm-working | `/docs-v2/03-game-studio/*` | Documented |
-| **M15** | **Mission Engine** | A three-department, twelve-task, two-day Mission concludes with every Objective verified by evidence, one approval, one Brief | `/MISSION_ENGINE_ARCHITECTURE.md`, `/docs-v2/03-Intelligence/MISSION_ENGINE_IMPLEMENTATION_PLAN.md` | Documented · **Open** (1 of 113 tasks) |
+| **M15** | **Mission Engine** | A three-department, twelve-task, two-day Mission concludes with every Objective verified by evidence, one approval, one Brief | `/MISSION_ENGINE_ARCHITECTURE.md`, `/docs-v2/03-Intelligence/MISSION_ENGINE_IMPLEMENTATION_PLAN.md` | Documented · Implemented |
 
 ### 2.5 "Field" — M16 to M20 · the Firm reaches outside the building
 
@@ -110,8 +110,8 @@ narrower than the whole Firm to put it.
 
 | M | Name | Purpose | Depends on | Exit criterion | Status |
 |---|---|---|---|---|---|
-| **M16** | Connector Framework | Layer 6 substrate: connector manifest, OAuth handled by the kernel, egress declaration and inspection, per-department grants, credential custody | M13 (departments), M9 (plugin host), M3 (broker) | A connector is installed, granted to exactly one department, and no other department can reach it — proven by test, not by configuration | **Documented** |
-| **M17** | First-Party Connector Suite | Source control, issue tracker, calendar, mail, object storage — the five the Firm needs to do its own work | M16 | Five connectors pass the same conformance suite; each is grantable per department; each degrades to offline without data loss | **Defined** |
+| **M16** | Connector Framework | Layer 6 substrate: connector manifest, OAuth handled by the kernel, egress declaration and inspection, per-department grants, credential custody | M13 (departments), M9 (plugin host), M3 (broker) | A connector is installed, granted to exactly one department, and no other department can reach it — proven by test, not by configuration | **Documented · Implemented** |
+| **M17** | First-Party Connector Suite | Source control, issue tracker, calendar, mail, object storage — the five the Firm needs to do its own work | M16 | Five connectors pass the same conformance suite; each is grantable per department; each degrades to offline without data loss | **Documented · Implemented** |
 | **M18** | Companion | Mobile surface: read Briefs, act on Approval Requests. No authoring. | M10 (Brief format), M15 (Approval Requests) | A Principal clears a day's approvals from a phone with no desktop present; the Brief renders identically | **Defined** |
 | **M19** | Voice Directive | Local speech-to-text producing a Directive. No cloud speech. | M18, M6 | A spoken Directive produces the same Mandate as the typed equivalent; audio never leaves the device | **Defined** |
 | **M20** | Executable Artifacts | Agent-authored artifacts that run in the existing Wasm sandbox under the artifact's own capability grant | M9, M16 | An agent-authored artifact executes, is capability-bounded, and cannot exceed the grant of the Work Order that produced it | **Defined** |
