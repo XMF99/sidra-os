@@ -24,6 +24,7 @@ members = [
     "services/delegation",
     "apps/kernel-server",
     "packages/transport",
+    "services/sync",
 ]
 
 [workspace.package]
