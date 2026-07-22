@@ -1,6 +1,6 @@
 # ADR-0059 — Per-Seat working memory is an isolated namespace, default-deny at the human layer
 
-**Status:** Proposed · **Date:** M21 architecture (3.0 "Chambers") · **Extends:** memory architecture §2, §7; layer model §3
+**Status:** Accepted · **Date:** M21 architecture (3.0 "Chambers") · **Extends:** memory architecture §2, §7; layer model §3
 
 ## Context
 

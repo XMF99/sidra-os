@@ -1,6 +1,6 @@
 # ADR-0057 — A Seat is a first-class human identity, keyed on the existing actor field
 
-**Status:** Proposed · **Date:** M21 architecture (3.0 "Chambers") · **Realizes:** ADR-0021
+**Status:** Accepted · **Date:** M21 architecture (3.0 "Chambers") · **Realizes:** ADR-0021
 
 ## Context
 

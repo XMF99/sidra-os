@@ -1,6 +1,6 @@
 # ADR-0058 — Per-Seat Fence and budget nest under the firm ceilings, enforced by the one Broker
 
-**Status:** Proposed · **Date:** M21 architecture (3.0 "Chambers") · **Extends:** ADR-0020, security model §4
+**Status:** Accepted · **Date:** M21 architecture (3.0 "Chambers") · **Extends:** ADR-0020, security model §4
 
 ## Context
 
