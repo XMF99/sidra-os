@@ -1,0 +1,6 @@
+# Lyra Executive Charter (Game Studio Division Executive)
+agent_id = "agent.studio"
+name = "Lyra"
+role = "Game Studio Division Executive"
+division = "div_game_studio"
+tools = ["retrieve", "delegate", "convene", "decide", "report"] # Exactly 5 tools per ADR-0004

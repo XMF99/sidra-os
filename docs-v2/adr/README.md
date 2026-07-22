@@ -26,6 +26,9 @@ behaviour needs a record.
 | [0037](0037-oauth-is-a-kernel-capability.md) | OAuth authorization is a kernel capability, not a connector responsibility | Accepted | — |
 | [0038](0038-release-gate-is-a-proof-obligation-not-a-date.md) | The 1.0 release gate is a proof obligation, not a date | Accepted | — |
 | [0039](0039-hardening-adds-no-authoritative-tables.md) | Hardening adds no authoritative tables; release bookkeeping is a projection | Accepted | — |
+| [0040](0040-implicit-default-department-as-migration-bridge.md) | The implicit default department as the migration bridge | Accepted | — |
+| [0041](0041-replay-equivalence-as-the-substrate-exit-gate.md) | Replay equivalence as the substrate's exit gate | Accepted | — |
+| [0042](0042-firm-wide-veto-enforced-as-a-blocking-guard-at-the-choke-point.md) | A firm-wide veto is enforced as a non-downgradable blocking Guard at the choke point | Accepted | — |
 
 ## Format
 
