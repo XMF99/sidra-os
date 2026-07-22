@@ -1,0 +1,35 @@
+# Game Studio Department Pack Manifest (dept.game-development)
+# Ref: GAME_STUDIO_AND_MARKETPLACE_ARCHITECTURE.md §4, ADR-0018, ADR-0019
+
+id = "dept.game-development"
+name = "Game Development Studio"
+version = "1.0.0"
+division_id = "div_game_studio"
+provides = ["capability.game-design", "capability.vertical-slice-build"]
+requires = ["capability.code-review", "capability.security-review"]
+
+[capabilities]
+required = ["capability.game-design", "capability.vertical-slice-build"]
+optional = ["capability.3d-rendering-preview"]
+forbidden = ["capability.direct-wallet-charge"]
+
+[review]
+default_intensity = "standard" # ADR-0018 default
+
+[budget]
+sub_ceiling_share = 0.20
+
+[filesystem]
+scope_prefix = "dept.game-development.*"
+
+[[roles]]
+archetype_id = "archetype.game-director"
+name = "Game Director"
+policy = "eager"
+capabilities = ["capability.game-design"]
+
+[[roles]]
+archetype_id = "archetype.lead-programmer"
+name = "Lead Programmer"
+policy = "eager"
+capabilities = ["capability.vertical-slice-build"]
