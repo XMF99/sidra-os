@@ -112,9 +112,9 @@ narrower than the whole Firm to put it.
 |---|---|---|---|---|---|
 | **M16** | Connector Framework | Layer 6 substrate: connector manifest, OAuth handled by the kernel, egress declaration and inspection, per-department grants, credential custody | M13 (departments), M9 (plugin host), M3 (broker) | A connector is installed, granted to exactly one department, and no other department can reach it — proven by test, not by configuration | **Documented · Implemented** |
 | **M17** | First-Party Connector Suite | Source control, issue tracker, calendar, mail, object storage — the five the Firm needs to do its own work | M16 | Five connectors pass the same conformance suite; each is grantable per department; each degrades to offline without data loss | **Documented · Implemented** |
-| **M18** | Companion | Mobile surface: read Briefs, act on Approval Requests. No authoring. | M10 (Brief format), M15 (Approval Requests) | A Principal clears a day's approvals from a phone with no desktop present; the Brief renders identically | **Defined** |
-| **M19** | Voice Directive | Local speech-to-text producing a Directive. No cloud speech. | M18, M6 | A spoken Directive produces the same Mandate as the typed equivalent; audio never leaves the device | **Defined** |
-| **M20** | Executable Artifacts | Agent-authored artifacts that run in the existing Wasm sandbox under the artifact's own capability grant | M9, M16 | An agent-authored artifact executes, is capability-bounded, and cannot exceed the grant of the Work Order that produced it | **Defined** |
+| **M18** | Companion | Mobile surface: read Briefs, act on Approval Requests. No authoring. | M10 (Brief format), M15 (Approval Requests) | A Principal clears a day's approvals from a phone with no desktop present; the Brief renders identically | **Documented · Implemented** |
+| **M19** | Voice Directive | Local speech-to-text producing a Directive. No cloud speech. | M18, M6 | A spoken Directive produces the same Mandate as the typed equivalent; audio never leaves the device | **Documented · Implemented** |
+| **M20** | Executable Artifacts | Agent-authored artifacts that run in the existing Wasm sandbox under the artifact's own capability grant | M9, M16 | An agent-authored artifact executes, is capability-bounded, and cannot exceed the grant of the Work Order that produced it | **Documented · Implemented** |
 
 ### 3.0 "Chambers" — M21 to M25 · the Firm admits colleagues
 
@@ -123,11 +123,11 @@ ships. The audit chain does not need rewriting, which is the entire payoff of th
 
 | M | Name | Purpose | Depends on | Exit criterion | Status |
 |---|---|---|---|---|---|
-| **M21** | Seats and Identity | Multiple Seats: creation, per-Seat Fences, budgets, working memory, and the actor field the chain already carries | M2 (chain), ADR-0021 | A second Seat is created; every event distinguishes the two; no historical event is rewritten | **Defined** |
-| **M22** | Delegation and Separation of Duties | Principle 5 at the human layer: one Seat may not approve its own request; delegation between Seats; scoped authority | M21 | A Seat's own Approval Request cannot be self-approved; the refusal is structural, not advisory | **Defined** |
-| **M23** | Kernel Extraction | The 3.0 topology: a subset of `services/` runs as a hosted process with a binary under `apps/` — the extraction ADR-0011 was designed to make possible | M11, M21 | The kernel runs headless; the desktop app becomes one client; **no file moved, no import rewritten** | **Defined** |
-| **M24** | Sync and Conflict Resolution | Multi-device Vault convergence with the event log as the merge substrate | M23 | Two devices diverge offline and converge with no lost event and no silent overwrite; conflicts surface as Decisions | **Defined** |
-| **M25** | Firm Templates and Portability | Export an org chart, charter set, Pack selection and Canon as a distributable Firm Template | M14 (Marketplace), M21 | A Firm Template installs into an empty Vault and reproduces the source Firm's structure without its data | **Defined** |
+| **M21** | Seats and Identity | Multiple Seats: creation, per-Seat Fences, budgets, working memory, and the actor field the chain already carries | M2 (chain), ADR-0021 | A second Seat is created; every event distinguishes the two; no historical event is rewritten | **Documented · Implemented** |
+| **M22** | Delegation and Separation of Duties | Principle 5 at the human layer: one Seat may not approve its own request; delegation between Seats; scoped authority | M21 | A Seat's own Approval Request cannot be self-approved; the refusal is structural, not advisory | **Documented · Implemented** |
+| **M23** | Kernel Extraction | The 3.0 topology: a subset of `services/` runs as a hosted process with a binary under `apps/` — the extraction ADR-0011 was designed to make possible | M11, M21 | The kernel runs headless; the desktop app becomes one client; **no file moved, no import rewritten** | **Documented · Implemented** |
+| **M24** | Sync and Conflict Resolution | Multi-device Vault convergence with the event log as the merge substrate | M23 | Two devices diverge offline and converge with no lost event and no silent overwrite; conflicts surface as Decisions | **Documented · Implemented** |
+| **M25** | Firm Templates and Portability | Export an org chart, charter set, Pack selection and Canon as a distributable Firm Template | M14 (Marketplace), M21 | A Firm Template installs into an empty Vault and reproduces the source Firm's structure without its data | **Documented · Implemented** |
 
 ### 4.0 "Continuum" — M26 to M30 · the Firm improves itself
 
