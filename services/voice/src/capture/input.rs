@@ -1,18 +1,15 @@
-use crate::domain::values::CaptureId;
+//! M19 Voice Directive — Kernel Audio Capture Session
+//! Ref: VOICE_DIRECTIVE_ARCHITECTURE.md §6.1, §5, ADR-0052
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum CaptureState {
-    Idle,
-    Capturing,
-    Transcribing,
-    Draft,
-    Discarded,
-}
+use crate::domain::values::CaptureId;
+use super::state::CaptureState;
 
 pub struct AudioCaptureSession {
     pub capture_id: CaptureId,
     pub state: CaptureState,
     pub pcm_ring_buffer: Vec<u8>,
+    pub max_duration_seconds: u32,
+    pub bytes_captured: usize,
 }
 
 impl AudioCaptureSession {
@@ -21,28 +18,41 @@ impl AudioCaptureSession {
             capture_id,
             state: CaptureState::Capturing,
             pcm_ring_buffer: Vec::new(),
+            max_duration_seconds: 120, // 2-minute max duration bound (F6)
+            bytes_captured: 0,
         }
     }
 
     pub fn push_frames(&mut self, frames: &[u8]) {
         if self.state == CaptureState::Capturing {
             self.pcm_ring_buffer.extend_from_slice(frames);
+            self.bytes_captured += frames.len();
         }
     }
 
-    pub fn stop(&mut self) {
-        if self.state == CaptureState::Capturing {
-            self.state = CaptureState::Transcribing;
+    pub fn stop(&mut self) -> Result<(), String> {
+        if self.state != CaptureState::Capturing {
+            return Err(format!("Cannot stop capture session in state {:?}", self.state));
         }
+        self.state = CaptureState::Transcribing;
+        Ok(())
     }
 
-    pub fn enter_draft_and_release_buffer(&mut self) {
+    /// Enters Draft state and immediately releases in-memory PCM audio buffer.
+    /// Audio buffer MUST NOT survive past Transcribing into Draft (ADR-0052 invariant).
+    pub fn enter_draft_and_release_buffer(&mut self) -> Result<(), String> {
+        if self.state != CaptureState::Transcribing {
+            return Err(format!("Cannot enter draft from state {:?}", self.state));
+        }
         self.state = CaptureState::Draft;
-        self.pcm_ring_buffer.clear(); // Releases audio buffer on entry to Draft (ADR-0052 invariant)
+        self.pcm_ring_buffer.clear();
+        self.pcm_ring_buffer.shrink_to_fit();
+        Ok(())
     }
 
     pub fn cancel(&mut self) {
         self.state = CaptureState::Discarded;
         self.pcm_ring_buffer.clear();
+        self.pcm_ring_buffer.shrink_to_fit();
     }
 }
