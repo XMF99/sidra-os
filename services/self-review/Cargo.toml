@@ -1,0 +1,17 @@
+[package]
+name = "sidra-self-review"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+sidra-domain = { path = "../../packages/domain" }
+sidra-store = { path = "../store" }
+sidra-departments = { path = "../departments" }
+sidra-calibration = { path = "../calibration" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+ulid = "1.0"
+thiserror = "1.0"
+rusqlite = "0.31"

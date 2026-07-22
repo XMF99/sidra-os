@@ -29,6 +29,7 @@ members = [
     "services/calibration",
     "services/evolution",
     "services/compilation",
+    "services/self-review",
 ]
 
 [workspace.package]
