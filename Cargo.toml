@@ -26,6 +26,7 @@ members = [
     "packages/transport",
     "services/sync",
     "services/portability",
+    "services/calibration",
 ]
 
 [workspace.package]
