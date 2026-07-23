@@ -11,9 +11,6 @@ import { HashRouter } from './routes/router';
 import { AppShell } from './app/AppShell';
 import './design/tokens/tokens.css';
 
-// Legacy rooms import for migration bridge
-import { DashboardRoom } from './rooms/DashboardRoom';
-
 export const App: FC = () => {
   return (
     <TauriBridgeProvider>
@@ -24,11 +21,9 @@ export const App: FC = () => {
               <ShortcutRegistryProvider>
                 <NotificationProvider>
                   <AppErrorBoundary>
-                    <HashRouter fallbackComponent={
-                      <AppShell>
-                        <DashboardRoom />
-                      </AppShell>
-                    } />
+                    <AppShell>
+                      <HashRouter />
+                    </AppShell>
                   </AppErrorBoundary>
                 </NotificationProvider>
               </ShortcutRegistryProvider>

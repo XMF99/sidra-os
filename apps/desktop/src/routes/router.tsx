@@ -2,6 +2,7 @@ import { FC, useEffect, useState, ReactNode } from 'react';
 import { RouteErrorBoundary } from '../app/boundaries/RouteErrorBoundary';
 import { NotFound } from '../pages/NotFound';
 import { ComponentGallery } from '../pages/dev/ComponentGallery';
+import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { ROUTE_TABLE } from './routeTable';
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
   fallbackComponent?: ReactNode;
 }
 
-export const HashRouter: FC<Props> = ({ fallbackComponent }) => {
+export const HashRouter: FC<Props> = () => {
   const [currentHash, setCurrentHash] = useState<string>(
     typeof window !== 'undefined' ? window.location.hash || '#/' : '#/'
   );
@@ -35,6 +36,16 @@ export const HashRouter: FC<Props> = ({ fallbackComponent }) => {
     );
   }
 
+  if (rawPath === '/' || rawPath === '') {
+    return (
+      <RouteErrorBoundary>
+        <div data-current-hash={currentHash} style={{ height: '100%', width: '100%' }}>
+          <DashboardPage />
+        </div>
+      </RouteErrorBoundary>
+    );
+  }
+
   // Validate current hash against known route table paths
   const isValidRoute = () => {
     const rawPath = currentHash.replace(/^#/, '').split('?')[0] || '/';
@@ -52,7 +63,7 @@ export const HashRouter: FC<Props> = ({ fallbackComponent }) => {
   return (
     <RouteErrorBoundary>
       <div data-current-hash={currentHash} style={{ height: '100%', width: '100%' }}>
-        {matched ? fallbackComponent : <NotFound />}
+        {matched ? <DashboardPage /> : <NotFound />}
       </div>
     </RouteErrorBoundary>
   );
