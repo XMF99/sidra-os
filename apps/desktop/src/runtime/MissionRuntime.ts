@@ -2,6 +2,7 @@ import { ExecutionContext, MissionRunRecord, MissionState, RuntimeEvent } from '
 import { StateMachine } from './StateMachine';
 import { ExecutionQueue } from './ExecutionQueue';
 import { Scheduler } from './Scheduler';
+import { AgentRuntime } from '../agent-runtime/AgentRuntime';
 
 export type EventListener = (event: RuntimeEvent) => void;
 
@@ -98,11 +99,19 @@ export class MissionRuntime {
     return this.startMission(nextItem.missionId);
   }
 
-  public startMission(missionId: string): MissionRunRecord {
+  public startMission(missionId: string, requiredCapability = 'analysis'): MissionRunRecord {
     const record = this.getRecordOrThrow(missionId);
     this.transitionState(missionId, 'running');
     record.progressPercent = 10;
-    this.emitEvent('MissionStarted', missionId, record.context.correlationId);
+
+    // Trigger capability matching in AgentRuntime
+    const agentRuntime = AgentRuntime.getInstance();
+    const assignedAgent = agentRuntime.assignMission(missionId, requiredCapability);
+
+    this.emitEvent('MissionStarted', missionId, record.context.correlationId, {
+      assignedAgentId: assignedAgent?.id,
+      assignedAgentName: assignedAgent?.name,
+    });
     return record;
   }
 
