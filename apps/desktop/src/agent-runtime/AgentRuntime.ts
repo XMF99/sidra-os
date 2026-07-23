@@ -3,6 +3,7 @@ import { AgentStateMachine } from './AgentStateMachine';
 import { AgentRegistry } from './AgentRegistry';
 import { AgentMailbox } from './AgentMailbox';
 import { HeartbeatMonitor } from './HeartbeatMonitor';
+import { ModelGateway } from '../model-gateway/ModelGateway';
 
 export type AgentEventListener = (event: AgentRuntimeEvent) => void;
 
@@ -184,6 +185,23 @@ export class AgentRuntime {
   private transitionState(agent: AgentModel, targetState: AgentState): void {
     AgentStateMachine.validateTransition(agent.state, targetState);
     agent.state = targetState;
+  }
+
+  public async executeModelTask(agentId: string, objective: string, categoryHint = 'analysis') {
+    const agent = this.getAgentOrThrow(agentId);
+    const gateway = ModelGateway.getInstance();
+
+    const response = await gateway.complete({
+      agentId,
+      missionId: agent.currentMissionId,
+      categoryHint,
+      messages: [
+        { role: 'system', content: `Agent ${agent.name} (${agent.role})` },
+        { role: 'user', content: objective },
+      ],
+    });
+
+    return response;
   }
 
   public getRegistry(): AgentRegistry {
