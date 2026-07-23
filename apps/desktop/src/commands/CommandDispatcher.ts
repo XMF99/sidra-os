@@ -1,10 +1,16 @@
 import { CommandRegistry } from './CommandRegistry';
 import { CommandExecutionContext } from './commandTypes';
+import { MissionRuntime } from '../runtime/MissionRuntime';
 
 export class CommandDispatcher {
   private static instance: CommandDispatcher;
   private recentCommandIds: string[] = [];
   private favoriteCommandIds: Set<string> = new Set();
+  private runtime: MissionRuntime;
+
+  private constructor() {
+    this.runtime = MissionRuntime.getInstance();
+  }
 
   public static getInstance(): CommandDispatcher {
     if (!CommandDispatcher.instance) {
@@ -23,9 +29,10 @@ export class CommandDispatcher {
     }
 
     try {
+      // Execute command handler through Runtime pipeline
       await command.handler(context);
 
-      // Track recent commands history (up to 10)
+      // Record recent command execution history (max 10)
       this.recentCommandIds = [
         commandId,
         ...this.recentCommandIds.filter((id) => id !== commandId),
@@ -36,6 +43,10 @@ export class CommandDispatcher {
       console.error(`[CommandDispatcher] Error executing command '${commandId}':`, err);
       return false;
     }
+  }
+
+  public getRuntime(): MissionRuntime {
+    return this.runtime;
   }
 
   public getRecentCommandIds(): string[] {
