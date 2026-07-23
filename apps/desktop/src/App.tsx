@@ -1,54 +1,42 @@
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Rail, RoomId } from '@sidra/ui';
+import { FC } from 'react';
+import { TauriBridgeProvider } from './app/providers/TauriBridgeProvider';
+import { I18nRtlProvider } from './app/providers/I18nRtlProvider';
+import { ThemeProvider } from './app/providers/ThemeProvider';
+import { QueryProvider } from './app/providers/QueryProvider';
+import { PermissionProvider } from './app/providers/PermissionProvider';
+import { ShortcutRegistryProvider } from './app/providers/ShortcutRegistryProvider';
+import { NotificationProvider } from './app/providers/NotificationProvider';
+import { AppErrorBoundary } from './app/boundaries/AppErrorBoundary';
+import { HashRouter } from './routes/router';
+import { AppShell } from './app/AppShell';
+import './design/tokens/tokens.css';
+
+// Legacy rooms import for migration bridge
 import { DashboardRoom } from './rooms/DashboardRoom';
-import { Boardroom } from './rooms/Boardroom';
-import { SeatsRoom } from './rooms/SeatsRoom';
-import { ArtifactsRoom } from './rooms/ArtifactsRoom';
-import { VoiceRoom } from './rooms/VoiceRoom';
-import { EventLogRoom } from './rooms/EventLogRoom';
-import { SystemHealthRoom } from './rooms/SystemHealthRoom';
-import { Department } from './rooms/Department';
-import { Archive } from './rooms/Archive';
-import { Vault } from './rooms/Vault';
-import { Console } from './rooms/Console';
-import { Settings } from './rooms/Settings';
-import { useShellStore } from './state/useShellStore';
-import '@sidra/design/style';
 
-const queryClient = new QueryClient();
-
-export const App: React.FC = () => {
-  const activeRoom = useShellStore((state) => state.activeRoom);
-  const setActiveRoom = useShellStore((state) => state.setActiveRoom);
-
+export const App: FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <div
-        style={{
-          display: 'flex',
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
-          backgroundColor: 'var(--sd-color-surface-base)',
-        }}
-      >
-        <Rail activeRoom={activeRoom} onSelectRoom={(room: RoomId) => setActiveRoom(room)} />
-
-        {activeRoom === 'lobby' && <DashboardRoom />}
-        {activeRoom === 'boardroom' && <Boardroom />}
-        {activeRoom === 'seats' && <SeatsRoom />}
-        {activeRoom === 'artifacts' && <ArtifactsRoom />}
-        {activeRoom === 'voice' && <VoiceRoom />}
-        {activeRoom === 'events' && <EventLogRoom />}
-        {activeRoom === 'health' && <SystemHealthRoom />}
-        {activeRoom === 'department' && <Department />}
-        {activeRoom === 'archive' && <Archive />}
-        {activeRoom === 'vault' && <Vault />}
-        {activeRoom === 'console' && <Console />}
-        {activeRoom === 'settings' && <Settings />}
-      </div>
-    </QueryClientProvider>
+    <TauriBridgeProvider>
+      <I18nRtlProvider>
+        <ThemeProvider>
+          <QueryProvider>
+            <PermissionProvider>
+              <ShortcutRegistryProvider>
+                <NotificationProvider>
+                  <AppErrorBoundary>
+                    <HashRouter fallbackComponent={
+                      <AppShell>
+                        <DashboardRoom />
+                      </AppShell>
+                    } />
+                  </AppErrorBoundary>
+                </NotificationProvider>
+              </ShortcutRegistryProvider>
+            </PermissionProvider>
+          </QueryProvider>
+        </ThemeProvider>
+      </I18nRtlProvider>
+    </TauriBridgeProvider>
   );
 };
 
