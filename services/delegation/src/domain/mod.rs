@@ -6,6 +6,6 @@ pub mod values;
 
 pub use delegation::Delegation;
 pub use events::*;
-pub use resolution::{ApprovalResolution, ApprovalVerdict, AuthoritySource};
+pub use resolution::{ApprovalResolution, ApprovalVerdict, AuthoritySource, CreateResolutionArgs};
 pub use scoped_authority::ScopedAuthority;
 pub use values::{DelegationId, DenyReason, Scope};

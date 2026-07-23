@@ -16,7 +16,9 @@ impl CandidateActivator {
         timestamp: u64,
     ) -> Result<(CandidateActivation, String), String> {
         if principal_actor.starts_with("agent:") || principal_actor.starts_with("archetype:") {
-            return Err("An agent actor cannot activate a workflow candidate (GUIDE §3 item 9)".to_string());
+            return Err(
+                "An agent actor cannot activate a workflow candidate (GUIDE §3 item 9)".to_string(),
+            );
         }
 
         let decision_id = format!("dec_comp_{}", Ulid::new());

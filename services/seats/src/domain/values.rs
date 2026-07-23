@@ -12,7 +12,10 @@ impl SeatId {
     }
 
     pub fn generate() -> Self {
-        Self(format!("seat_{}", ulid::Ulid::new().to_string().to_lowercase()))
+        Self(format!(
+            "seat_{}",
+            ulid::Ulid::new().to_string().to_lowercase()
+        ))
     }
 }
 

@@ -121,7 +121,10 @@ fn narrow_accepts_every_narrowing_amendment() {
             ..Default::default()
         })
         .expect("lower ceiling is narrower");
-    assert_eq!(narrow_ceiling.effect_ceiling(), EffectClass::from_u8(1).unwrap());
+    assert_eq!(
+        narrow_ceiling.effect_ceiling(),
+        EffectClass::from_u8(1).unwrap()
+    );
 
     // 3. Earlier deadline
     let narrow_deadline = c

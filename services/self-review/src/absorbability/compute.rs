@@ -8,7 +8,7 @@ impl AbsorbabilityCalculator {
     pub const CONFIDENCE_FLOOR: f64 = 0.60;
 
     pub fn assess(
-        department_id: &DepartmentId,
+        _department_id: &DepartmentId,
         dept_quality: QualityScore,
         neighbours: &[(DepartmentId, QualityScore)],
         evidence: Vec<EvidenceRef>,

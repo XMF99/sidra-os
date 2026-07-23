@@ -12,7 +12,9 @@ pub fn validate_request_graph(edges: &HashMap<String, Vec<String>>) -> Result<()
 
         for target in neighbors {
             if target == start_node {
-                return Err(format!("Request-graph refusal: self-cycle detected at '{start_node}'"));
+                return Err(format!(
+                    "Request-graph refusal: self-cycle detected at '{start_node}'"
+                ));
             }
             if let Some(second_hop) = edges.get(target) {
                 for next_target in second_hop {

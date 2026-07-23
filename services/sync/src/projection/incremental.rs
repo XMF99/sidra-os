@@ -6,7 +6,10 @@ use std::sync::Mutex;
 pub struct IncrementalProjectionRebuild;
 
 impl IncrementalProjectionRebuild {
-    pub fn rebuild_from_frontier(vault: &Mutex<Vault>, frontier_timestamp: u64) -> Result<usize, String> {
+    pub fn rebuild_from_frontier(
+        vault: &Mutex<Vault>,
+        frontier_timestamp: u64,
+    ) -> Result<usize, String> {
         let vault_guard = vault.lock().map_err(|e| e.to_string())?;
         let conn = vault_guard.connection();
 

@@ -16,16 +16,17 @@ pub enum EdgeKind {
     Barrier,
 }
 
-impl EdgeKind {
-    pub fn from_str(s: &str) -> Self {
-        match s {
+impl std::str::FromStr for EdgeKind {
+    type Err = std::convert::Infallible;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s {
             "artifact" => EdgeKind::Artifact,
             "resource" => EdgeKind::Resource,
             "timing" => EdgeKind::Timing,
             "conditional" => EdgeKind::Conditional,
             "barrier" => EdgeKind::Barrier,
             _ => EdgeKind::Dependency,
-        }
+        })
     }
 }
 

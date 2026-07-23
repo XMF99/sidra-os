@@ -1,5 +1,5 @@
-pub mod trust;
 pub mod submit_seam;
+pub mod trust;
 
-pub use trust::*;
 pub use submit_seam::*;
+pub use trust::*;

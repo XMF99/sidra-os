@@ -1,12 +1,12 @@
 //! Integration tests for sidra-artifacts-exec crate
 //! Verifies AC1–AC13 and ADR-0054/0055/0056 compliance.
 
-use std::collections::BTreeSet;
 use sidra_artifacts_exec::{
-    ArtifactCapabilityGrant, ArtifactConformanceSuite, ArtifactId, ArtifactManifest, ArtifactRunHost,
-    ArtifactValidator, Capability, ExecStatus, ExecutableArtifact, GrantDeriver,
-    MockWorkOrderCapabilityResolver, ModuleHash, WasmLimits,
+    ArtifactConformanceSuite, ArtifactId, ArtifactManifest, ArtifactRunHost, Capability,
+    ExecStatus, ExecutableArtifact, GrantDeriver, MockWorkOrderCapabilityResolver, ModuleHash,
+    WasmLimits,
 };
+use std::collections::BTreeSet;
 
 #[test]
 fn test_exit_criterion_bounding_refusal_ac3() {
@@ -88,16 +88,16 @@ fn test_artifact_execution_in_sandbox() {
     let mut runnable_art = artifact;
     runnable_art.status = ExecStatus::Runnable;
 
-    let run = ArtifactRunHost::execute(
-        &runnable_art,
-        &grant,
-        &wo_grant,
-        &wo_grant,
-        "wo_exec",
-        "principal",
-        b"Sources/sample.csv",
-        1700000000,
-    )
+    let run = ArtifactRunHost::execute(sidra_artifacts_exec::ExecuteArtifactArgs {
+        artifact: &runnable_art,
+        grant: &grant,
+        firm_policy: &wo_grant,
+        session: &wo_grant,
+        invoking_work_order_id: "wo_exec",
+        invoked_by_actor: "principal",
+        args_payload: b"Sources/sample.csv",
+        now: 1700000000,
+    })
     .unwrap();
 
     assert_eq!(run.effects.len(), 1);

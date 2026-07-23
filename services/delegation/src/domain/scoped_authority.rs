@@ -1,10 +1,10 @@
 //! M22 Delegation and Separation of Duties — Scoped Authority View
 //! Ref: DELEGATION_AND_SEPARATION_ARCHITECTURE.md §4.3, ADR-0061
 
-use serde::{Deserialize, Serialize};
-use std::collections::BTreeSet;
-use sidra_seats::{Capability, SeatFence, SeatId};
 use super::delegation::Delegation;
+use serde::{Deserialize, Serialize};
+use sidra_seats::{Capability, SeatFence, SeatId};
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScopedAuthority {

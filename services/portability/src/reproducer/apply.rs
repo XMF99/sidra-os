@@ -1,6 +1,5 @@
 use crate::domain::manifest::FirmTemplate;
 use crate::importer::empty_guard::EmptyVaultGuard;
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -21,7 +20,8 @@ impl FirmTemplateReproducer {
         let conn = vault_guard.connection();
 
         // 2. Transactional reproducing
-        conn.execute_batch("BEGIN TRANSACTION;").map_err(|e| e.to_string())?;
+        conn.execute_batch("BEGIN TRANSACTION;")
+            .map_err(|e| e.to_string())?;
 
         let manifest = &template.manifest;
 

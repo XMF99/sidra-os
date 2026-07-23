@@ -40,9 +40,10 @@ impl FenceManager {
         let normalized_str = normalized.to_string_lossy();
 
         // Check if path starts with any allowed directory
-        let is_allowed = self.fence.allowed_directories.iter().any(|allowed| {
-            normalized_str.starts_with(allowed) || target_path.starts_with(allowed)
-        });
+        let is_allowed =
+            self.fence.allowed_directories.iter().any(|allowed| {
+                normalized_str.starts_with(allowed) || target_path.starts_with(allowed)
+            });
 
         if !is_allowed {
             return Err(SecurityError::PathTraversalDenied {
@@ -60,15 +61,15 @@ impl FenceManager {
             host: raw_url.to_string(),
         })?;
 
-        let host = parsed_url.host_str().ok_or_else(|| SecurityError::EgressDenied {
-            host: raw_url.to_string(),
-        })?;
+        let host = parsed_url
+            .host_str()
+            .ok_or_else(|| SecurityError::EgressDenied {
+                host: raw_url.to_string(),
+            })?;
 
-        let is_approved = self
-            .fence
-            .egress_allowlist
-            .iter()
-            .any(|allowed_domain| host == allowed_domain || host.ends_with(&format!(".{}", allowed_domain)));
+        let is_approved = self.fence.egress_allowlist.iter().any(|allowed_domain| {
+            host == allowed_domain || host.ends_with(&format!(".{}", allowed_domain))
+        });
 
         if !is_approved {
             return Err(SecurityError::EgressDenied {

@@ -5,10 +5,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EffectClass {
-    Class0Pure,          // Pure / local read (Vault/memory/compute)
-    Class1ExternalRead,  // External read via connector
-    Class2LocalWrite,     // Reversible local write (versioned)
-    Class3Irreversible,  // Irreversible / spend / external write (Always asks approval)
+    Class0Pure,         // Pure / local read (Vault/memory/compute)
+    Class1ExternalRead, // External read via connector
+    Class2LocalWrite,   // Reversible local write (versioned)
+    Class3Irreversible, // Irreversible / spend / external write (Always asks approval)
 }
 
 impl EffectClass {

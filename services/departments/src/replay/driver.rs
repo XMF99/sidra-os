@@ -8,6 +8,12 @@ pub struct ReplayDriver {
     pub default_department: Department,
 }
 
+impl Default for ReplayDriver {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ReplayDriver {
     pub fn new() -> Self {
         Self {

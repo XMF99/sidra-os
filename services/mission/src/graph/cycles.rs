@@ -23,10 +23,8 @@ fn dfs_cycle(curr: &str, graph: &TaskGraph, visited: &mut Vec<String>) -> bool {
     }
     visited.push(curr.to_string());
     for edge in &graph.edges {
-        if edge.from_task == curr {
-            if dfs_cycle(&edge.to_task, graph, visited) {
-                return true;
-            }
+        if edge.from_task == curr && dfs_cycle(&edge.to_task, graph, visited) {
+            return true;
         }
     }
     visited.pop();

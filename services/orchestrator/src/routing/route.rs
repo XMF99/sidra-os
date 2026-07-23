@@ -11,10 +11,7 @@ pub struct RouteResult {
     pub depth: u8,
 }
 
-pub fn route_directive(
-    directive_text: &str,
-    target_dept_hint: Option<&str>,
-) -> RouteResult {
+pub fn route_directive(_directive_text: &str, target_dept_hint: Option<&str>) -> RouteResult {
     if let Some(dept) = target_dept_hint {
         RouteResult {
             target_division: format!("div_for_{dept}"),

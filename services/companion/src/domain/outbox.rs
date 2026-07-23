@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::values::{DeviceId, Signature};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ApprovalVerdict {

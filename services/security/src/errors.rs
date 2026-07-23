@@ -26,7 +26,9 @@ pub enum SecurityError {
     #[error("Path Traversal Escape Denied: Attempted path '{path}' escapes allowed directory bounds '{allowed}'")]
     PathTraversalDenied { path: String, allowed: String },
 
-    #[error("Class 3 Human Signature Required: Action '{action}' requires explicit Principal signature")]
+    #[error(
+        "Class 3 Human Signature Required: Action '{action}' requires explicit Principal signature"
+    )]
     Class3SignatureRequired { action: String },
 
     #[error("OS Keychain Error: {0}")]

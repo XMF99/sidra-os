@@ -35,7 +35,11 @@ impl VectorStore {
     }
 
     /// Search top-K nearest chunks by vector cosine similarity
-    pub fn search_vector(&self, query_vector: &[f32], top_k: usize) -> Vec<(usize, MemoryChunk, f32)> {
+    pub fn search_vector(
+        &self,
+        query_vector: &[f32],
+        top_k: usize,
+    ) -> Vec<(usize, MemoryChunk, f32)> {
         let mut scored: Vec<(usize, MemoryChunk, f32)> = self
             .chunks
             .iter()

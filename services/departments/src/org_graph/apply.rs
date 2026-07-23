@@ -2,7 +2,7 @@
 //!
 //! Ref: IMPLEMENTATION_PLAN.md T2.3
 
-use super::manifest::{StructureManifest, validate_structure_manifest};
+use super::manifest::{validate_structure_manifest, StructureManifest};
 use super::store::OrgGraphStore;
 use sidra_domain::structure::*;
 use std::collections::HashSet;
@@ -41,7 +41,10 @@ pub fn apply_structure_manifest(
             off_spec.head_agent_id.clone(),
             scope,
             Precedence::new(off_spec.precedence).map_err(|e| e.to_string())?,
-            off_spec.home_division.as_ref().map(|d| DivisionId(d.clone())),
+            off_spec
+                .home_division
+                .as_ref()
+                .map(|d| DivisionId(d.clone())),
         );
         store.offices.insert(off_spec.id.clone(), off);
     }

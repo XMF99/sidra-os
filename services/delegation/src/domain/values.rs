@@ -2,8 +2,8 @@
 //! Ref: DELEGATION_AND_SEPARATION_ARCHITECTURE.md §4.1, ADR-0060, ADR-0061
 
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeSet;
 use sidra_seats::Capability;
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct DelegationId(pub String);
@@ -14,7 +14,10 @@ impl DelegationId {
     }
 
     pub fn generate() -> Self {
-        Self(format!("del_{}", ulid::Ulid::new().to_string().to_lowercase()))
+        Self(format!(
+            "del_{}",
+            ulid::Ulid::new().to_string().to_lowercase()
+        ))
     }
 }
 
@@ -39,7 +42,11 @@ impl Scope {
         if fence_caps.iter().any(|c| c.0 == "*") {
             return self.clone();
         }
-        let caps = self.capabilities.intersection(fence_caps).cloned().collect();
+        let caps = self
+            .capabilities
+            .intersection(fence_caps)
+            .cloned()
+            .collect();
         Scope { capabilities: caps }
     }
 }

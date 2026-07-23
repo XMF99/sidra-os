@@ -1,6 +1,4 @@
-use crate::envelope::{
-    RequestPayload, ResponsePayload, ResponseStatus, TransportEnvelope, TransportPayload,
-};
+use crate::envelope::{RequestPayload, ResponseStatus, TransportEnvelope, TransportPayload};
 use sidra_orchestrator::Orchestrator;
 use sidra_store::Vault;
 use std::sync::Mutex;
@@ -12,7 +10,7 @@ impl DispatchAdapter {
         envelope: &TransportEnvelope,
         orchestrator: &Mutex<Orchestrator>,
         vault: &Mutex<Vault>,
-        acting_seat_id: &str,
+        _acting_seat_id: &str,
     ) -> TransportEnvelope {
         match &envelope.payload {
             TransportPayload::Request(RequestPayload { goal }) => {

@@ -1,6 +1,5 @@
 use crate::domain::values::{ArchetypeId, EvalSetId, EvalSetVersion};
 use crate::evalset::types::{EvaluationCase, EvaluationSet, ScoringSpec};
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;

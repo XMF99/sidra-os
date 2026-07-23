@@ -29,65 +29,75 @@ pub enum InvocationResult {
 /// 6. Inject credential at egress boundary (ADR-0034 custody)
 /// 7. Dispatch via egress allowlist (ADR-0036 egress)
 /// 8. Transform response
-pub fn invoke_connector(
-    conn: &rusqlite::Connection,
-    agent_id: &str,
-    agent_department: &DepartmentId,
-    connector_id: &ConnectorId,
-    operation_name: &OperationName,
-    params: &HashMap<String, String>,
-    registry: &ConnectorRegistry,
-    custody_store: &CustodyStore,
-    broker: &PermissionBroker,
-) -> Result<InvocationResult, ConnectorError> {
+pub struct InvokeConnectorArgs<'a> {
+    pub conn: &'a rusqlite::Connection,
+    pub agent_id: &'a str,
+    pub agent_department: &'a DepartmentId,
+    pub connector_id: &'a ConnectorId,
+    pub operation_name: &'a OperationName,
+    pub params: &'a HashMap<String, String>,
+    pub registry: &'a ConnectorRegistry,
+    pub custody_store: &'a CustodyStore,
+    pub broker: &'a PermissionBroker,
+}
+
+pub fn invoke_connector(args: InvokeConnectorArgs<'_>) -> Result<InvocationResult, ConnectorError> {
     // Stage 1: Resolve department (passed in agent_department)
 
     // Stage 2: Grant existence check (ADR-0035, Exit Criterion AC2)
     // Refusal is structural BEFORE broker, BEFORE request build, BEFORE network!
-    let grant = registry
+    let grant = args
+        .registry
         .grant_store
-        .get_grant(connector_id, agent_department)
+        .get_grant(args.connector_id, args.agent_department)
         .ok_or_else(|| ConnectorError::NoGrant {
-            connector_id: connector_id.as_str().to_string(),
-            department_id: agent_department.0.clone(),
+            connector_id: args.connector_id.as_str().to_string(),
+            department_id: args.agent_department.0.clone(),
         })?;
 
     // Get manifest
-    let manifest = registry
-        .get_manifest(connector_id)
+    let manifest = args
+        .registry
+        .get_manifest(args.connector_id)
         .ok_or_else(|| ConnectorError::OperationNotFound {
-            connector_id: connector_id.as_str().to_string(),
-            operation_name: operation_name.as_str().to_string(),
+            connector_id: args.connector_id.as_str().to_string(),
+            operation_name: args.operation_name.as_str().to_string(),
         })?;
 
     // Find operation
     let op = manifest
         .operations
         .iter()
-        .find(|o| &o.name == operation_name)
+        .find(|o| &o.name == args.operation_name)
         .ok_or_else(|| ConnectorError::OperationNotFound {
-            connector_id: connector_id.as_str().to_string(),
-            operation_name: operation_name.as_str().to_string(),
+            connector_id: args.connector_id.as_str().to_string(),
+            operation_name: args.operation_name.as_str().to_string(),
         })?;
 
     // Stage 3: Scope check
     let has_scope = grant.scopes.iter().any(|s| {
         s.as_str() == op.capability.as_str()
-            || s.as_str() == &format!("integration:{}:*", connector_id.as_str())
+            || s.as_str() == format!("integration:{}:*", args.connector_id.as_str())
     });
 
     if !has_scope {
         return Err(ConnectorError::GrantError(format!(
             "Grant for department '{}' does not include required scope '{}'",
-            agent_department.0, op.capability
+            args.agent_department.0, op.capability
         )));
     }
 
     // Stage 4: Build request (URL constructed from declared host + path template)
-    let (outbound_req, primary_host) = build_request(&manifest, op, params)?;
+    let (outbound_req, primary_host) = build_request(&manifest, op, args.params)?;
 
     // Stage 5: Permission Broker authorization & effect policy (T7.2)
-    let verdict = route_effect_policy(conn, agent_id, connector_id.as_str(), op, broker)?;
+    let verdict = route_effect_policy(
+        args.conn,
+        args.agent_id,
+        args.connector_id.as_str(),
+        op,
+        args.broker,
+    )?;
     match verdict {
         InvocationVerdict::NeedsApproval(req) => return Ok(InvocationResult::NeedsApproval(req)),
         InvocationVerdict::Fenced(reason) => return Ok(InvocationResult::Fenced(reason)),
@@ -99,7 +109,7 @@ pub fn invoke_connector(
         outbound_req,
         &manifest.auth,
         grant.keychain_ref.as_ref(),
-        custody_store,
+        args.custody_store,
     )?;
 
     // Stage 7: Egress dispatch (ADR-0036)

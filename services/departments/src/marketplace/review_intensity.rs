@@ -25,6 +25,8 @@ pub fn get_required_reviewers(mode: ReviewIntensityMode, effect_class: u8) -> us
 pub fn validate_no_solo_mode(mode: ReviewIntensityMode) -> Result<(), String> {
     // There is NO `solo` mode in the enum (AC-R1)
     match mode {
-        ReviewIntensityMode::Full | ReviewIntensityMode::Standard | ReviewIntensityMode::Lean => Ok(()),
+        ReviewIntensityMode::Full | ReviewIntensityMode::Standard | ReviewIntensityMode::Lean => {
+            Ok(())
+        }
     }
 }

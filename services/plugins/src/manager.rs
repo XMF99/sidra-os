@@ -2,7 +2,7 @@ use crate::manifest::ManifestParser;
 use crate::plugin_errors::PluginError;
 use crate::sandbox::WasmSandbox;
 use rusqlite::Connection;
-use sidra_domain::{Capability, EffectClass, EventInput, PluginInfo, PluginManifest, PluginStatus};
+use sidra_domain::{Capability, EffectClass, EventInput, PluginInfo, PluginStatus};
 use sidra_security::PermissionBroker;
 use sidra_store::EventLogRepository;
 use std::collections::HashMap;
@@ -30,7 +30,11 @@ impl PluginManager {
         let manifest = ManifestParser::parse_manifest(manifest_json)?;
 
         // Check semver compatibility with host kernel
-        ManifestParser::check_compatibility(&manifest.plugin_id, &manifest.version, &self.host_version)?;
+        ManifestParser::check_compatibility(
+            &manifest.plugin_id,
+            &manifest.version,
+            &self.host_version,
+        )?;
 
         let plugin_id = manifest.plugin_id.clone();
         let info = PluginInfo {
@@ -151,7 +155,7 @@ impl PluginManager {
             capability_id,
             "partition:read",
             target_partition,
-            EffectClass::Class0_Read,
+            EffectClass::Class0Read,
         )?;
 
         Ok(sandbox.read_partition_data(key))

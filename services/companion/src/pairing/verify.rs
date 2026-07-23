@@ -1,6 +1,6 @@
+use super::key::verify_signature;
 use crate::domain::device::{CompanionDevice, DeviceStatus};
 use crate::domain::outbox::ApprovalOutboxEntry;
-use super::key::verify_signature;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum SignatureVerificationResult {
@@ -16,7 +16,10 @@ pub fn verify_entry_signature(
     if device.status != DeviceStatus::Active {
         return SignatureVerificationResult::DeviceNotActive;
     }
-    let payload = format!("{}:{}:{:?}:{}", entry.outbox_entry_id, entry.approval_request_id, entry.verdict, entry.decided_at);
+    let payload = format!(
+        "{}:{}:{:?}:{}",
+        entry.outbox_entry_id, entry.approval_request_id, entry.verdict, entry.decided_at
+    );
     if verify_signature(&device.pubkey, payload.as_bytes(), &entry.signature) {
         SignatureVerificationResult::Valid
     } else {

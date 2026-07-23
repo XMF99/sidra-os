@@ -1,17 +1,6 @@
 //! Sidra OS Headless Kernel Server Binary Entry Point (Milestone M23)
 
-mod audit;
-mod auth;
-mod config;
-mod enroll;
-mod lifecycle;
-mod mirror;
-mod serve;
-mod session;
-mod stream;
-
-use config::KernelServerConfig;
-use serve::KernelServer;
+use sidra_kernel_server::{KernelServer, KernelServerConfig};
 
 fn main() {
     println!("Starting Sidra OS Headless Kernel Server (`sidra-kernel-server` v3.0.0-chambers)...");

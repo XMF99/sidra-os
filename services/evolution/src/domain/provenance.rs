@@ -17,7 +17,10 @@ impl Provenance {
         rationale: String,
     ) -> Result<Self, String> {
         if outcome_refs.is_empty() && kpi_refs.is_empty() {
-            return Err("Cannot construct Provenance with empty outcome_refs AND empty kpi_refs".to_string());
+            return Err(
+                "Cannot construct Provenance with empty outcome_refs AND empty kpi_refs"
+                    .to_string(),
+            );
         }
         Ok(Self {
             archetype_id,

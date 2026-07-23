@@ -34,10 +34,8 @@ pub use merge::{
 };
 
 pub use projection::{
-    full::FullProjectionRebuild,
-    frontier::MergeFrontierCalculator,
-    incremental::IncrementalProjectionRebuild,
-    unknown::UnknownEventDeferrer,
+    frontier::MergeFrontierCalculator, full::FullProjectionRebuild,
+    incremental::IncrementalProjectionRebuild, unknown::UnknownEventDeferrer,
 };
 
 pub use protocol::{

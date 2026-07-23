@@ -20,7 +20,7 @@ impl Operation {
         method: impl Into<String>,
         path: impl Into<String>,
     ) -> Result<Self, String> {
-        if effect == EffectClass::Class0_Read {
+        if effect == EffectClass::Class0Read {
             return Err("Operation effect class 0 is invalid: network operations must be at least effect class 1".to_string());
         }
 
@@ -28,7 +28,10 @@ impl Operation {
         let path_str = path.into();
 
         if !path_str.starts_with('/') {
-            return Err(format!("Path template must start with '/', got '{}'", path_str));
+            return Err(format!(
+                "Path template must start with '/', got '{}'",
+                path_str
+            ));
         }
 
         Ok(Self {

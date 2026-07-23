@@ -52,9 +52,7 @@ impl Objective {
         }
 
         // Falsifiability check: Cannot be self-report only
-        let has_mechanical_spec = verification_specs
-            .iter()
-            .any(|s| s.method != "self_report");
+        let has_mechanical_spec = verification_specs.iter().any(|s| s.method != "self_report");
 
         if !has_mechanical_spec {
             return Err("Non-falsifiable objective rejected: must carry at least one non-self-report verification method (ARCH §12.3, ADR-0025)");

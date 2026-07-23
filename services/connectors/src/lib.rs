@@ -24,9 +24,16 @@ pub use conformance::ConformanceSuite;
 pub use custody::{inject_credential, CustodyStore, OutboundRequest};
 pub use domain::*;
 pub use egress::{build_request, compile_egress, dispatch_request, DispatchResponse};
-pub use host::{emit_connector_event, invoke_connector, route_effect_policy, InvocationResult, InvocationVerdict};
-pub use lifecycle::{handle_recovered, handle_unreachable, revoke_grant, uninstall_connector, ConnectorState};
+pub use host::{
+    emit_connector_event, invoke_connector, route_effect_policy, InvocationResult,
+    InvocationVerdict, InvokeConnectorArgs,
+};
+pub use lifecycle::{
+    handle_recovered, handle_unreachable, revoke_grant, uninstall_connector, ConnectorState,
+};
 pub use manifest::{parse_manifest_toml, validate_install, verify_signature};
 pub use mirror::write_connector_mirror;
-pub use oauth::{begin_oauth, exchange_code_for_token, validate_callback, OAuthSessionState, RefreshScheduler};
+pub use oauth::{
+    begin_oauth, exchange_code_for_token, validate_callback, OAuthSessionState, RefreshScheduler,
+};
 pub use registry::{ConnectorRegistry, GrantStore};

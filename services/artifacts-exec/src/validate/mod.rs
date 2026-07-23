@@ -1,7 +1,6 @@
 //! M20 Executable Artifacts — Validation Checks
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §5.4, ADR-0055, ADR-0056
 
-use std::collections::BTreeSet;
 use crate::domain::{ArtifactManifest, Capability, ExecutableArtifact, ModuleHash};
 use crate::grant::WorkOrderCapabilityResolver;
 
@@ -31,7 +30,8 @@ impl ArtifactValidator {
         Self::verify_no_ambient_authority(wasm_bytes)?;
 
         // Check 5: Producing Work Order resolves (ADR-0056)
-        let wo_grant = resolver.resolve_work_order_capabilities(&artifact.producing_work_order_id)?;
+        let wo_grant =
+            resolver.resolve_work_order_capabilities(&artifact.producing_work_order_id)?;
 
         // Check 6: Requested capabilities ⊆ Work Order capability grant (ADR-0054)
         for req in &artifact.requested_capabilities {
@@ -61,8 +61,14 @@ impl ArtifactValidator {
     pub fn verify_no_ambient_authority(wasm_bytes: &[u8]) -> Result<(), String> {
         // Inspect import section for raw system imports
         let wasm_str = String::from_utf8_lossy(wasm_bytes);
-        let forbidden_imports = ["wasi:cli", "wasi:filesystem", "wasi:sockets", "wasi:random", "wasi:clocks/wall-clock"];
-        
+        let forbidden_imports = [
+            "wasi:cli",
+            "wasi:filesystem",
+            "wasi:sockets",
+            "wasi:random",
+            "wasi:clocks/wall-clock",
+        ];
+
         for forbidden in forbidden_imports {
             if wasm_str.contains(forbidden) {
                 return Err(format!(
@@ -76,7 +82,9 @@ impl ArtifactValidator {
 
     fn scan_redaction(text: &str) -> Result<(), String> {
         if text.contains("ghp_") || text.contains("sk_live_") || text.contains("Bearer ") {
-            return Err("ValidationFailed: Raw credential detected in artifact metadata".to_string());
+            return Err(
+                "ValidationFailed: Raw credential detected in artifact metadata".to_string(),
+            );
         }
         Ok(())
     }

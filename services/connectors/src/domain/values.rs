@@ -40,7 +40,9 @@ impl<'de> Deserialize<'de> for ConnectorVersion {
         D: serde::Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        semver::Version::parse(&s).map(Self).map_err(serde::de::Error::custom)
+        semver::Version::parse(&s)
+            .map(Self)
+            .map_err(serde::de::Error::custom)
     }
 }
 
@@ -84,11 +86,17 @@ impl Scope {
     pub fn parse(s: &str) -> Result<Self, String> {
         let parts: Vec<&str> = s.split(':').collect();
         if parts.len() != 3 || parts[0] != "integration" {
-            return Err(format!("Invalid scope grammar: expected 'integration:<id>:<action>', got '{}'", s));
+            return Err(format!(
+                "Invalid scope grammar: expected 'integration:<id>:<action>', got '{}'",
+                s
+            ));
         }
         let action = parts[2];
         if !["read", "write", "admin", "*"].contains(&action) {
-            return Err(format!("Invalid scope action: expected read, write, admin, or *, got '{}'", action));
+            return Err(format!(
+                "Invalid scope action: expected read, write, admin, or *, got '{}'",
+                action
+            ));
         }
         Ok(Self(s.to_string()))
     }

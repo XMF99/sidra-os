@@ -5,15 +5,14 @@
 use crate::manifest::parse::DepartmentPackManifest;
 use std::collections::HashSet;
 
+#[derive(Default)]
 pub struct DepartmentGrantsStore {
     pub active_grants: std::collections::HashMap<String, HashSet<String>>,
 }
 
 impl DepartmentGrantsStore {
     pub fn new() -> Self {
-        Self {
-            active_grants: std::collections::HashMap::new(),
-        }
+        Self::default()
     }
 
     pub fn grant_department(

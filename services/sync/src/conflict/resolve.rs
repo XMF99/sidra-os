@@ -36,7 +36,10 @@ impl ConflictResolutionAppender {
             event_type: "ConflictResolved".to_string(),
             aggregate_type: "conflict".to_string(),
             aggregate_id: conflict_id.to_string(),
-            payload: format!("Conflict {} resolved with value '{}'", conflict_id, chosen_value),
+            payload: format!(
+                "Conflict {} resolved with value '{}'",
+                conflict_id, chosen_value
+            ),
             metadata: format!(r#"{{"actor":"{}"}}"#, acting_seat_id),
             timestamp: timestamp.to_string(),
         };

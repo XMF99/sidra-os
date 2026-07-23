@@ -7,7 +7,7 @@ use crate::registry::ConnectorRegistry;
 pub fn uninstall_connector(
     connector_id: &ConnectorId,
     registry: &ConnectorRegistry,
-    custody_store: &CustodyStore,
+    _custody_store: &CustodyStore,
     revoked_at: &str,
 ) -> Result<(), ConnectorError> {
     registry.uninstall_connector(connector_id, revoked_at)?;

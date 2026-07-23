@@ -1,9 +1,9 @@
 //! M21 Seats and Identity — Seat Fence Aggregate
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §4.3, ADR-0058
 
+use super::values::{ActorValue, SeatId};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
-use super::values::{ActorValue, SeatId};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, PartialOrd, Ord)]
 pub struct Capability(pub String);
@@ -50,7 +50,9 @@ impl SeatFence {
     ) -> Result<Self, String> {
         // Assert requested_capabilities ⊆ admitting_seat_fence (no self-widen ADR-0058)
         for cap in &requested_capabilities {
-            if !admitting_seat_fence.capabilities.contains(cap) && !admitting_seat_fence.capabilities.iter().any(|c| c.0 == "*") {
+            if !admitting_seat_fence.capabilities.contains(cap)
+                && !admitting_seat_fence.capabilities.iter().any(|c| c.0 == "*")
+            {
                 return Err(format!(
                     "FenceViolation: Cannot grant capability '{}' not held by admitting authority (ADR-0058)",
                     cap.0
@@ -68,7 +70,10 @@ impl SeatFence {
     }
 
     /// Compute effective capability intersection with firm policy
-    pub fn intersect_with_policy(&self, firm_policy: &BTreeSet<Capability>) -> BTreeSet<Capability> {
+    pub fn intersect_with_policy(
+        &self,
+        firm_policy: &BTreeSet<Capability>,
+    ) -> BTreeSet<Capability> {
         if !self.active {
             return BTreeSet::new(); // Inactive/Suspended Fence permits nothing
         }

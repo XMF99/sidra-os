@@ -1,6 +1,5 @@
 use crate::domain::values::ParameterVersion;
 use crate::store::params::CalibrationParameterSet;
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -30,7 +29,8 @@ impl ParameterReverter {
         }
 
         // Deactivate all versions and set target version active
-        conn.execute("UPDATE calibration_parameters SET active = 0", []).map_err(|e| e.to_string())?;
+        conn.execute("UPDATE calibration_parameters SET active = 0", [])
+            .map_err(|e| e.to_string())?;
         conn.execute(
             "UPDATE calibration_parameters SET active = 1 WHERE version = ?1",
             rusqlite::params![to_version.0],
@@ -43,7 +43,10 @@ impl ParameterReverter {
             event_type: "CalibrationReverted".to_string(),
             aggregate_type: "calibration".to_string(),
             aggregate_id: to_version.0.to_string(),
-            payload: format!("Reverted calibration parameters to Version {}", to_version.0),
+            payload: format!(
+                "Reverted calibration parameters to Version {}",
+                to_version.0
+            ),
             metadata: r#"{"actor":"founding_principal"}"#.to_string(),
             timestamp: timestamp.to_string(),
         };

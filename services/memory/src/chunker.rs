@@ -15,7 +15,12 @@ impl ChunkingEngine {
     }
 
     /// Split source text into overlapping MemoryChunk objects with estimated token counts
-    pub fn chunk_text(&self, source_id: &str, text: &str, dummy_embedding: &[f32]) -> Vec<MemoryChunk> {
+    pub fn chunk_text(
+        &self,
+        source_id: &str,
+        text: &str,
+        dummy_embedding: &[f32],
+    ) -> Vec<MemoryChunk> {
         let mut chunks = Vec::new();
         let chars: Vec<char> = text.chars().collect();
         let total_chars = chars.len();
@@ -42,7 +47,10 @@ impl ChunkingEngine {
             if end == total_chars {
                 break;
             }
-            start += self.chunk_size_chars.saturating_sub(self.overlap_chars).max(1);
+            start += self
+                .chunk_size_chars
+                .saturating_sub(self.overlap_chars)
+                .max(1);
         }
 
         chunks

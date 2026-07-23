@@ -81,7 +81,10 @@ impl Proposer {
             event_type: "CharterRevisionProposed".to_string(),
             aggregate_type: "evolution".to_string(),
             aggregate_id: revision_id.0.clone(),
-            payload: format!("Proposed Charter Revision {} for archetype {}", revision_id.0, archetype_id.0),
+            payload: format!(
+                "Proposed Charter Revision {} for archetype {}",
+                revision_id.0, archetype_id.0
+            ),
             metadata: format!(r#"{{"actor":"{}"}}"#, proposed_by),
             timestamp: timestamp.to_string(),
         };

@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — TOML Manifest Parsing
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §5.1, §5.4
 
+use super::values::{Capability, WasmLimits};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
-use super::values::{Capability, WasmLimits};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ManifestArtifactSection {
@@ -52,7 +52,9 @@ impl ArtifactManifest {
             return Err("Manifest artifact.id is required".to_string());
         }
         if self.provenance.producing_work_order.trim().is_empty() {
-            return Err("Manifest provenance.producing_work_order is required (ADR-0056)".to_string());
+            return Err(
+                "Manifest provenance.producing_work_order is required (ADR-0056)".to_string(),
+            );
         }
         if self.artifact.entrypoint.trim().is_empty() {
             return Err("Manifest artifact.entrypoint is required".to_string());

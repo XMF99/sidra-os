@@ -4,3 +4,6 @@ pub mod health;
 pub mod proposal;
 pub mod review;
 pub mod values;
+
+pub use health::{DepartmentHealth, DepartmentHealthParams};
+pub use proposal::{StructureProposal, StructureProposalParams};

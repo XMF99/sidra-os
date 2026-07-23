@@ -1,7 +1,7 @@
 use crate::audit::KernelAuditLogger;
 use crate::auth::SeatAuthenticator;
 use crate::config::KernelServerConfig;
-use crate::lifecycle::{LifecycleError, ServerLifecycle, ServerState};
+use crate::lifecycle::{ServerLifecycle, ServerState};
 use crate::session::ClientSession;
 use sidra_domain::{Capability, EffectClass};
 use sidra_kernel::Kernel;
@@ -10,9 +10,7 @@ use sidra_orchestrator::Orchestrator;
 use sidra_security::{FenceManager, PermissionBroker};
 use sidra_store::{EventLogRepository, Vault};
 
-use sidra_transport::{
-    DispatchAdapter, TransportCodec, TransportEndpoint, TransportEnvelope, TransportListener,
-};
+use sidra_transport::{DispatchAdapter, TransportCodec, TransportListener};
 use std::sync::{Arc, Mutex};
 
 pub struct KernelServer {
@@ -49,13 +47,14 @@ impl KernelServer {
             .map_err(|e| e.to_string())?;
 
         let kernel = Kernel::new();
-        let mock_provider: Arc<dyn ModelProvider> = Arc::new(MockSuccessProvider::new("server_llm"));
+        let mock_provider: Arc<dyn ModelProvider> =
+            Arc::new(MockSuccessProvider::new("server_llm"));
         let router = ModelRouter::new(vec![mock_provider]);
 
         let fence = sidra_domain::Fence {
             allowed_directories: vec!["/workspace/app".to_string()],
             egress_allowlist: vec!["api.sidra.os".to_string()],
-            max_effect_class: EffectClass::Class1_ReversibleLocal,
+            max_effect_class: EffectClass::Class1ReversibleLocal,
             spend_ceiling_usd: 1000.0,
         };
         let fence_manager = FenceManager::new(fence);
@@ -65,7 +64,7 @@ impl KernelServer {
             capability_id: "cap_server_exec".to_string(),
             grantee_agent_id: "agent_analyst_01".to_string(),
             resource: "system".to_string(),
-            max_effect_class: EffectClass::Class1_ReversibleLocal,
+            max_effect_class: EffectClass::Class1ReversibleLocal,
             is_revoked: false,
         });
 
@@ -93,7 +92,10 @@ impl KernelServer {
             &server.vault,
             "principal",
             "KernelServerStarted",
-            &format!("Server booted in Serving state at endpoint {}", server.listener.endpoint_str()),
+            &format!(
+                "Server booted in Serving state at endpoint {}",
+                server.listener.endpoint_str()
+            ),
             timestamp,
         )?;
 
@@ -109,7 +111,10 @@ impl KernelServer {
     ) -> Result<String, String> {
         let mut lifecycle_guard = self.lifecycle.lock().map_err(|e| e.to_string())?;
         if !lifecycle_guard.is_serving() {
-            return Err(format!("Server is unavailable (state: {:?})", lifecycle_guard.state()));
+            return Err(format!(
+                "Server is unavailable (state: {:?})",
+                lifecycle_guard.state()
+            ));
         }
 
         lifecycle_guard
@@ -130,11 +135,15 @@ impl KernelServer {
                 &self.vault,
                 &seat_id.0,
                 "ClientAuthenticated",
-                &format!("Session {} authenticated for client {}", session.session_id, client_id),
+                &format!(
+                    "Session {} authenticated for client {}",
+                    session.session_id, client_id
+                ),
                 timestamp,
             )?;
 
-            let response_env = DispatchAdapter::dispatch(&envelope, &self.orchestrator, &self.vault, &seat_id.0);
+            let response_env =
+                DispatchAdapter::dispatch(&envelope, &self.orchestrator, &self.vault, &seat_id.0);
             let encoded_resp = TransportCodec::encode(&response_env).map_err(|e| e.to_string())?;
 
             Ok(encoded_resp)

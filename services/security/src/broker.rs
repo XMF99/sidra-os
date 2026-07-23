@@ -121,7 +121,7 @@ impl PermissionBroker {
         }
 
         // 6. Effect Class 3: Requires explicit Principal human signature
-        if requested_effect == EffectClass::Class3_CriticalHumanSignature {
+        if requested_effect == EffectClass::Class3CriticalHumanSignature {
             SecurityAuditLogger::log_security_event(
                 conn,
                 "class_3_signature_required",
@@ -135,7 +135,7 @@ impl PermissionBroker {
         }
 
         // 7. Effect Class 2: Requires Approval Request unless within fence cap
-        if requested_effect == EffectClass::Class2_IrreversibleExternal
+        if requested_effect == EffectClass::Class2IrreversibleExternal
             && requested_effect > self.fence_manager.fence().max_effect_class
         {
             SecurityAuditLogger::log_security_event(

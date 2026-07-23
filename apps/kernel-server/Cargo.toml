@@ -22,6 +22,10 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 ulid = { workspace = true }
 
+[lib]
+name = "sidra_kernel_server"
+path = "src/lib.rs"
+
 [[bin]]
 name = "sidra-kernel-server"
 path = "src/main.rs"

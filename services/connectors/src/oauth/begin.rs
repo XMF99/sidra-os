@@ -28,8 +28,14 @@ pub fn begin_oauth(
             pkce,
             ..
         } => {
-            let state = format!("{:x}", Sha256::digest(ulid::Ulid::new().to_string().as_bytes()));
-            let verifier = format!("{:x}", Sha256::digest(format!("verifier:{}", ulid::Ulid::new()).as_bytes()));
+            let state = format!(
+                "{:x}",
+                Sha256::digest(ulid::Ulid::new().to_string().as_bytes())
+            );
+            let verifier = format!(
+                "{:x}",
+                Sha256::digest(format!("verifier:{}", ulid::Ulid::new()).as_bytes())
+            );
 
             let mut url = Url::parse(authorize).map_err(|e| {
                 ConnectorError::OAuthError(format!("Invalid authorize endpoint: {}", e))

@@ -67,7 +67,10 @@ impl VersionVector {
     }
 
     pub fn get(&self, device_id: &DeviceId) -> DeviceSeq {
-        self.frontiers.get(device_id).copied().unwrap_or(DeviceSeq(0))
+        self.frontiers
+            .get(device_id)
+            .copied()
+            .unwrap_or(DeviceSeq(0))
     }
 
     pub fn update(&mut self, device_id: DeviceId, seq: DeviceSeq) {

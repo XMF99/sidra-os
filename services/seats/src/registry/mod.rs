@@ -1,8 +1,8 @@
 //! M21 Seats and Identity — Seat Registry
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §6
 
-use std::collections::HashMap;
 use crate::domain::{ActorValue, Seat, SeatId};
+use std::collections::HashMap;
 
 #[derive(Default)]
 pub struct SeatRegistry {
@@ -17,9 +17,13 @@ impl SeatRegistry {
 
     pub fn register(&mut self, seat: Seat) -> Result<(), String> {
         if self.seats_by_actor.contains_key(&seat.actor_value.0) {
-            return Err(format!("Actor value '{}' already bound to another Seat", seat.actor_value.0));
+            return Err(format!(
+                "Actor value '{}' already bound to another Seat",
+                seat.actor_value.0
+            ));
         }
-        self.seats_by_actor.insert(seat.actor_value.0.clone(), seat.id.0.clone());
+        self.seats_by_actor
+            .insert(seat.actor_value.0.clone(), seat.id.0.clone());
         self.seats_by_id.insert(seat.id.0.clone(), seat);
         Ok(())
     }

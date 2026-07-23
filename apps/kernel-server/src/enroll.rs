@@ -21,7 +21,9 @@ impl ClientEnrollmentService {
         credential_ref: &str,
         timestamp: i64,
     ) -> Result<(), EnrollmentError> {
-        let vault_guard = vault.lock().map_err(|e| EnrollmentError::DatabaseError(e.to_string()))?;
+        let vault_guard = vault
+            .lock()
+            .map_err(|e| EnrollmentError::DatabaseError(e.to_string()))?;
         let conn = vault_guard.connection();
 
         conn.execute(
@@ -40,7 +42,9 @@ impl ClientEnrollmentService {
         client_id: &str,
         timestamp: i64,
     ) -> Result<(), EnrollmentError> {
-        let vault_guard = vault.lock().map_err(|e| EnrollmentError::DatabaseError(e.to_string()))?;
+        let vault_guard = vault
+            .lock()
+            .map_err(|e| EnrollmentError::DatabaseError(e.to_string()))?;
         let conn = vault_guard.connection();
 
         conn.execute(

@@ -20,9 +20,9 @@ pub fn attempt_transition(
     }
 
     let rules = get_transition_rules();
-    let matching_rule = rules.iter().find(|r| {
-        r.from == current_state && r.to == target_state && r.trigger == trigger
-    });
+    let matching_rule = rules
+        .iter()
+        .find(|r| r.from == current_state && r.to == target_state && r.trigger == trigger);
 
     match matching_rule {
         Some(rule) => {

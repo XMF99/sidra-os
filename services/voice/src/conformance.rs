@@ -13,7 +13,8 @@ impl VoiceConformanceSuite {
     /// Given identical confirmed text 'S', typed submission and voice submission yield equal Mandates.
     pub fn verify_mandate_equivalence(transcript_text: &str, capture_id: &CaptureId) -> bool {
         let typed_payload = transcript_text;
-        let voice_submission = SubmissionSeam::prepare_confirmed_submission(transcript_text, capture_id);
+        let voice_submission =
+            SubmissionSeam::prepare_confirmed_submission(transcript_text, capture_id);
 
         assert_eq!(typed_payload, voice_submission.confirmed_text);
         assert_eq!(voice_submission.input_method, InputMethod::Voice);
@@ -32,7 +33,10 @@ impl VoiceConformanceSuite {
     pub fn verify_no_egress_and_local_only() -> bool {
         // 1. Verify model load on demand and buffer integrity
         let mut model_mgr = crate::model::ModelLifecycleManager::new();
-        assert!(!model_mgr.is_resident_at_idle(), "Model must not be resident at idle");
+        assert!(
+            !model_mgr.is_resident_at_idle(),
+            "Model must not be resident at idle"
+        );
 
         let stt_model = model_mgr.acquire_model();
         if !stt_model.verify_integrity() {
@@ -55,7 +59,9 @@ impl VoiceConformanceSuite {
         }
 
         // Must be in Draft state and PCM buffer MUST be zeroed
-        if session.state != crate::capture::state::CaptureState::Draft || !session.pcm_ring_buffer.is_empty() {
+        if session.state != crate::capture::state::CaptureState::Draft
+            || !session.pcm_ring_buffer.is_empty()
+        {
             return false;
         }
 

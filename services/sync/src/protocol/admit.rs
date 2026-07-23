@@ -15,7 +15,9 @@ pub struct EventAdmissionController;
 
 impl EventAdmissionController {
     pub fn admit_event(vault: &Mutex<Vault>, event: &Event) -> Result<bool, AdmissionError> {
-        let vault_guard = vault.lock().map_err(|e| AdmissionError::DatabaseError(e.to_string()))?;
+        let vault_guard = vault
+            .lock()
+            .map_err(|e| AdmissionError::DatabaseError(e.to_string()))?;
         let conn = vault_guard.connection();
 
         // Check if event already exists by event_id
@@ -41,7 +43,8 @@ impl EventAdmissionController {
             timestamp: event.timestamp.clone(),
         };
 
-        EventLogRepository::append(conn, &input).map_err(|e| AdmissionError::DatabaseError(e.to_string()))?;
+        EventLogRepository::append(conn, &input)
+            .map_err(|e| AdmissionError::DatabaseError(e.to_string()))?;
         Ok(true)
     }
 }

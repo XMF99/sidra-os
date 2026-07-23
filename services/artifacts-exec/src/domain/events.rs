@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — Domain Events
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §11.2, ADR-0054, ADR-0056
 
+use super::values::{ArtifactId, Capability, ModuleHash};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
-use super::values::{ArtifactId, Capability, ModuleHash};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ArtifactAuthored {

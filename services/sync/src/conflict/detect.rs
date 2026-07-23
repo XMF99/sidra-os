@@ -1,4 +1,3 @@
-use crate::domain::conflict::SyncConflict;
 use crate::domain::values::ProjectionCell;
 use sidra_domain::Event;
 

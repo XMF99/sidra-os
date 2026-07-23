@@ -1,7 +1,7 @@
+use crate::custody::store::CustodyStore;
 use crate::domain::auth::AuthConfig;
 use crate::domain::errors::ConnectorError;
 use crate::domain::values::KeychainRef;
-use crate::custody::store::CustodyStore;
 use std::collections::HashMap;
 
 /// Request carrying headers and body for egress dispatch
@@ -39,10 +39,9 @@ pub fn inject_credential(
                     );
                 }
                 AuthConfig::ApiKey => {
-                    request.headers.insert(
-                        "X-API-Key".to_string(),
-                        secret_plaintext.clone(),
-                    );
+                    request
+                        .headers
+                        .insert("X-API-Key".to_string(), secret_plaintext.clone());
                 }
                 _ => {}
             }

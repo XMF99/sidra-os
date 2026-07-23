@@ -13,8 +13,12 @@ pub fn authorize_capability(
         return Err(format!("Capability '{requested}' not granted to agent"));
     }
 
-    if !department_ceiling.allowed_capabilities.contains(&requested.to_string())
-        && !department_ceiling.allowed_capabilities.contains(&"*".to_string())
+    if !department_ceiling
+        .allowed_capabilities
+        .contains(&requested.to_string())
+        && !department_ceiling
+            .allowed_capabilities
+            .contains(&"*".to_string())
     {
         return Err(format!(
             "Capability '{requested}' exceeds department capability ceiling"

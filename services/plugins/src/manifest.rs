@@ -18,7 +18,10 @@ impl ManifestParser {
 
         // Validate semver format
         Version::parse(&manifest.version).map_err(|e| {
-            PluginError::Manifest(format!("Invalid semver version '{}': {}", manifest.version, e))
+            PluginError::Manifest(format!(
+                "Invalid semver version '{}': {}",
+                manifest.version, e
+            ))
         })?;
 
         Ok(manifest)

@@ -1,8 +1,8 @@
 //! M21 Seats and Identity — Fence Enforcement Engine
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §8, ADR-0058
 
-use std::collections::BTreeSet;
 use crate::domain::{Capability, SeatFence};
+use std::collections::BTreeSet;
 
 pub struct SeatFenceEngine;
 

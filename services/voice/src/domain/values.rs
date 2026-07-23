@@ -1,9 +1,8 @@
 //! M19 Voice Directive — Core Domain Value Objects
 //! Ref: VOICE_DIRECTIVE_ARCHITECTURE.md §4.1, §4.2, ADR-0052, ADR-0053
 
-use serde::{Deserialize, Serialize};
-use super::input_method::InputMethod;
 use crate::retention::policy::RetentionPolicy;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ModelId(pub String);

@@ -53,13 +53,19 @@ impl CustodyStore {
         }
 
         let mut map = self.ref_map.lock().unwrap();
-        map.insert((connector_id.clone(), department_id.clone()), keychain_ref.clone());
+        map.insert(
+            (connector_id.clone(), department_id.clone()),
+            keychain_ref.clone(),
+        );
 
         Ok(keychain_ref)
     }
 
     /// Retrieve secret for injection at egress boundary only (T4.2)
-    pub fn get_secret_for_injection(&self, keychain_ref: &KeychainRef) -> Result<String, ConnectorError> {
+    pub fn get_secret_for_injection(
+        &self,
+        keychain_ref: &KeychainRef,
+    ) -> Result<String, ConnectorError> {
         let ref_str = keychain_ref.as_str();
 
         // Check memory store fallback

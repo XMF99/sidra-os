@@ -13,7 +13,10 @@ impl ArtifactId {
     }
 
     pub fn generate() -> Self {
-        Self(format!("art_{}", ulid::Ulid::new().to_string().to_lowercase()))
+        Self(format!(
+            "art_{}",
+            ulid::Ulid::new().to_string().to_lowercase()
+        ))
     }
 }
 
@@ -33,7 +36,10 @@ pub struct ArtifactRunId(pub String);
 
 impl ArtifactRunId {
     pub fn generate() -> Self {
-        Self(format!("run_{}", ulid::Ulid::new().to_string().to_lowercase()))
+        Self(format!(
+            "run_{}",
+            ulid::Ulid::new().to_string().to_lowercase()
+        ))
     }
 }
 
@@ -44,7 +50,10 @@ impl Capability {
     pub fn parse(cap_str: &str) -> Result<Self, String> {
         let parts: Vec<&str> = cap_str.split('.').collect();
         if parts.len() < 2 || parts[0].is_empty() || parts[1].is_empty() {
-            return Err(format!("Invalid capability syntax '{}': must follow domain.action[:scope]", cap_str));
+            return Err(format!(
+                "Invalid capability syntax '{}': must follow domain.action[:scope]",
+                cap_str
+            ));
         }
         Ok(Self(cap_str.to_string()))
     }
@@ -78,13 +87,25 @@ impl WasmLimits {
 
     pub fn validate(&self) -> Result<(), String> {
         if self.fuel > Self::MAX_FUEL {
-            return Err(format!("Requested fuel {} exceeds M9 host max {}", self.fuel, Self::MAX_FUEL));
+            return Err(format!(
+                "Requested fuel {} exceeds M9 host max {}",
+                self.fuel,
+                Self::MAX_FUEL
+            ));
         }
         if self.memory_mb > Self::MAX_MEMORY_MB {
-            return Err(format!("Requested memory {} MB exceeds M9 host max {}", self.memory_mb, Self::MAX_MEMORY_MB));
+            return Err(format!(
+                "Requested memory {} MB exceeds M9 host max {}",
+                self.memory_mb,
+                Self::MAX_MEMORY_MB
+            ));
         }
         if self.wall_ms > Self::MAX_WALL_MS {
-            return Err(format!("Requested wall time {} ms exceeds M9 host max {}", self.wall_ms, Self::MAX_WALL_MS));
+            return Err(format!(
+                "Requested wall time {} ms exceeds M9 host max {}",
+                self.wall_ms,
+                Self::MAX_WALL_MS
+            ));
         }
         Ok(())
     }

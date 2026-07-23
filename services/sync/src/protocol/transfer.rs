@@ -20,7 +20,9 @@ impl SyncTransferRunner {
     ) -> Result<SyncReport, String> {
         // Send local outgoing events
         if !outgoing_events.is_empty() {
-            transport.send_batch(outgoing_events).map_err(|e| e.to_string())?;
+            transport
+                .send_batch(outgoing_events)
+                .map_err(|e| e.to_string())?;
         }
 
         // Receive incoming peer events

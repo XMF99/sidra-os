@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — Grant Derivation & Bounding Refusal
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §3.3, §9, ADR-0054
 
-use std::collections::BTreeSet;
-use crate::domain::{ArtifactCapabilityGrant, ArtifactId, Capability};
 use super::resolve::WorkOrderCapabilityResolver;
+use crate::domain::{ArtifactCapabilityGrant, ArtifactId, Capability};
+use std::collections::BTreeSet;
 
 pub struct GrantDeriver;
 

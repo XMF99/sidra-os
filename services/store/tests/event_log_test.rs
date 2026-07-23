@@ -51,21 +51,37 @@ fn test_m2_exit_criterion_10k_events_hash_chain_and_projection_rebuild() {
 
         // 3. Verify complete 10,000 event SHA-256 hash chain integrity
         let is_valid = EventLogRepository::verify_chain(vault.connection()).unwrap();
-        assert!(is_valid, "SHA-256 hash chain must verify cleanly across 10,000 events");
+        assert!(
+            is_valid,
+            "SHA-256 hash chain must verify cleanly across 10,000 events"
+        );
 
         // 4. Verify count
         let events = EventLogRepository::read_all(vault.connection()).unwrap();
-        assert_eq!(events.len(), 10000, "Event log must contain exactly 10,000 events");
+        assert_eq!(
+            events.len(),
+            10000,
+            "Event log must contain exactly 10,000 events"
+        );
 
         // 5. Rebuild Engagements projection from scratch
-        let rebuilt_count = ProjectionEngine::rebuild(vault.connection(), &EngagementsProjection).unwrap();
-        assert_eq!(rebuilt_count, 10000, "Projection engine must process all 10,000 events");
+        let rebuilt_count =
+            ProjectionEngine::rebuild(vault.connection(), &EngagementsProjection).unwrap();
+        assert_eq!(
+            rebuilt_count, 10000,
+            "Projection engine must process all 10,000 events"
+        );
 
         // 6. Verify projection state contains exact expected 100 engagement rows
         let proj_rows: i64 = vault
             .connection()
-            .query_row("SELECT count(*) FROM engagements_projection", [], |row| row.get(0))
+            .query_row("SELECT count(*) FROM engagements_projection", [], |row| {
+                row.get(0)
+            })
             .unwrap();
-        assert_eq!(proj_rows, 100, "Engagements projection must contain 100 aggregated rows");
+        assert_eq!(
+            proj_rows, 100,
+            "Engagements projection must contain 100 aggregated rows"
+        );
     }
 }

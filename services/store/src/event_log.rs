@@ -23,16 +23,16 @@ impl EventLogRepository {
             None => (1, GENESIS_HASH.to_string()),
         };
 
-        let hash = Event::compute_hash(
-            &prev_hash,
+        let hash = Event::compute_hash(sidra_domain::EventHashInput {
+            prev_hash: &prev_hash,
             sequence,
-            &input.event_id,
-            &input.event_type,
-            &input.aggregate_type,
-            &input.aggregate_id,
-            &input.payload,
-            &input.timestamp,
-        );
+            event_id: &input.event_id,
+            event_type: &input.event_type,
+            aggregate_type: &input.aggregate_type,
+            aggregate_id: &input.aggregate_id,
+            payload: &input.payload,
+            timestamp: &input.timestamp,
+        });
 
         tx.execute(
             "INSERT INTO events (sequence, event_id, event_type, aggregate_type, aggregate_id, payload, metadata, timestamp, prev_hash, hash)
@@ -111,16 +111,16 @@ impl EventLogRepository {
                 });
             }
 
-            let computed_hash = Event::compute_hash(
-                &event.prev_hash,
-                event.sequence,
-                &event.event_id,
-                &event.event_type,
-                &event.aggregate_type,
-                &event.aggregate_id,
-                &event.payload,
-                &event.timestamp,
-            );
+            let computed_hash = Event::compute_hash(sidra_domain::EventHashInput {
+                prev_hash: &event.prev_hash,
+                sequence: event.sequence,
+                event_id: &event.event_id,
+                event_type: &event.event_type,
+                aggregate_type: &event.aggregate_type,
+                aggregate_id: &event.aggregate_id,
+                payload: &event.payload,
+                timestamp: &event.timestamp,
+            });
 
             if computed_hash != event.hash {
                 return Err(StoreError::HashMismatch {

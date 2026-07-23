@@ -9,5 +9,7 @@ pub fn authorise_mission(actor: &str, mission_id: &str) -> Result<String, String
             "API Authorisation Refusal: Command 'mission.authorise' for mission '{mission_id}' is refused to actor '{actor}'. Only the Principal can authorise a mission (ARCH §21.3 rule 2)."
         ));
     }
-    Ok(format!("Mission '{mission_id}' authorised successfully by Principal."))
+    Ok(format!(
+        "Mission '{mission_id}' authorised successfully by Principal."
+    ))
 }

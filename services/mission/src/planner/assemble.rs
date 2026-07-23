@@ -2,10 +2,10 @@
 //!
 //! Ref: IMPLEMENTATION_PLAN.md T5.7
 
+use super::edges::derive_edges;
 use crate::domain::objective::Objective;
 use crate::domain::plan::{PlanVersion, PlanVersionNumber};
 use crate::domain::task::Task;
-use super::edges::derive_edges;
 
 pub fn assemble_plan(
     version: PlanVersionNumber,

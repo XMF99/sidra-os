@@ -5,7 +5,11 @@
 use super::edges::TaskGraph;
 
 pub fn compute_blocking_factor(graph: &TaskGraph, task_id: &str) -> usize {
-    graph.edges.iter().filter(|e| e.from_task == task_id).count()
+    graph
+        .edges
+        .iter()
+        .filter(|e| e.from_task == task_id)
+        .count()
 }
 
 pub fn is_single_point_of_failure(graph: &TaskGraph, task_id: &str) -> bool {

@@ -2,7 +2,7 @@ use sidra_domain::{
     AgentMessage, AgentState, AppStatus, ApprovalRequest, BriefStatus, Capability, ChatMessage,
     CompletionRequest, CompletionResponse, ContextWindow, EffectClass, EngagementId, Event, Fence,
     MemoryChunk, PluginInfo, PluginManifest, PluginStatus, ProvenanceTag, SearchResult, SystemInfo,
-    TaskPlan, TaskStatus, TaskStep, TokenUsage, ToolDefinition, ToolCall,
+    TaskPlan, TaskStatus, TaskStep, TokenUsage, ToolCall, ToolDefinition,
 };
 use ts_rs::TS;
 

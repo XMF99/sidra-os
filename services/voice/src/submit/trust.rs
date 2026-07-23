@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::domain::input_method::InputMethod;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DirectiveSubmissionPayload {

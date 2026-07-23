@@ -18,7 +18,10 @@ impl ReservationStore {
     pub fn reserve(&self, resource_id: &str) -> Result<(), String> {
         let mut lock = self.reserved_resources.lock().map_err(|e| e.to_string())?;
         if lock.contains(resource_id) {
-            return Err(format!("Resource reservation conflict: '{}' is already locked", resource_id));
+            return Err(format!(
+                "Resource reservation conflict: '{}' is already locked",
+                resource_id
+            ));
         }
         lock.insert(resource_id.to_string());
         Ok(())

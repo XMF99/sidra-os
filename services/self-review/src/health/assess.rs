@@ -29,19 +29,19 @@ impl HealthAssessor {
 
         let earned_overhead = metrics.overhead.0 <= metrics.measured_quality.0;
 
-        DepartmentHealth::new(
-            format!("hlth_{}", Ulid::new()),
-            review_id.clone(),
-            department_id.clone(),
-            metrics.overhead,
-            metrics.measured_quality,
+        DepartmentHealth::new(crate::domain::DepartmentHealthParams {
+            health_id: format!("hlth_{}", Ulid::new()),
+            review_id: review_id.clone(),
+            department_id: department_id.clone(),
+            overhead: metrics.overhead,
+            measured_quality: metrics.measured_quality,
             earned_overhead,
-            absorb_result.verdict,
-            absorb_result.candidate_absorber,
-            absorb_result.quality_drop,
-            metrics.evidence,
-            conf,
-            timestamp,
-        )
+            absorbable_verdict: absorb_result.verdict,
+            candidate_absorber: absorb_result.candidate_absorber,
+            quality_drop: absorb_result.quality_drop,
+            evidence: metrics.evidence,
+            confidence: conf,
+            assessed_at: timestamp,
+        })
     }
 }

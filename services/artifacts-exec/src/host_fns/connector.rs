@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — External Connector Host Function Path
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §8, ADR-0034, ADR-0036 (M16 join)
 
-use std::collections::BTreeSet;
-use crate::domain::{Capability, EffectRecord};
 use super::effect::EffectClass;
+use crate::domain::{Capability, EffectRecord};
+use std::collections::BTreeSet;
 
 pub struct ConnectorHostFunctions;
 
@@ -17,7 +17,8 @@ impl ConnectorHostFunctions {
         is_irreversible_class_3: bool,
         now: u64,
     ) -> Result<(String, EffectRecord), String> {
-        let required_cap = Capability::parse(&format!("integration:{}:{}", connector_id, operation))?;
+        let required_cap =
+            Capability::parse(&format!("integration:{}:{}", connector_id, operation))?;
 
         let allowed = effective_grant.contains(&required_cap);
         let effect_class = if is_irreversible_class_3 {
@@ -27,14 +28,17 @@ impl ConnectorHostFunctions {
         };
 
         if is_irreversible_class_3 {
-            let record = EffectRecord {
+            let _record = EffectRecord {
                 effect_class: effect_class.as_u8(),
                 operation: format!("connector.invoke:{}:{}", connector_id, operation),
                 target_resource: connector_id.to_string(),
                 verdict: "needs_approval".to_string(),
                 at: now,
             };
-            return Err("Class3Effect: Irreversible external effect requires Principal Approval Request".to_string());
+            return Err(
+                "Class3Effect: Irreversible external effect requires Principal Approval Request"
+                    .to_string(),
+            );
         }
 
         let verdict = if allowed { "allowed" } else { "fenced" };
@@ -47,9 +51,18 @@ impl ConnectorHostFunctions {
         };
 
         if !allowed {
-            return Err(format!("EffectDenied: Capability '{}' is fenced in effective grant", required_cap.0));
+            return Err(format!(
+                "EffectDenied: Capability '{}' is fenced in effective grant",
+                required_cap.0
+            ));
         }
 
-        Ok((format!("Mock M16 Connector Result for {}:{}", connector_id, operation), record))
+        Ok((
+            format!(
+                "Mock M16 Connector Result for {}:{}",
+                connector_id, operation
+            ),
+            record,
+        ))
     }
 }

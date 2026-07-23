@@ -1,8 +1,8 @@
 //! M20 Executable Artifacts — Effective Grant Calculation
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §3.3, §9, ADR-0054
 
-use std::collections::BTreeSet;
 use crate::domain::{ArtifactCapabilityGrant, Capability};
+use std::collections::BTreeSet;
 
 pub struct EffectiveGrantCalculator;
 

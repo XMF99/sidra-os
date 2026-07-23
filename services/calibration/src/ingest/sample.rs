@@ -4,6 +4,17 @@ use serde::{Deserialize, Serialize};
 use ulid::Ulid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComputeSampleArgs {
+    pub mission_id: MissionId,
+    pub plan_version: u64,
+    pub task_signature: TaskSignature,
+    pub estimand: Estimand,
+    pub p50: f64,
+    pub p90: f64,
+    pub actual: f64,
+    pub concluded_at: u64,
+}
+
 pub struct EstimateErrorSample {
     pub sample_id: String,
     pub mission_id: MissionId,
@@ -22,83 +33,68 @@ pub struct EstimateErrorSample {
 impl EstimateErrorSample {
     pub fn get_floor(estimand: Estimand) -> f64 {
         match estimand {
-            Estimand::Cost => 0.01,     // $0.01 floor
-            Estimand::Duration => 1.0,  // 1 second floor
-            Estimand::Effort => 1.0,    // 1 unit floor
+            Estimand::Cost => 0.01,    // $0.01 floor
+            Estimand::Duration => 1.0, // 1 second floor
+            Estimand::Effort => 1.0,   // 1 unit floor
         }
     }
 
-    pub fn compute(
-        mission_id: MissionId,
-        plan_version: u64,
-        task_signature: TaskSignature,
-        estimand: Estimand,
-        p50: f64,
-        p90: f64,
-        actual: f64,
-        concluded_at: u64,
-    ) -> Self {
-        let floor = Self::get_floor(estimand);
-        let denom = p50.max(floor);
-        let signed_relative_error = (actual - p50) / denom;
+    pub fn compute(args: ComputeSampleArgs) -> Self {
+        let floor = Self::get_floor(args.estimand);
+        let denom = args.p50.max(floor);
+        let signed_relative_error = (args.actual - args.p50) / denom;
         let abs_relative_error = signed_relative_error.abs();
-        let within_band = actual <= p90 && actual >= (p50 - (p90 - p50));
+        let within_band =
+            args.actual <= args.p90 && args.actual >= (args.p50 - (args.p90 - args.p50));
 
         Self {
             sample_id: format!("smpl_{}", Ulid::new()),
-            mission_id,
-            plan_version,
-            task_signature,
-            estimand,
-            p50,
-            p90,
-            actual,
+            mission_id: args.mission_id,
+            plan_version: args.plan_version,
+            task_signature: args.task_signature,
+            estimand: args.estimand,
+            p50: args.p50,
+            p90: args.p90,
+            actual: args.actual,
             signed_relative_error,
             abs_relative_error,
             within_band,
-            concluded_at,
+            concluded_at: args.concluded_at,
         }
     }
 
     pub fn from_outcome(row: &OutcomeRecordRow) -> Vec<Self> {
-        let mut samples = Vec::new();
-
-        // Cost sample
-        samples.push(Self::compute(
-            row.mission_id.clone(),
-            row.plan_version,
-            row.task_signature.clone(),
-            Estimand::Cost,
-            row.estimated_cost_p50,
-            row.estimated_cost_p90,
-            row.actual_cost,
-            row.concluded_at,
-        ));
-
-        // Duration sample
-        samples.push(Self::compute(
-            row.mission_id.clone(),
-            row.plan_version,
-            row.task_signature.clone(),
-            Estimand::Duration,
-            row.estimated_duration_p50,
-            row.estimated_duration_p90,
-            row.actual_duration,
-            row.concluded_at,
-        ));
-
-        // Effort sample
-        samples.push(Self::compute(
-            row.mission_id.clone(),
-            row.plan_version,
-            row.task_signature.clone(),
-            Estimand::Effort,
-            row.estimated_effort_p50,
-            row.estimated_effort_p90,
-            row.actual_effort,
-            row.concluded_at,
-        ));
-
-        samples
+        vec![
+            Self::compute(ComputeSampleArgs {
+                mission_id: row.mission_id.clone(),
+                plan_version: row.plan_version,
+                task_signature: row.task_signature.clone(),
+                estimand: Estimand::Cost,
+                p50: row.estimated_cost_p50,
+                p90: row.estimated_cost_p90,
+                actual: row.actual_cost,
+                concluded_at: row.concluded_at,
+            }),
+            Self::compute(ComputeSampleArgs {
+                mission_id: row.mission_id.clone(),
+                plan_version: row.plan_version,
+                task_signature: row.task_signature.clone(),
+                estimand: Estimand::Duration,
+                p50: row.estimated_duration_p50,
+                p90: row.estimated_duration_p90,
+                actual: row.actual_duration,
+                concluded_at: row.concluded_at,
+            }),
+            Self::compute(ComputeSampleArgs {
+                mission_id: row.mission_id.clone(),
+                plan_version: row.plan_version,
+                task_signature: row.task_signature.clone(),
+                estimand: Estimand::Effort,
+                p50: row.estimated_effort_p50,
+                p90: row.estimated_effort_p90,
+                actual: row.actual_effort,
+                concluded_at: row.concluded_at,
+            }),
+        ]
     }
 }

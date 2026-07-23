@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — Local Broker-Mediated Host Functions
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §8, §9
 
-use std::collections::BTreeSet;
-use crate::domain::{Capability, EffectRecord};
 use super::effect::EffectClass;
+use crate::domain::{Capability, EffectRecord};
+use std::collections::BTreeSet;
 
 pub struct LocalHostFunctions;
 
@@ -15,7 +15,7 @@ impl LocalHostFunctions {
         now: u64,
     ) -> Result<(Vec<u8>, EffectRecord), String> {
         let required_cap = Capability::parse(&format!("fs.read:vault/{}", path))?;
-        
+
         let allowed = effective_grant.iter().any(|c| {
             c.0 == required_cap.0
                 || (c.0.ends_with("/**") && required_cap.0.starts_with(&c.0[..c.0.len() - 2]))
@@ -31,10 +31,16 @@ impl LocalHostFunctions {
         };
 
         if !allowed {
-            return Err(format!("EffectDenied: Capability '{}' is fenced in effective grant", required_cap.0));
+            return Err(format!(
+                "EffectDenied: Capability '{}' is fenced in effective grant",
+                required_cap.0
+            ));
         }
 
-        Ok((format!("Mock Vault Content for {}", path).into_bytes(), record))
+        Ok((
+            format!("Mock Vault Content for {}", path).into_bytes(),
+            record,
+        ))
     }
 
     /// Execute vault.write host function mediated by Broker
@@ -61,7 +67,10 @@ impl LocalHostFunctions {
         };
 
         if !allowed {
-            return Err(format!("EffectDenied: Capability '{}' is fenced in effective grant", required_cap.0));
+            return Err(format!(
+                "EffectDenied: Capability '{}' is fenced in effective grant",
+                required_cap.0
+            ));
         }
 
         Ok(record)

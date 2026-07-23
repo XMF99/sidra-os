@@ -1,4 +1,3 @@
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;

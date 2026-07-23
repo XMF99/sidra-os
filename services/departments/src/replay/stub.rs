@@ -4,15 +4,14 @@
 
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct ModelCallStub {
     pub responses: HashMap<String, String>,
 }
 
 impl ModelCallStub {
     pub fn new() -> Self {
-        Self {
-            responses: HashMap::new(),
-        }
+        Self::default()
     }
 
     pub fn register(&mut self, frame_digest: String, response: String) {

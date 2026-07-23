@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-use crate::render::payload::BriefRenderPayload;
 use super::approvals::ApprovalRequestView;
+use crate::render::payload::BriefRenderPayload;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SyncSnapshot {

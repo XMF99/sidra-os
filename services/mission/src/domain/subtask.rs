@@ -26,7 +26,9 @@ impl Subtask {
     ) -> Result<Self, &'static str> {
         // Enforce depth cap of 1: Subtask cannot have a parent subtask (ARCH §7.4)
         if parent_subtask_id.is_some() {
-            return Err("Subtask depth cap violation: A subtask cannot have a parent subtask (ARCH §7.4)");
+            return Err(
+                "Subtask depth cap violation: A subtask cannot have a parent subtask (ARCH §7.4)",
+            );
         }
 
         Ok(Self {

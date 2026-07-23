@@ -41,10 +41,22 @@ fn mission_id_rejects_invalid_construction() {
         ("msn_", "empty body"),
         ("msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1", "body too short"),
         ("msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1CX", "body too long"),
-        ("msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1I", "contains excluded letter I"),
-        ("msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1L", "contains excluded letter L"),
-        ("msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1O", "contains excluded letter O"),
-        ("msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1U", "contains excluded letter U"),
+        (
+            "msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1I",
+            "contains excluded letter I",
+        ),
+        (
+            "msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1L",
+            "contains excluded letter L",
+        ),
+        (
+            "msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1O",
+            "contains excluded letter O",
+        ),
+        (
+            "msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1U",
+            "contains excluded letter U",
+        ),
         ("msn_01j8kq4z9f3b7t2y6r8n0m5v1c", "lowercase body"),
     ];
     for (input, why) in cases {
@@ -203,7 +215,10 @@ fn money_accepts_the_architecture_examples() {
 
 #[test]
 fn money_accepts_a_bare_amount_without_the_symbol() {
-    assert_eq!(Money::parse("45.00").expect("bare form"), Money::parse("$45.00").expect("symbol form"));
+    assert_eq!(
+        Money::parse("45.00").expect("bare form"),
+        Money::parse("$45.00").expect("symbol form")
+    );
 }
 
 #[test]
@@ -232,7 +247,11 @@ fn money_rejects_invalid_construction() {
 fn money_arithmetic_refuses_to_go_negative() {
     let four = Money::parse("$4.00").expect("valid");
     let ten = Money::parse("$10.00").expect("valid");
-    assert_eq!(four.checked_sub(ten), None, "budgets must not floor silently");
+    assert_eq!(
+        four.checked_sub(ten),
+        None,
+        "budgets must not floor silently"
+    );
     assert_eq!(
         ten.checked_sub(four).map(|m| m.to_string()),
         Some("$6.00".to_owned())
@@ -249,8 +268,14 @@ fn money_arithmetic_refuses_to_go_negative() {
 
 #[test]
 fn duration_accepts_the_architecture_examples() {
-    assert_eq!(Duration::parse("18m").expect("ARCH 6.1").as_seconds(), 1_080);
-    assert_eq!(Duration::parse("22m").expect("ARCH 6.1").as_seconds(), 1_320);
+    assert_eq!(
+        Duration::parse("18m").expect("ARCH 6.1").as_seconds(),
+        1_080
+    );
+    assert_eq!(
+        Duration::parse("22m").expect("ARCH 6.1").as_seconds(),
+        1_320
+    );
 }
 
 #[test]
@@ -325,7 +350,11 @@ fn directive_id_accepts_valid_form() {
 
 #[test]
 fn directive_id_rejects_invalid_form() {
-    let bad = ["dir_short", "msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1C", "dir_01J8KQ4Z9F3B7T2Y6R8N0M5V1!"];
+    let bad = [
+        "dir_short",
+        "msn_01J8KQ4Z9F3B7T2Y6R8N0M5V1C",
+        "dir_01J8KQ4Z9F3B7T2Y6R8N0M5V1!",
+    ];
     for b in bad {
         assert!(DirectiveId::parse(b).is_err(), "should reject {b}");
     }
@@ -336,9 +365,19 @@ fn department_id_validates_separator_and_chars() {
     assert!(DepartmentId::parse("backend").is_ok());
     assert!(DepartmentId::parse("incident-response").is_ok());
 
-    let invalid = ["", "-backend", "backend-", "BackEnd", "backend_service", "back.end"];
+    let invalid = [
+        "",
+        "-backend",
+        "backend-",
+        "BackEnd",
+        "backend_service",
+        "back.end",
+    ];
     for inv in invalid {
-        assert!(DepartmentId::parse(inv).is_err(), "should reject department {inv}");
+        assert!(
+            DepartmentId::parse(inv).is_err(),
+            "should reject department {inv}"
+        );
     }
 }
 
@@ -347,7 +386,14 @@ fn fence_validates_separator_and_chars() {
     assert!(Fence::parse("no_production_writes").is_ok());
     assert!(Fence::parse("read_only").is_ok());
 
-    let invalid = ["", "_no_writes", "no_writes_", "no-writes", "NoWrites", "no.writes"];
+    let invalid = [
+        "",
+        "_no_writes",
+        "no_writes_",
+        "no-writes",
+        "NoWrites",
+        "no.writes",
+    ];
     for inv in invalid {
         assert!(Fence::parse(inv).is_err(), "should reject fence {inv}");
     }
@@ -391,19 +437,25 @@ fn calendar_date_validation_and_parsing() {
     assert_eq!(d.to_string(), "2026-09-15");
 
     // Leap year acceptance (Criterion l)
-    assert!(CalendarDate::new(2024, 2, 29).is_ok(), "2024-02-29 is a leap year");
+    assert!(
+        CalendarDate::new(2024, 2, 29).is_ok(),
+        "2024-02-29 is a leap year"
+    );
 
     // Invalid dates (Criterion l)
     let invalid_dates = [
-        (2026, 2, 29),  // Not leap year
-        (2024, 2, 30),  // Feb 30 invalid
-        (2026, 13, 1),  // Month 13 invalid
-        (2026, 0, 10),  // Month 0 invalid
-        (2026, 4, 31),  // April has 30 days
-        (0, 1, 1),      // Year 0 invalid
+        (2026, 2, 29), // Not leap year
+        (2024, 2, 30), // Feb 30 invalid
+        (2026, 13, 1), // Month 13 invalid
+        (2026, 0, 10), // Month 0 invalid
+        (2026, 4, 31), // April has 30 days
+        (0, 1, 1),     // Year 0 invalid
     ];
     for (y, m, day) in invalid_dates {
-        assert!(CalendarDate::new(y, m, day).is_err(), "should reject {y}-{m}-{day}");
+        assert!(
+            CalendarDate::new(y, m, day).is_err(),
+            "should reject {y}-{m}-{day}"
+        );
     }
 
     // ISO-8601 parsing
@@ -475,7 +527,11 @@ fn priority_tier_orders_most_urgent_first() {
 
 #[test]
 fn priority_tier_defaults_to_standard() {
-    assert_eq!(PriorityTier::default(), PriorityTier::P2, "ARCH 9.2: P2 is the default");
+    assert_eq!(
+        PriorityTier::default(),
+        PriorityTier::P2,
+        "ARCH 9.2: P2 is the default"
+    );
 }
 
 // =====================================================================================
@@ -486,8 +542,14 @@ fn priority_tier_defaults_to_standard() {
 fn errors_name_the_offending_input() {
     let error = MissionId::parse("nope").expect_err("must fail");
     let rendered = error.to_string();
-    assert!(rendered.contains("MissionId"), "error names the kind: {rendered}");
-    assert!(rendered.contains("nope"), "error names the input: {rendered}");
+    assert!(
+        rendered.contains("MissionId"),
+        "error names the kind: {rendered}"
+    );
+    assert!(
+        rendered.contains("nope"),
+        "error names the input: {rendered}"
+    );
     assert!(
         matches!(error, ValueError::WrongPrefix { .. }),
         "prefix failures are distinguishable from other failures"
@@ -500,8 +562,8 @@ fn errors_name_the_offending_input() {
 
 mod properties {
     use super::{
-        AutonomyDepth, CalendarDate, Duration, EffectClass, MissionId, Money, PriorityTier,
-        TaskId, Weight, VALID_BODY,
+        AutonomyDepth, CalendarDate, Duration, EffectClass, MissionId, Money, PriorityTier, TaskId,
+        Weight, VALID_BODY,
     };
 
     /// How many samples each property draws. Large enough to explore the space, small enough

@@ -17,7 +17,7 @@ fn setup_security_environment() -> (Vault, PermissionBroker) {
     let fence = Fence {
         allowed_directories: vec!["/workspace/app".to_string(), "C:\\workspace\\app".to_string()],
         egress_allowlist: vec!["api.sidra.os".to_string(), "github.com".to_string()],
-        max_effect_class: EffectClass::Class1_ReversibleLocal,
+        max_effect_class: EffectClass::Class1ReversibleLocal,
         spend_ceiling_usd: 50.0,
     };
 
@@ -29,7 +29,7 @@ fn setup_security_environment() -> (Vault, PermissionBroker) {
         capability_id: "cap_worker_read_write".to_string(),
         grantee_agent_id: "agent_worker_01".to_string(),
         resource: "/workspace/app".to_string(),
-        max_effect_class: EffectClass::Class1_ReversibleLocal,
+        max_effect_class: EffectClass::Class1ReversibleLocal,
         is_revoked: false,
     };
     broker.grant_capability(cap);
@@ -55,7 +55,7 @@ fn redteam_attack_1_filesystem_escape_attempt() {
             "cap_worker_read_write",
             "fs:read",
             bad_path,
-            EffectClass::Class0_Read,
+            EffectClass::Class0Read,
         );
 
         assert!(
@@ -90,7 +90,7 @@ fn redteam_attack_2_unlisted_network_egress_attempt() {
             "cap_worker_read_write",
             "http:post",
             bad_url,
-            EffectClass::Class2_IrreversibleExternal,
+            EffectClass::Class2IrreversibleExternal,
         );
 
         assert!(
@@ -119,7 +119,7 @@ fn redteam_attack_3_capability_escalation_attempt() {
         "cap_worker_read_write",
         "crypto:delete_master_key",
         "keychain://master",
-        EffectClass::Class3_CriticalHumanSignature,
+        EffectClass::Class3CriticalHumanSignature,
     );
 
     assert!(

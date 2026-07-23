@@ -2,8 +2,8 @@
 //!
 //! Ref: IMPLEMENTATION_PLAN.md T3.3
 
-use sidra_domain::structure::Veto;
 use serde::{Deserialize, Serialize};
+use sidra_domain::structure::Veto;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Dissent {

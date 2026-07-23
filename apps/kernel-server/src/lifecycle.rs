@@ -22,6 +22,12 @@ pub struct ServerLifecycle {
     in_flight_count: usize,
 }
 
+impl Default for ServerLifecycle {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ServerLifecycle {
     pub fn new() -> Self {
         Self {

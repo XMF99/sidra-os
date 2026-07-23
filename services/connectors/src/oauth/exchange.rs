@@ -10,10 +10,10 @@ use sidra_domain::DepartmentId;
 pub fn exchange_code_for_token(
     manifest: &ConnectorManifest,
     session: &OAuthSessionState,
-    code: &str,
+    _code: &str,
     custody_store: &CustodyStore,
 ) -> Result<KeychainRef, ConnectorError> {
-    let token_host = match &manifest.auth {
+    let _token_host = match &manifest.auth {
         AuthConfig::OAuth2 { token, .. } => token.clone(),
         _ => {
             return Err(ConnectorError::OAuthError(

@@ -26,12 +26,17 @@ impl CursorTracker {
         Ok(())
     }
 
-    pub fn get_vector_for_peer(vault: &Mutex<Vault>, peer_id: &PeerId) -> Result<VersionVector, String> {
+    pub fn get_vector_for_peer(
+        vault: &Mutex<Vault>,
+        peer_id: &PeerId,
+    ) -> Result<VersionVector, String> {
         let vault_guard = vault.lock().map_err(|e| e.to_string())?;
         let conn = vault_guard.connection();
 
         let mut stmt = conn
-            .prepare("SELECT target_device_id, last_admitted_seq FROM sync_cursors WHERE peer_id = ?1")
+            .prepare(
+                "SELECT target_device_id, last_admitted_seq FROM sync_cursors WHERE peer_id = ?1",
+            )
             .map_err(|e| e.to_string())?;
 
         let mut vector = VersionVector::new();
@@ -43,11 +48,9 @@ impl CursorTracker {
             })
             .map_err(|e| e.to_string())?;
 
-        for r in rows {
-            if let Ok((dev_str, seq_num)) = r {
-                if let Ok(dev_id) = DeviceId::new(dev_str) {
-                    vector.update(dev_id, DeviceSeq(seq_num));
-                }
+        for (dev_str, seq_num) in rows.flatten() {
+            if let Ok(dev_id) = DeviceId::new(dev_str) {
+                vector.update(dev_id, DeviceSeq(seq_num));
             }
         }
 

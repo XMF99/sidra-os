@@ -28,35 +28,37 @@ pub struct StructureProposal {
     pub proposed_at: u64,
 }
 
+pub struct StructureProposalParams {
+    pub proposal_id: String,
+    pub review_id: ReviewId,
+    pub department_id: DepartmentId,
+    pub kind: ProposalKind,
+    pub rationale: String,
+    pub evidence: Vec<EvidenceRef>,
+    pub confidence: Confidence,
+    pub proposed_at: u64,
+}
+
 impl StructureProposal {
-    pub fn new(
-        proposal_id: String,
-        review_id: ReviewId,
-        department_id: DepartmentId,
-        kind: ProposalKind,
-        rationale: String,
-        evidence: Vec<EvidenceRef>,
-        confidence: Confidence,
-        proposed_at: u64,
-    ) -> Result<Self, String> {
-        if evidence.is_empty() {
+    pub fn new(params: StructureProposalParams) -> Result<Self, String> {
+        if params.evidence.is_empty() {
             return Err(format!(
                 "StructureProposal invariant violated: evidence set for proposal {} cannot be empty (ADR-0077)",
-                proposal_id
+                params.proposal_id
             ));
         }
 
         Ok(Self {
-            proposal_id,
-            review_id,
-            department_id,
-            kind,
-            rationale,
-            evidence,
-            confidence,
+            proposal_id: params.proposal_id,
+            review_id: params.review_id,
+            department_id: params.department_id,
+            kind: params.kind,
+            rationale: params.rationale,
+            evidence: params.evidence,
+            confidence: params.confidence,
             resolution: ProposalResolution::Open,
             decision_id: None,
-            proposed_at,
+            proposed_at: params.proposed_at,
         })
     }
 }

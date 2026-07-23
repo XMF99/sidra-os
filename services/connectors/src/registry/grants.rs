@@ -41,7 +41,10 @@ impl GrantStore {
         // Check T3.2: Forbidden scope check (ADR-0013 self-denial)
         let forbidden = self.get_forbidden_scopes(&department_id);
         for scope in &requested_scopes {
-            if forbidden.iter().any(|f| f.as_str() == scope.as_str() || f.as_str() == "integration:*:*") {
+            if forbidden
+                .iter()
+                .any(|f| f.as_str() == scope.as_str() || f.as_str() == "integration:*:*")
+            {
                 return Err(ConnectorError::ForbiddenScopeDenied {
                     scope: scope.as_str().to_string(),
                     department_id: department_id.0.clone(),
@@ -53,7 +56,7 @@ impl GrantStore {
         for scope in &requested_scopes {
             let matches_manifest = manifest.operations.iter().any(|op| {
                 op.capability.as_str() == scope.as_str()
-                    || scope.as_str() == &format!("integration:{}:*", manifest.id.as_str())
+                    || scope.as_str() == format!("integration:{}:*", manifest.id.as_str())
             });
 
             if !matches_manifest {

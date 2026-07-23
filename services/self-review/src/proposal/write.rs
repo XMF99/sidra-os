@@ -1,6 +1,5 @@
 use crate::domain::health::{AbsorbableVerdict, DepartmentHealth};
 use crate::domain::proposal::{ProposalKind, StructureProposal};
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -26,19 +25,19 @@ impl ProposalWriter {
             ProposalKind::Retire
         };
 
-        let proposal = StructureProposal::new(
-            proposal_id.clone(),
-            health.review_id.clone(),
-            health.department_id.clone(),
-            kind.clone(),
-            format!(
+        let proposal = StructureProposal::new(crate::domain::StructureProposalParams {
+            proposal_id: proposal_id.clone(),
+            review_id: health.review_id.clone(),
+            department_id: health.department_id.clone(),
+            kind: kind.clone(),
+            rationale: format!(
                 "Principle 13 absorbability test passed: neighbour could absorb Work Orders with quality_drop = {:.4} <= 0",
                 health.quality_drop
             ),
-            health.evidence.clone(),
-            health.confidence,
-            timestamp,
-        )?;
+            evidence: health.evidence.clone(),
+            confidence: health.confidence,
+            proposed_at: timestamp,
+        })?;
 
         let vault_guard = vault.lock().map_err(|e| e.to_string())?;
         let conn = vault_guard.connection();

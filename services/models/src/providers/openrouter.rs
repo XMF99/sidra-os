@@ -31,11 +31,13 @@ impl ModelProvider for OpenRouterProvider {
         let tool_calls = request
             .tools
             .first()
-            .map(|t| vec![ToolCall {
-                id: format!("call_openrouter_{}", Ulid::new()),
-                name: t.name.clone(),
-                arguments_json: r#"{"status":"processed"}"#.to_string(),
-            }])
+            .map(|t| {
+                vec![ToolCall {
+                    id: format!("call_openrouter_{}", Ulid::new()),
+                    name: t.name.clone(),
+                    arguments_json: r#"{"status":"processed"}"#.to_string(),
+                }]
+            })
             .unwrap_or_default();
 
         let prompt_tokens = request.messages.iter().map(|m| m.content.len() / 4).sum();
@@ -49,7 +51,8 @@ impl ModelProvider for OpenRouterProvider {
                 prompt_tokens,
                 completion_tokens,
                 total_tokens: prompt_tokens + completion_tokens,
-                estimated_cost_usd: (prompt_tokens as f64 * 0.000002) + (completion_tokens as f64 * 0.000010),
+                estimated_cost_usd: (prompt_tokens as f64 * 0.000002)
+                    + (completion_tokens as f64 * 0.000010),
             },
             provider_name: self.name().to_string(),
         })

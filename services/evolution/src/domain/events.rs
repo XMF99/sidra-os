@@ -1,5 +1,7 @@
 use crate::domain::status::RefuseReason;
-use crate::domain::values::{ArchetypeId, CharterVersion, DecisionId, EvalRunId, EvalSetVersion, RevisionId};
+use crate::domain::values::{
+    ArchetypeId, CharterVersion, DecisionId, EvalRunId, EvalSetVersion, RevisionId,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

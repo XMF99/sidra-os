@@ -1,9 +1,9 @@
 //! M22 Delegation and Separation of Duties — Domain Events
 //! Ref: DELEGATION_AND_SEPARATION_ARCHITECTURE.md §7.2, ADR-0060, ADR-0061
 
+use super::resolution::AuthoritySource;
 use serde::{Deserialize, Serialize};
 use sidra_seats::SeatId;
-use super::resolution::AuthoritySource;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DelegationGranted {

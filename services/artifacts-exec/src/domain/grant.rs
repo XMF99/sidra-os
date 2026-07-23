@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — Capability Grant Primitive
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §4.3, ADR-0054
 
+use super::values::{ArtifactId, Capability};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
-use super::values::{ArtifactId, Capability};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ArtifactCapabilityGrant {

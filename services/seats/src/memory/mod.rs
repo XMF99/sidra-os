@@ -7,7 +7,10 @@ pub struct SeatMemoryEngine;
 
 impl SeatMemoryEngine {
     /// Verify whether acting Seat may read a target working memory namespace
-    pub fn authorize_read(memory: &SeatWorkingMemory, requested_namespace: &str) -> Result<(), String> {
+    pub fn authorize_read(
+        memory: &SeatWorkingMemory,
+        requested_namespace: &str,
+    ) -> Result<(), String> {
         if !memory.is_readable(requested_namespace) {
             return Err(format!(
                 "MemoryIsolationDenied: Seat '{}' cannot read cross-Seat namespace '{}' (ADR-0059)",
@@ -18,7 +21,10 @@ impl SeatMemoryEngine {
     }
 
     /// Verify whether acting Seat may write a target working memory namespace
-    pub fn authorize_write(memory: &SeatWorkingMemory, requested_namespace: &str) -> Result<(), String> {
+    pub fn authorize_write(
+        memory: &SeatWorkingMemory,
+        requested_namespace: &str,
+    ) -> Result<(), String> {
         if !memory.is_writable(requested_namespace) {
             return Err(format!(
                 "MemoryIsolationDenied: Seat '{}' cannot write namespace '{}' (sealed or cross-Seat access, ADR-0059)",

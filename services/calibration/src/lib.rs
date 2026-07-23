@@ -24,7 +24,9 @@ pub use compute::{
 
 pub use domain::{
     events::CalibrationEvent,
-    values::{CalibrationRunId, Estimand, EstimateSource, MissionId, ParameterVersion, TaskSignature},
+    values::{
+        CalibrationRunId, Estimand, EstimateSource, MissionId, ParameterVersion, TaskSignature,
+    },
 };
 
 pub use guard::{held_out::HeldOutNarrowingGuard, no_egress::SocketEgressGuard};

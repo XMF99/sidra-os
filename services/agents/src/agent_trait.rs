@@ -1,4 +1,4 @@
-use sidra_domain::{ChatMessage, CompletionRequest, TaskPlan, TaskStatus, TaskStep};
+use sidra_domain::{TaskPlan, TaskStatus, TaskStep};
 use sidra_models::ModelRouter;
 use ulid::Ulid;
 

@@ -4,7 +4,11 @@ pub struct CostCalculator;
 
 impl CostCalculator {
     /// Calculate estimated USD cost based on provider pricing tables
-    pub fn calculate_cost(provider_name: &str, prompt_tokens: usize, completion_tokens: usize) -> TokenUsage {
+    pub fn calculate_cost(
+        provider_name: &str,
+        prompt_tokens: usize,
+        completion_tokens: usize,
+    ) -> TokenUsage {
         let (prompt_rate, completion_rate) = match provider_name {
             "openai" => (0.000005, 0.000015),
             "anthropic" => (0.000003, 0.000015),

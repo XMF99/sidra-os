@@ -30,7 +30,7 @@ impl ModelLifecycleManager {
 
     /// Verifies model is not resident at idle (M8 memory constraint).
     pub fn is_resident_at_idle(&self) -> bool {
-        self.model.as_ref().map_or(false, |m| m.is_loaded)
+        self.model.as_ref().is_some_and(|m| m.is_loaded)
     }
 }
 

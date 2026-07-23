@@ -18,7 +18,9 @@ impl ProposalValidator {
 
         // Check 2: Author != Reviewer (proposed_by cannot be an archetype instance)
         if proposed_by.starts_with("archetype:") || proposed_by.contains(&archetype_id.0) {
-            return Err("An archetype instance cannot author a charter revision for itself".to_string());
+            return Err(
+                "An archetype instance cannot author a charter revision for itself".to_string(),
+            );
         }
 
         // Check 3: Provenance matching
@@ -28,7 +30,10 @@ impl ProposalValidator {
 
         // Check 4: Redaction scan (no embedded credential/hook/host)
         let json_repr = serde_json::to_string(charter).unwrap_or_default();
-        if json_repr.contains("SECRET_KEY") || json_repr.contains("api_key") || json_repr.contains("http://") {
+        if json_repr.contains("SECRET_KEY")
+            || json_repr.contains("api_key")
+            || json_repr.contains("http://")
+        {
             return Err("Candidate charter failed redaction scan".to_string());
         }
 

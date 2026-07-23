@@ -14,9 +14,16 @@ pub fn transition_status(
         (ExecStatus::Executing, ExecStatus::Executed) => artifact.status = ExecStatus::Executed,
         (ExecStatus::Executed, ExecStatus::Audited) => artifact.status = ExecStatus::Audited,
         (ExecStatus::Audited, ExecStatus::Runnable) => artifact.status = ExecStatus::Runnable,
-        (s, ExecStatus::Revoked) if s != ExecStatus::Purged => artifact.status = ExecStatus::Revoked,
+        (s, ExecStatus::Revoked) if s != ExecStatus::Purged => {
+            artifact.status = ExecStatus::Revoked
+        }
         (ExecStatus::Revoked, ExecStatus::Purged) => artifact.status = ExecStatus::Purged,
-        (from, to) => return Err(format!("Invalid state transition from {:?} to {:?}", from, to)),
+        (from, to) => {
+            return Err(format!(
+                "Invalid state transition from {:?} to {:?}",
+                from, to
+            ))
+        }
     }
     Ok(())
 }

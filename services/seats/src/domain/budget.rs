@@ -1,8 +1,8 @@
 //! M21 Seats and Identity — Seat Budget Aggregate
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §4.4, ADR-0058, ADR-0020
 
-use serde::{Deserialize, Serialize};
 use super::values::SeatId;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SeatBudget {

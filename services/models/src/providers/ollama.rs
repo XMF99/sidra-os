@@ -30,11 +30,13 @@ impl ModelProvider for OllamaProvider {
         let tool_calls = request
             .tools
             .first()
-            .map(|t| vec![ToolCall {
-                id: format!("call_ollama_{}", Ulid::new()),
-                name: t.name.clone(),
-                arguments_json: r#"{"status":"processed"}"#.to_string(),
-            }])
+            .map(|t| {
+                vec![ToolCall {
+                    id: format!("call_ollama_{}", Ulid::new()),
+                    name: t.name.clone(),
+                    arguments_json: r#"{"status":"processed"}"#.to_string(),
+                }]
+            })
             .unwrap_or_default();
 
         let prompt_tokens = request.messages.iter().map(|m| m.content.len() / 4).sum();

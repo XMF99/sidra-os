@@ -1,5 +1,4 @@
 use crate::domain::observation::ProcedureObservation;
-use crate::domain::signature::ProcedureSignature;
 use crate::domain::values::{EngagementId, MissionId};
 use crate::signature::normalize::SignatureNormalizer;
 

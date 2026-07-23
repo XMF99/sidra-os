@@ -1,10 +1,10 @@
 //! M21 Seats and Identity — Domain Events
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §11.2, ADR-0057, ADR-0058, ADR-0059
 
-use serde::{Deserialize, Serialize};
-use std::collections::BTreeSet;
 use super::fence::Capability;
 use super::values::{ActorValue, DisplayName, SeatId};
+use serde::{Deserialize, Serialize};
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SeatMaterialized {

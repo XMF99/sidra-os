@@ -6,7 +6,10 @@ use super::states::TaskState;
 
 pub fn attempt_task_transition(from: TaskState, to: TaskState) -> Result<TaskState, String> {
     if from.is_terminal() {
-        return Err(format!("Task transition refusal: Task is in terminal state '{:?}'", from));
+        return Err(format!(
+            "Task transition refusal: Task is in terminal state '{:?}'",
+            from
+        ));
     }
     Ok(to)
 }

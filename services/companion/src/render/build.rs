@@ -1,5 +1,5 @@
-use sha2::{Sha256, Digest};
-use super::payload::{BriefNode, BriefSection, BriefRenderPayload};
+use super::payload::{BriefNode, BriefRenderPayload, BriefSection};
+use sha2::{Digest, Sha256};
 
 pub fn build_brief_render_payload(
     brief_id: &str,
@@ -11,12 +11,33 @@ pub fn build_brief_render_payload(
     confidence_score: f64,
 ) -> BriefRenderPayload {
     let sections = vec![
-        BriefSection { name: "situation".to_string(), nodes: vec![BriefNode::Paragraph(situation.to_string())] },
-        BriefSection { name: "actions".to_string(), nodes: vec![BriefNode::Paragraph(actions.to_string())] },
-        BriefSection { name: "findings".to_string(), nodes: vec![BriefNode::Paragraph(findings.to_string())] },
-        BriefSection { name: "recommendation".to_string(), nodes: vec![BriefNode::Paragraph(recommendation.to_string())] },
-        BriefSection { name: "the_ask".to_string(), nodes: vec![BriefNode::Paragraph(the_ask.to_string())] },
-        BriefSection { name: "confidence".to_string(), nodes: vec![BriefNode::Paragraph(format!("Confidence: {:.2}", confidence_score))] },
+        BriefSection {
+            name: "situation".to_string(),
+            nodes: vec![BriefNode::Paragraph(situation.to_string())],
+        },
+        BriefSection {
+            name: "actions".to_string(),
+            nodes: vec![BriefNode::Paragraph(actions.to_string())],
+        },
+        BriefSection {
+            name: "findings".to_string(),
+            nodes: vec![BriefNode::Paragraph(findings.to_string())],
+        },
+        BriefSection {
+            name: "recommendation".to_string(),
+            nodes: vec![BriefNode::Paragraph(recommendation.to_string())],
+        },
+        BriefSection {
+            name: "the_ask".to_string(),
+            nodes: vec![BriefNode::Paragraph(the_ask.to_string())],
+        },
+        BriefSection {
+            name: "confidence".to_string(),
+            nodes: vec![BriefNode::Paragraph(format!(
+                "Confidence: {:.2}",
+                confidence_score
+            ))],
+        },
     ];
 
     let mut hasher = Sha256::new();

@@ -1,7 +1,7 @@
 //! M21 Seats and Identity — Read-Time Attribution Join
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §5.2, §11.3, ADR-0057
 
-use crate::domain::{ActorValue, Seat, SeatId};
+use crate::domain::{ActorValue, Seat};
 use crate::registry::SeatRegistry;
 
 pub struct SeatAttributionJoin;

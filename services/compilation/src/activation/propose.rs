@@ -1,6 +1,5 @@
-use crate::domain::candidate::{CandidateStatus, WorkflowCandidate};
+use crate::domain::candidate::WorkflowCandidate;
 use crate::domain::signature::ProcedureSignature;
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;

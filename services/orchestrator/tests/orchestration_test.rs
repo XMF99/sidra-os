@@ -21,7 +21,7 @@ fn test_m6_exit_criterion_multi_agent_cooperation_and_provenance_tracing() {
     let fence = sidra_domain::Fence {
         allowed_directories: vec!["/workspace/app".to_string()],
         egress_allowlist: vec!["api.sidra.os".to_string()],
-        max_effect_class: EffectClass::Class1_ReversibleLocal,
+        max_effect_class: EffectClass::Class1ReversibleLocal,
         spend_ceiling_usd: 100.0,
     };
     let fence_manager = FenceManager::new(fence);
@@ -32,14 +32,14 @@ fn test_m6_exit_criterion_multi_agent_cooperation_and_provenance_tracing() {
         capability_id: "cap_analyst_exec".to_string(),
         grantee_agent_id: "agent_analyst_01".to_string(),
         resource: "system".to_string(),
-        max_effect_class: EffectClass::Class1_ReversibleLocal,
+        max_effect_class: EffectClass::Class1ReversibleLocal,
         is_revoked: false,
     });
     broker.grant_capability(Capability {
         capability_id: "cap_writer_exec".to_string(),
         grantee_agent_id: "agent_writer_01".to_string(),
         resource: "system".to_string(),
-        max_effect_class: EffectClass::Class1_ReversibleLocal,
+        max_effect_class: EffectClass::Class1ReversibleLocal,
         is_revoked: false,
     });
 
@@ -54,26 +54,52 @@ fn test_m6_exit_criterion_multi_agent_cooperation_and_provenance_tracing() {
 
     // 4. Verify Plan Completion
     assert_eq!(plan.status, TaskStatus::Completed);
-    assert_eq!(plan.steps.len(), 2, "Task plan MUST be decomposed into 2 steps");
+    assert_eq!(
+        plan.steps.len(),
+        2,
+        "Task plan MUST be decomposed into 2 steps"
+    );
     assert!(plan.steps.iter().all(|s| s.status == TaskStatus::Completed));
 
     // 5. Verify Inter-Agent Messages & Mandatory Provenance Tags (ADR-0007)
-    assert!(!messages.is_empty(), "Inter-agent messages MUST be produced");
+    assert!(
+        !messages.is_empty(),
+        "Inter-agent messages MUST be produced"
+    );
     for msg in &messages {
-        assert!(!msg.provenance.author_agent_id.is_empty(), "Author agent ID must be set");
-        assert!(!msg.provenance.capability_id.is_empty(), "Capability ID must be attached");
-        assert!(msg.provenance.authorized_by_principal, "Principal authorization flag must be true");
+        assert!(
+            !msg.provenance.author_agent_id.is_empty(),
+            "Author agent ID must be set"
+        );
+        assert!(
+            !msg.provenance.capability_id.is_empty(),
+            "Capability ID must be attached"
+        );
+        assert!(
+            msg.provenance.authorized_by_principal,
+            "Principal authorization flag must be true"
+        );
     }
 
     // 6. Verify Full State Persistence into Vault Event Log (ADR-0008)
     let events = EventLogRepository::read_all(vault.connection()).unwrap();
     let plan_events = events.iter().any(|e| e.event_type == "task.plan_created");
-    let tool_start_events = events.iter().any(|e| e.event_type == "tool.execution_started");
-    let tool_done_events = events.iter().any(|e| e.event_type == "tool.execution_completed");
+    let tool_start_events = events
+        .iter()
+        .any(|e| e.event_type == "tool.execution_started");
+    let tool_done_events = events
+        .iter()
+        .any(|e| e.event_type == "tool.execution_completed");
 
     assert!(plan_events, "Task plan creation MUST be logged to Vault");
-    assert!(tool_start_events, "Tool execution start MUST be logged to Vault");
-    assert!(tool_done_events, "Tool execution completion MUST be logged to Vault");
+    assert!(
+        tool_start_events,
+        "Tool execution start MUST be logged to Vault"
+    );
+    assert!(
+        tool_done_events,
+        "Tool execution completion MUST be logged to Vault"
+    );
 
     // 7. Verify SHA-256 Hash Chain Integrity
     assert!(

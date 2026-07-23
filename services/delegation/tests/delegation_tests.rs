@@ -1,12 +1,12 @@
 //! Integration tests for sidra-delegation crate
 //! Verifies AC1–AC12, Exit Criterion, ADR-0060, ADR-0061.
 
-use std::collections::BTreeSet;
-use sidra_seats::{Capability, SeatFence, SeatId};
 use sidra_delegation::{
     ApprovalVerdict, AuthoritySource, DelegationConformanceSuite, DelegationEngine, DenyReason,
-    EligibilityGuard, ResolutionEngine, Scope, ScopedAuthority,
+    ResolutionEngine, Scope,
 };
+use sidra_seats::{Capability, SeatFence, SeatId};
+use std::collections::BTreeSet;
 
 #[test]
 fn test_exit_criterion_structural_self_approval_refused_ac2() {
@@ -35,15 +35,15 @@ fn test_delegation_scope_bounded_by_fence_ac5() {
     over_broad_caps.insert(Capability::parse("net.fetch:api.stripe.com").unwrap());
     let over_broad_scope = Scope::new(over_broad_caps);
 
-    let res = engine.delegate_authority(
-        seat_a.clone(),
-        seat_b.clone(),
-        over_broad_scope,
-        &fence_a,
-        1700000000,
-        1700003600,
-        "dec_001",
-    );
+    let res = engine.delegate_authority(sidra_delegation::DelegateAuthorityArgs {
+        delegator: seat_a.clone(),
+        delegatee: seat_b.clone(),
+        scope: over_broad_scope,
+        delegator_fence: &fence_a,
+        granted_at: 1700000000,
+        expires_at: 1700003600,
+        decision_id: "dec_001".to_string(),
+    });
 
     assert!(res.is_err());
     assert!(matches!(res.unwrap_err(), DenyReason::ScopeExceedsFence(_)));
@@ -68,17 +68,17 @@ fn test_cross_seat_approval_success_ac8() {
     };
 
     // Seat A requests, Seat B approves (Distinct Seats!)
-    let res = ResolutionEngine::approve_request(
-        "req_002",
-        seat_a,
-        seat_b,
-        &cap,
-        &fence_b,
-        &[],
-        ApprovalVerdict::Granted,
-        "dec_002",
-        1700000100,
-    );
+    let res = ResolutionEngine::approve_request(sidra_delegation::ApproveRequestArgs {
+        request_id: "req_002".to_string(),
+        requester_seat: seat_a,
+        approver_seat: seat_b,
+        required_capability: &cap,
+        approver_own_fence: &fence_b,
+        active_delegations: &[],
+        verdict: ApprovalVerdict::Granted,
+        decision_id: "dec_002".to_string(),
+        now: 1700000100,
+    });
 
     assert!(res.is_ok());
     let resolution = res.unwrap();

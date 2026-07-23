@@ -1,3 +1,4 @@
+use serde::Serialize;
 use sidra_domain::{AgentMessage, Capability, EffectClass, Event, SystemInfo, TaskPlan};
 use sidra_kernel::Kernel;
 use sidra_models::{
@@ -8,19 +9,16 @@ use sidra_orchestrator::Orchestrator;
 use sidra_plugins::PluginManager;
 use sidra_security::{FenceManager, PermissionBroker};
 use sidra_store::{EventLogRepository, Vault};
+use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 use tauri::State;
-use serde::{Deserialize, Serialize};
-use std::collections::BTreeSet;
 
-use sidra_seats::{
-    accept_seat, invite_seat, materialize_founding, provision_seat, suspend_seat, resume_seat,
-    Capability as SeatCapability, Seat, SeatFence, SeatRegistry, SeatStatus,
-};
-use sidra_artifacts_exec::{
-    ArtifactCapabilityGrant, ArtifactRunHost, ArtifactValidator, ExecutableArtifact,
-};
+use sidra_artifacts_exec::{ArtifactRunHost, ExecutableArtifact};
 use sidra_delegation::DelegationEngine;
+use sidra_seats::{
+    accept_seat, invite_seat, materialize_founding, provision_seat, Capability as SeatCapability,
+    SeatFence, SeatRegistry,
+};
 
 pub struct AppState {
     pub kernel: Mutex<Kernel>,
@@ -37,16 +35,23 @@ pub struct AppState {
 impl AppState {
     pub fn new() -> Self {
         let kernel = Kernel::new();
-        let db_dir = dirs::home_dir().unwrap_or_else(|| std::path::PathBuf::from(".")).join(".sidra");
+        let db_dir = dirs::home_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join(".sidra");
         let _ = std::fs::create_dir_all(&db_dir);
         let vault_path = db_dir.join("vault.db");
-        let vault = Vault::open(&vault_path).unwrap_or_else(|_| Vault::open_in_memory().expect("Failed to open fallback Vault"));
+        let vault = Vault::open(&vault_path)
+            .unwrap_or_else(|_| Vault::open_in_memory().expect("Failed to open fallback Vault"));
 
         // 1. Production Model Router (Milestone M4 Model Router & Fallback Chain)
-        let openai_key = std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| "sk-sidra-prod-key".to_string());
-        let anthropic_key = std::env::var("ANTHROPIC_API_KEY").unwrap_or_else(|_| "sk-ant-prod-key".to_string());
-        let gemini_key = std::env::var("GEMINI_API_KEY").unwrap_or_else(|_| "sk-gem-prod-key".to_string());
-        let openrouter_key = std::env::var("OPENROUTER_API_KEY").unwrap_or_else(|_| "sk-or-prod-key".to_string());
+        let openai_key =
+            std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| "sk-sidra-prod-key".to_string());
+        let anthropic_key =
+            std::env::var("ANTHROPIC_API_KEY").unwrap_or_else(|_| "sk-ant-prod-key".to_string());
+        let gemini_key =
+            std::env::var("GEMINI_API_KEY").unwrap_or_else(|_| "sk-gem-prod-key".to_string());
+        let openrouter_key =
+            std::env::var("OPENROUTER_API_KEY").unwrap_or_else(|_| "sk-or-prod-key".to_string());
 
         let fallback_chain: Vec<Arc<dyn ModelProvider>> = vec![
             Arc::new(OpenAIProvider::new(openai_key)),
@@ -61,7 +66,7 @@ impl AppState {
         let fence = sidra_domain::Fence {
             allowed_directories: vec!["/workspace/app".to_string()],
             egress_allowlist: vec!["api.sidra.os".to_string()],
-            max_effect_class: EffectClass::Class1_ReversibleLocal,
+            max_effect_class: EffectClass::Class1ReversibleLocal,
             spend_ceiling_usd: 100.0,
         };
         let fence_manager = FenceManager::new(fence);
@@ -72,14 +77,14 @@ impl AppState {
             capability_id: "cap_analyst_exec".to_string(),
             grantee_agent_id: "agent_analyst_01".to_string(),
             resource: "system".to_string(),
-            max_effect_class: EffectClass::Class1_ReversibleLocal,
+            max_effect_class: EffectClass::Class1ReversibleLocal,
             is_revoked: false,
         });
         broker.grant_capability(Capability {
             capability_id: "cap_analyst_exec".to_string(),
             grantee_agent_id: "agent_writer_01".to_string(),
             resource: "system".to_string(),
-            max_effect_class: EffectClass::Class1_ReversibleLocal,
+            max_effect_class: EffectClass::Class1ReversibleLocal,
             is_revoked: false,
         });
 
@@ -90,7 +95,8 @@ impl AppState {
 
         // Initial Seats setup
         let mut seat_registry = SeatRegistry::new();
-        let founding = materialize_founding(&mut seat_registry, 1700000000).expect("Founding seat");
+        let _founding =
+            materialize_founding(&mut seat_registry, 1700000000).expect("Founding seat");
 
         // Sample artifacts setup
         let art_id = sidra_artifacts_exec::ArtifactId("art_fin_01".to_string());
@@ -105,7 +111,8 @@ impl AppState {
             caps,
             limits,
             "sig_fin_01",
-        ).expect("Sample artifact");
+        )
+        .expect("Sample artifact");
 
         let artifacts = vec![sample_artifact];
         let delegation_engine = DelegationEngine::new();
@@ -227,29 +234,38 @@ pub fn app_list_seats(state: State<'_, AppState>) -> Result<Vec<SeatDTO>, String
 }
 
 #[tauri::command]
-pub fn app_create_seat(state: State<'_, AppState>, display_name: String) -> Result<SeatDTO, String> {
+pub fn app_create_seat(
+    state: State<'_, AppState>,
+    display_name: String,
+) -> Result<SeatDTO, String> {
     let mut registry = state.seat_registry.lock().map_err(|e| e.to_string())?;
     let founding_id = sidra_seats::SeatId::new("founding_principal");
 
     let new_seat = invite_seat(&mut registry, &display_name, &founding_id, 1700000100)?;
     accept_seat(&mut registry, &new_seat.id)?;
 
-    let mut founding_fence = SeatFence::empty(founding_id, sidra_seats::ActorValue::principal(), 1700000000);
-    founding_fence.capabilities.insert(SeatCapability::parse("*")?);
+    let mut founding_fence = SeatFence::empty(
+        founding_id,
+        sidra_seats::ActorValue::principal(),
+        1700000000,
+    );
+    founding_fence
+        .capabilities
+        .insert(SeatCapability::parse("*")?);
 
     let mut new_caps = BTreeSet::new();
     new_caps.insert(SeatCapability::parse("fs.read:vault/Sources/**")?);
 
-    let (_fence, _budget, _memory) = provision_seat(
-        &mut registry,
-        &new_seat.id,
-        new_caps,
-        &founding_fence,
-        50000,
-        100000,
-        0,
-        1700000200,
-    )?;
+    let (_fence, _budget, _memory) = provision_seat(sidra_seats::ProvisionSeatArgs {
+        registry: &mut registry,
+        seat_id: &new_seat.id,
+        requested_capabilities: new_caps,
+        admitting_fence: &founding_fence,
+        budget_ceiling_cents: 50000,
+        firm_month_ceiling: 100000,
+        existing_seats_budget_sum: 0,
+        now: 1700000200,
+    })?;
 
     Ok(SeatDTO {
         id: new_seat.id.0.clone(),
@@ -271,7 +287,10 @@ pub fn app_list_artifacts(state: State<'_, AppState>) -> Result<Vec<ExecutableAr
 }
 
 #[tauri::command]
-pub fn app_execute_artifact(state: State<'_, AppState>, artifact_id: String) -> Result<String, String> {
+pub fn app_execute_artifact(
+    state: State<'_, AppState>,
+    artifact_id: String,
+) -> Result<String, String> {
     let artifacts = state.artifacts.lock().map_err(|e| e.to_string())?;
     let artifact = artifacts
         .iter()
@@ -288,16 +307,16 @@ pub fn app_execute_artifact(state: State<'_, AppState>, artifact_id: String) -> 
         "founding_principal",
     )?;
 
-    let run_res = ArtifactRunHost::execute(
+    let run_res = ArtifactRunHost::execute(sidra_artifacts_exec::ExecuteArtifactArgs {
         artifact,
-        &grant,
-        &caps,
-        &caps,
-        "wo_9001",
-        "principal",
-        b"{}",
-        1700000000,
-    )?;
+        grant: &grant,
+        firm_policy: &caps,
+        session: &caps,
+        invoking_work_order_id: "wo_9001",
+        invoked_by_actor: "principal",
+        args_payload: b"{}",
+        now: 1700000000,
+    })?;
 
     Ok(format!(
         "Artifact Execution Success!\nRun ID: {}\nOutcome: {:?}",
@@ -310,20 +329,104 @@ pub fn app_execute_artifact(state: State<'_, AppState>, artifact_id: String) -> 
 #[tauri::command]
 pub fn app_get_milestones() -> Result<Vec<MilestoneInfo>, String> {
     Ok(vec![
-        MilestoneInfo { id: "M1".into(), name: "Foundation & Event Log".into(), release: "1.0".into(), is_completed: true, exit_criterion: "Hash chain verified".into() },
-        MilestoneInfo { id: "M2".into(), name: "Vault & Persistence".into(), release: "1.0".into(), is_completed: true, exit_criterion: "SQLite WAL mode active".into() },
-        MilestoneInfo { id: "M3".into(), name: "Permission Broker & Fences".into(), release: "1.0".into(), is_completed: true, exit_criterion: "Single choke point enforced".into() },
-        MilestoneInfo { id: "M4".into(), name: "Model Router & Providers".into(), release: "1.0".into(), is_completed: true, exit_criterion: "Fallback cascades ready".into() },
-        MilestoneInfo { id: "M5".into(), name: "Budget Ceilings".into(), release: "1.0".into(), is_completed: true, exit_criterion: "Hard caps enforced".into() },
-        MilestoneInfo { id: "M6".into(), name: "Working Memory Namespaces".into(), release: "1.0".into(), is_completed: true, exit_criterion: "Default deny scoping".into() },
-        MilestoneInfo { id: "M18".into(), name: "Companion Mobile Surface".into(), release: "2.0".into(), is_completed: true, exit_criterion: "Mobile approvals render identical".into() },
-        MilestoneInfo { id: "M19".into(), name: "Voice Directive".into(), release: "2.0".into(), is_completed: true, exit_criterion: "Spoken directive produces same Mandate".into() },
-        MilestoneInfo { id: "M20".into(), name: "Executable Artifacts".into(), release: "2.0".into(), is_completed: true, exit_criterion: "Artifact executes capability-bounded".into() },
-        MilestoneInfo { id: "M21".into(), name: "Seats and Identity".into(), release: "3.0".into(), is_completed: true, exit_criterion: "Second Seat created, zero history rewritten".into() },
-        MilestoneInfo { id: "M22".into(), name: "Delegation and Separation of Duties".into(), release: "3.0".into(), is_completed: true, exit_criterion: "Self-approval structural refusal".into() },
-        MilestoneInfo { id: "M23".into(), name: "Kernel Extraction".into(), release: "3.0".into(), is_completed: false, exit_criterion: "Kernel runs headless".into() },
-        MilestoneInfo { id: "M24".into(), name: "Sync and Conflict Resolution".into(), release: "3.0".into(), is_completed: false, exit_criterion: "Offline convergence with zero lost events".into() },
-        MilestoneInfo { id: "M25".into(), name: "Firm Templates and Portability".into(), release: "3.0".into(), is_completed: false, exit_criterion: "Template reproduces structure".into() },
+        MilestoneInfo {
+            id: "M1".into(),
+            name: "Foundation & Event Log".into(),
+            release: "1.0".into(),
+            is_completed: true,
+            exit_criterion: "Hash chain verified".into(),
+        },
+        MilestoneInfo {
+            id: "M2".into(),
+            name: "Vault & Persistence".into(),
+            release: "1.0".into(),
+            is_completed: true,
+            exit_criterion: "SQLite WAL mode active".into(),
+        },
+        MilestoneInfo {
+            id: "M3".into(),
+            name: "Permission Broker & Fences".into(),
+            release: "1.0".into(),
+            is_completed: true,
+            exit_criterion: "Single choke point enforced".into(),
+        },
+        MilestoneInfo {
+            id: "M4".into(),
+            name: "Model Router & Providers".into(),
+            release: "1.0".into(),
+            is_completed: true,
+            exit_criterion: "Fallback cascades ready".into(),
+        },
+        MilestoneInfo {
+            id: "M5".into(),
+            name: "Budget Ceilings".into(),
+            release: "1.0".into(),
+            is_completed: true,
+            exit_criterion: "Hard caps enforced".into(),
+        },
+        MilestoneInfo {
+            id: "M6".into(),
+            name: "Working Memory Namespaces".into(),
+            release: "1.0".into(),
+            is_completed: true,
+            exit_criterion: "Default deny scoping".into(),
+        },
+        MilestoneInfo {
+            id: "M18".into(),
+            name: "Companion Mobile Surface".into(),
+            release: "2.0".into(),
+            is_completed: true,
+            exit_criterion: "Mobile approvals render identical".into(),
+        },
+        MilestoneInfo {
+            id: "M19".into(),
+            name: "Voice Directive".into(),
+            release: "2.0".into(),
+            is_completed: true,
+            exit_criterion: "Spoken directive produces same Mandate".into(),
+        },
+        MilestoneInfo {
+            id: "M20".into(),
+            name: "Executable Artifacts".into(),
+            release: "2.0".into(),
+            is_completed: true,
+            exit_criterion: "Artifact executes capability-bounded".into(),
+        },
+        MilestoneInfo {
+            id: "M21".into(),
+            name: "Seats and Identity".into(),
+            release: "3.0".into(),
+            is_completed: true,
+            exit_criterion: "Second Seat created, zero history rewritten".into(),
+        },
+        MilestoneInfo {
+            id: "M22".into(),
+            name: "Delegation and Separation of Duties".into(),
+            release: "3.0".into(),
+            is_completed: true,
+            exit_criterion: "Self-approval structural refusal".into(),
+        },
+        MilestoneInfo {
+            id: "M23".into(),
+            name: "Kernel Extraction".into(),
+            release: "3.0".into(),
+            is_completed: false,
+            exit_criterion: "Kernel runs headless".into(),
+        },
+        MilestoneInfo {
+            id: "M24".into(),
+            name: "Sync and Conflict Resolution".into(),
+            release: "3.0".into(),
+            is_completed: false,
+            exit_criterion: "Offline convergence with zero lost events".into(),
+        },
+        MilestoneInfo {
+            id: "M25".into(),
+            name: "Firm Templates and Portability".into(),
+            release: "3.0".into(),
+            is_completed: false,
+            exit_criterion: "Template reproduces structure".into(),
+        },
     ])
 }
 
@@ -362,7 +465,9 @@ pub fn voice_begin_capture(state: State<'_, AppState>) -> Result<String, String>
 }
 
 #[tauri::command]
-pub fn voice_stop_capture(state: State<'_, AppState>) -> Result<sidra_voice::TranscriptText, String> {
+pub fn voice_stop_capture(
+    state: State<'_, AppState>,
+) -> Result<sidra_voice::TranscriptText, String> {
     let mut session_guard = state.voice_session.lock().map_err(|e| e.to_string())?;
     if let Some(ref mut session) = *session_guard {
         session.stop()?;
@@ -371,7 +476,10 @@ pub fn voice_stop_capture(state: State<'_, AppState>) -> Result<sidra_voice::Tra
         let mut mgr = state.voice_model_mgr.lock().map_err(|e| e.to_string())?;
         mgr.release_model();
 
-        Ok(sidra_voice::TranscriptText::new("Draft the reply to the vendor and flag commitment", true))
+        Ok(sidra_voice::TranscriptText::new(
+            "Draft the reply to the vendor and flag commitment",
+            true,
+        ))
     } else {
         Err("No active capture session".to_string())
     }
@@ -394,5 +502,12 @@ pub fn voice_cancel_capture(state: State<'_, AppState>) -> Result<(), String> {
 #[tauri::command]
 pub fn voice_model_status(state: State<'_, AppState>) -> Result<bool, String> {
     let mgr = state.voice_model_mgr.lock().map_err(|e| e.to_string())?;
-    Ok(!mgr.is_resident_at_idle() || true)
+    Ok(!mgr.is_resident_at_idle())
+}
+
+#[tauri::command]
+pub fn app_get_delegations(state: State<'_, AppState>) -> Result<String, String> {
+    let engine = state.delegation_engine.lock().map_err(|e| e.to_string())?;
+    drop(engine);
+    Ok("Delegation Engine Active".to_string())
 }

@@ -1,7 +1,7 @@
-use serde::{Deserialize, Serialize};
 use crate::domain::device::{CompanionDevice, DeviceStatus};
 use crate::domain::outbox::ApprovalOutboxEntry;
 use crate::pairing::verify::{verify_entry_signature, SignatureVerificationResult};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ReconciliationStatus {
@@ -27,10 +27,12 @@ impl ReconciliationEngine {
         entry: &ApprovalOutboxEntry,
         existing_decisions: &[String],
         pending_requests: &[String],
-        now: u64,
+        _now: u64,
     ) -> ReconciliationResult {
         // Step 1: Trust Check
-        if device.status != DeviceStatus::Active || verify_entry_signature(device, entry) != SignatureVerificationResult::Valid {
+        if device.status != DeviceStatus::Active
+            || verify_entry_signature(device, entry) != SignatureVerificationResult::Valid
+        {
             return ReconciliationResult {
                 outbox_entry_id: entry.outbox_entry_id.clone(),
                 approval_request_id: entry.approval_request_id.clone(),

@@ -33,7 +33,7 @@ pub struct EvalRunner;
 
 impl EvalRunner {
     pub fn run_evaluation_subject(
-        charter: &Charter,
+        _charter: &Charter,
         eval_set: &EvaluationSet,
         subject_kind: SubjectKind,
         subject_ref: String,

@@ -15,13 +15,13 @@ pub fn evaluate_phase_gate(mission: &Mission, target_phase: &str) -> Result<(), 
         }
         "AWAITING_AUTH" => {
             if mission.current_plan().is_none() {
-                errors.push("AWAITING_AUTH gate failed: No authorized plan version present".to_string());
+                errors.push(
+                    "AWAITING_AUTH gate failed: No authorized plan version present".to_string(),
+                );
             }
         }
-        "READY" => {
-            if mission.current_state != "AWAITING_AUTH" {
-                errors.push("READY gate failed: Mission must be in AWAITING_AUTH state".to_string());
-            }
+        "READY" if mission.current_state != "AWAITING_AUTH" => {
+            errors.push("READY gate failed: Mission must be in AWAITING_AUTH state".to_string());
         }
         _ => {}
     }

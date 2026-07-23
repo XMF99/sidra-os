@@ -1,12 +1,12 @@
 //! M22 Delegation and Separation of Duties — Conformance Suite & Exit Criterion Verification
 //! Ref: DELEGATION_AND_SEPARATION_ARCHITECTURE.md §16, §17, ADR-0060, ADR-0061
 
-use std::collections::BTreeSet;
-use sidra_seats::{Capability, SeatFence, SeatId};
-use crate::delegation::DelegationEngine;
-use crate::domain::{ApprovalResolution, ApprovalVerdict, AuthoritySource, DenyReason, Scope};
+use crate::domain::{
+    ApprovalResolution, ApprovalVerdict, AuthoritySource, CreateResolutionArgs, DenyReason,
+};
 use crate::eligibility::EligibilityGuard;
-use crate::resolution::ResolutionEngine;
+use sidra_seats::{Capability, SeatFence, SeatId};
+use std::collections::BTreeSet;
 
 pub struct DelegationConformanceSuite;
 
@@ -40,16 +40,16 @@ impl DelegationConformanceSuite {
         assert_eq!(guard_res, Err(DenyReason::SelfApproval));
 
         // 2. Structural Constraint Half: Direct construction/write of self-resolution fails in domain & SQL CHECK
-        let struct_res = ApprovalResolution::create(
-            "req_001",
-            seat_a.clone(), // Requester
-            seat_a.clone(), // Approver
-            AuthoritySource::OwnFence,
-            None,
-            ApprovalVerdict::Granted,
-            "dec_001",
-            1700000100,
-        );
+        let struct_res = ApprovalResolution::create(CreateResolutionArgs {
+            request_id: "req_001".to_string(),
+            requester_seat_id: seat_a.clone(), // Requester
+            approver_seat_id: seat_a.clone(),  // Approver
+            authority_source: AuthoritySource::OwnFence,
+            delegation_id: None,
+            verdict: ApprovalVerdict::Granted,
+            decision_id: "dec_001".to_string(),
+            now: 1700000100,
+        });
 
         assert!(struct_res.is_err());
         assert!(struct_res.unwrap_err().contains("SelfApprovalViolation"));

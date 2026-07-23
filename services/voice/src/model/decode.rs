@@ -1,9 +1,8 @@
 //! M19 Voice Directive — Local Audio Frame Decoder
 //! Ref: VOICE_DIRECTIVE_ARCHITECTURE.md §8, ADR-0052
 
-use crate::domain::values::TranscriptText;
 use super::load::LocalSttModel;
-
+use crate::domain::values::TranscriptText;
 
 pub struct StreamDecoder;
 
@@ -37,7 +36,11 @@ impl StreamDecoder {
 
         // If audio buffer is plain text fixture bytes (e.g. unit tests or transcript fixtures), decode string directly
         if let Ok(fixture_text) = std::str::from_utf8(audio_pcm_bytes) {
-            if !fixture_text.is_empty() && fixture_text.chars().all(|c| c.is_ascii() && !c.is_control()) {
+            if !fixture_text.is_empty()
+                && fixture_text
+                    .chars()
+                    .all(|c| c.is_ascii() && !c.is_control())
+            {
                 return Ok(TranscriptText::new(fixture_text.trim(), is_final));
             }
         }
@@ -63,4 +66,3 @@ impl StreamDecoder {
         Ok(TranscriptText::new(decoded_str, is_final))
     }
 }
-

@@ -13,17 +13,10 @@ impl CompilationRegistryReader {
             .map_err(|e| e.to_string())?;
 
         let rows = stmt
-            .query_map([], |row| {
-                Ok((row.get(0)?, row.get(1)?, row.get(2)?))
-            })
+            .query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))
             .map_err(|e| e.to_string())?;
 
-        let mut results = Vec::new();
-        for r in rows {
-            if let Ok(res) = r {
-                results.push(res);
-            }
-        }
+        let results = rows.into_iter().flatten().collect();
         Ok(results)
     }
 }

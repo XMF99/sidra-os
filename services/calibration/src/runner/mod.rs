@@ -4,7 +4,6 @@ use crate::ingest::read_model::OutcomeRecordReader;
 use crate::ingest::sample::EstimateErrorSample;
 use crate::metric::aggregate::{CalibrationMetric, MetricAggregator};
 use crate::store::read::ParameterStoreReader;
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -24,7 +23,10 @@ pub struct CalibrationRunner;
 impl CalibrationRunner {
     pub const MIN_MISSIONS: usize = 50;
 
-    pub fn run_calibration(vault: &Mutex<Vault>, timestamp: u64) -> Result<CalibrationRunResult, String> {
+    pub fn run_calibration(
+        vault: &Mutex<Vault>,
+        timestamp: u64,
+    ) -> Result<CalibrationRunResult, String> {
         // Enforce Local-Only No-Egress Guard (ADR-0009)
         SocketEgressGuard::assert_no_egress()?;
 
@@ -76,11 +78,16 @@ impl CalibrationRunner {
         let conn = vault_guard.connection();
 
         // 1. Deactivate current version and activate new version
-        conn.execute("UPDATE calibration_parameters SET active = 0", []).map_err(|e| e.to_string())?;
+        conn.execute("UPDATE calibration_parameters SET active = 0", [])
+            .map_err(|e| e.to_string())?;
         conn.execute(
             "INSERT INTO calibration_parameters (version, supersedes_version, active, created_at)
              VALUES (?1, ?2, 1, ?3)",
-            rusqlite::params![new_version.0 as i64, current_params.version.0 as i64, timestamp as i64],
+            rusqlite::params![
+                new_version.0 as i64,
+                current_params.version.0 as i64,
+                timestamp as i64
+            ],
         )
         .map_err(|e| e.to_string())?;
 
@@ -107,7 +114,11 @@ impl CalibrationRunner {
             aggregate_id: run_id.clone(),
             payload: format!(
                 "Applied Calibration Run {} (Version {} -> {}) EE: {:.4} -> {:.4}",
-                run_id, current_params.version.0, new_version.0, metric_before.total_ee, metric_after.total_ee
+                run_id,
+                current_params.version.0,
+                new_version.0,
+                metric_before.total_ee,
+                metric_after.total_ee
             ),
             metadata: r#"{"actor":"founding_principal"}"#.to_string(),
             timestamp: timestamp.to_string(),

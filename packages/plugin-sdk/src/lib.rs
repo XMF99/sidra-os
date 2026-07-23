@@ -28,7 +28,12 @@ impl PluginContext {
         }
     }
 
-    pub fn prepare_host_call(&self, action: &str, resource: &str, payload: &str) -> HostCallRequest {
+    pub fn prepare_host_call(
+        &self,
+        action: &str,
+        resource: &str,
+        payload: &str,
+    ) -> HostCallRequest {
         HostCallRequest {
             plugin_id: self.plugin_id.clone(),
             action: action.to_string(),

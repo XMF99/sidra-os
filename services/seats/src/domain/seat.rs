@@ -1,8 +1,8 @@
 //! M21 Seats and Identity — Seat Aggregate
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §4.2, ADR-0057
 
-use serde::{Deserialize, Serialize};
 use super::values::{ActorValue, DisplayName, SeatId, SeatStatus};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Seat {
@@ -30,11 +30,7 @@ impl Seat {
         }
     }
 
-    pub fn invite(
-        display_name: DisplayName,
-        invited_by: SeatId,
-        now: u64,
-    ) -> Self {
+    pub fn invite(display_name: DisplayName, invited_by: SeatId, now: u64) -> Self {
         let seat_id = SeatId::generate();
         let actor_value = ActorValue::from_seat_id(&seat_id);
         Self {

@@ -9,14 +9,20 @@ impl ArtifactAuditEmitter {
     pub fn emit_grant_derived(event: &ArtifactGrantDerived) -> String {
         format!(
             "EVENT[ArtifactGrantDerived]: artifact={} wo={} caps_count={} at={}",
-            event.artifact_id.0, event.producing_work_order_id, event.frozen_grant.len(), event.derived_at
+            event.artifact_id.0,
+            event.producing_work_order_id,
+            event.frozen_grant.len(),
+            event.derived_at
         )
     }
 
     pub fn emit_grant_refused(event: &ArtifactGrantRefused) -> String {
         format!(
             "EVENT[ArtifactGrantRefused]: artifact={} wo={} offending_cap={} at={}",
-            event.artifact_id.0, event.producing_work_order_id, event.offending_capability, event.refused_at
+            event.artifact_id.0,
+            event.producing_work_order_id,
+            event.offending_capability,
+            event.refused_at
         )
     }
 

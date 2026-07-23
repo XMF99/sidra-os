@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — Run & Effect Records
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §4.4, ADR-0054
 
+use super::values::{ArtifactId, ArtifactRunId, Capability};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
-use super::values::{ArtifactId, ArtifactRunId, Capability};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RunOutcome {

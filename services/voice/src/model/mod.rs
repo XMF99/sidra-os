@@ -1,7 +1,7 @@
-pub mod load;
 pub mod decode;
 pub mod lifecycle;
+pub mod load;
 
-pub use load::*;
 pub use decode::*;
 pub use lifecycle::*;
+pub use load::*;

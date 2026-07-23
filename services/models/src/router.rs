@@ -32,7 +32,13 @@ impl ModelRouter {
                     return Ok(response);
                 }
                 Err(err) => {
-                    last_error_msg = format!("Provider [{}] failed (step {}/{}): {}", provider.name(), index + 1, self.fallback_chain.len(), err);
+                    last_error_msg = format!(
+                        "Provider [{}] failed (step {}/{}): {}",
+                        provider.name(),
+                        index + 1,
+                        self.fallback_chain.len(),
+                        err
+                    );
                 }
             }
         }

@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — Conformance Suite & Exit Criterion Proof
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §17, ADR-0054, ADR-0055, ADR-0056
 
-use std::collections::BTreeSet;
-use crate::domain::{ArtifactId, Capability, ExecutableArtifact, ModuleHash, WasmLimits};
+use crate::domain::{ArtifactId, Capability};
 use crate::grant::{GrantDeriver, MockWorkOrderCapabilityResolver};
+use std::collections::BTreeSet;
 
 pub struct ArtifactConformanceSuite;
 
@@ -39,13 +39,17 @@ impl ArtifactConformanceSuite {
 
         match result {
             Err(refusal) => {
-                if !refusal.contains("GrantRefused") || !refusal.contains("net.fetch:api.stripe.com") {
+                if !refusal.contains("GrantRefused")
+                    || !refusal.contains("net.fetch:api.stripe.com")
+                {
                     return Err(format!("Unexpected refusal message format: {}", refusal));
                 }
                 // PASSED! Hard refusal naming the offending capability before runnable
                 Ok(())
             }
-            Ok(_) => Err("FAIL: Over-request was granted! Violates ADR-0054 exit criterion".to_string()),
+            Ok(_) => {
+                Err("FAIL: Over-request was granted! Violates ADR-0054 exit criterion".to_string())
+            }
         }
     }
 
@@ -75,7 +79,10 @@ impl ArtifactConformanceSuite {
         // Verify frozen_grant ⊆ wo_grant
         for cap in &grant.frozen_grant {
             if !wo_grant.contains(cap) {
-                return Err(format!("Grant subset violation: frozen capability '{}' not in WO grant", cap.0));
+                return Err(format!(
+                    "Grant subset violation: frozen capability '{}' not in WO grant",
+                    cap.0
+                ));
             }
         }
 

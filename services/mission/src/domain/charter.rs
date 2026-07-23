@@ -371,7 +371,10 @@ impl Charter {
             deadline: amendment.deadline.unwrap_or(self.deadline),
             autonomy: amendment.autonomy.unwrap_or(self.autonomy),
             review_intensity: amendment.review_intensity.unwrap_or(self.review_intensity),
-            fences: amendment.fences.clone().unwrap_or_else(|| self.fences.clone()),
+            fences: amendment
+                .fences
+                .clone()
+                .unwrap_or_else(|| self.fences.clone()),
             departments_allowed: amendment
                 .departments_allowed
                 .clone()

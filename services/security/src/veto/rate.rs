@@ -2,8 +2,6 @@
 //!
 //! Ref: ADR-0015, IMPLEMENTATION_PLAN.md T3.6
 
-use sidra_domain::structure::Veto;
-
 pub fn calculate_office_approval_rate(vetoes_total: usize, vetoes_upheld: usize) -> f64 {
     if vetoes_total == 0 {
         return 1.0;

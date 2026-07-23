@@ -37,7 +37,12 @@ impl DecisionEngineRepository {
         conn.execute(
             "INSERT INTO decisions (id, subject_id, decision_type, status, created_at)
              VALUES (?1, ?2, ?3, 'APPROVED', ?4)",
-            params![decision.id, decision.title, decision.rationale, decision.created_at],
+            params![
+                decision.id,
+                decision.title,
+                decision.rationale,
+                decision.created_at
+            ],
         )
         .map_err(|e| e.to_string())?;
         Ok(())

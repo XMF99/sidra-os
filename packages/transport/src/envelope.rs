@@ -11,7 +11,11 @@ pub struct TransportEnvelope {
 }
 
 impl TransportEnvelope {
-    pub fn request(correlation_id: impl Into<String>, seat_id: Option<String>, goal: String) -> Self {
+    pub fn request(
+        correlation_id: impl Into<String>,
+        seat_id: Option<String>,
+        goal: String,
+    ) -> Self {
         Self {
             correlation_id: correlation_id.into(),
             client_id: None,

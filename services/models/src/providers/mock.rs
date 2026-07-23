@@ -36,7 +36,9 @@ pub struct MockSuccessProvider {
 
 impl MockSuccessProvider {
     pub fn new(name: &'static str) -> Self {
-        Self { provider_name: name }
+        Self {
+            provider_name: name,
+        }
     }
 }
 
@@ -49,16 +51,21 @@ impl ModelProvider for MockSuccessProvider {
         let tool_calls = request
             .tools
             .first()
-            .map(|t| vec![ToolCall {
-                id: format!("call_mock_{}", Ulid::new()),
-                name: t.name.clone(),
-                arguments_json: r#"{"status":"success_fallback"}"#.to_string(),
-            }])
+            .map(|t| {
+                vec![ToolCall {
+                    id: format!("call_mock_{}", Ulid::new()),
+                    name: t.name.clone(),
+                    arguments_json: r#"{"status":"success_fallback"}"#.to_string(),
+                }]
+            })
             .unwrap_or_default();
 
         Ok(CompletionResponse {
             id: format!("mock-{}", Ulid::new()),
-            content: format!("Response from mock success provider [{}]", self.provider_name),
+            content: format!(
+                "Response from mock success provider [{}]",
+                self.provider_name
+            ),
             tool_calls,
             usage: TokenUsage {
                 prompt_tokens: 10,

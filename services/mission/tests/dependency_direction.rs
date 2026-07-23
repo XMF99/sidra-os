@@ -41,7 +41,8 @@ fn manifest_does_not_declare_the_forbidden_dependency() {
 fn comment_stripping_does_not_hide_a_real_dependency() {
     // Guards the guard: if `manifest_without_comments` were too aggressive, the test above
     // would pass on a violating manifest. This asserts it still sees a real declaration.
-    let sample = "# sidra-orchestrator is forbidden\n[dependencies]\nsidra-orchestrator = \"0.1\"\n";
+    let sample =
+        "# sidra-orchestrator is forbidden\n[dependencies]\nsidra-orchestrator = \"0.1\"\n";
     let stripped = sample
         .lines()
         .map(|line| line.split('#').next().unwrap_or(""))

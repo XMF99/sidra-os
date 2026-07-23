@@ -18,7 +18,10 @@ pub use domain::{
     ArtifactCapabilityGrant, ArtifactId, ArtifactManifest, ArtifactRun, ArtifactRunId, Capability,
     ExecStatus, ExecutableArtifact, ModuleHash, RunOutcome, WasmLimits,
 };
-pub use grant::{EffectiveGrantCalculator, GrantDeriver, MockWorkOrderCapabilityResolver, WorkOrderCapabilityResolver};
+pub use grant::{
+    EffectiveGrantCalculator, GrantDeriver, MockWorkOrderCapabilityResolver,
+    WorkOrderCapabilityResolver,
+};
 pub use host_fns::{ConnectorHostFunctions, EffectClass, LocalHostFunctions};
-pub use run::{ArtifactRunHost, ResourceBoundsTracker};
+pub use run::{ArtifactRunHost, ExecuteArtifactArgs, ResourceBoundsTracker};
 pub use validate::ArtifactValidator;

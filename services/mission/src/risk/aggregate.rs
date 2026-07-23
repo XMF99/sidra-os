@@ -15,18 +15,20 @@ pub enum RiskBand {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RiskDimensions {
-    pub reversibility: u8,      // 0-3
-    pub specification: u8,      // 0-3
-    pub novelty: u8,            // 0-3
-    pub dependency_fragility: u8,// 0-3
-    pub cost_variance: u8,      // 0-3
-    pub blast_radius: u8,       // 0-3
+    pub reversibility: u8,        // 0-3
+    pub specification: u8,        // 0-3
+    pub novelty: u8,              // 0-3
+    pub dependency_fragility: u8, // 0-3
+    pub cost_variance: u8,        // 0-3
+    pub blast_radius: u8,         // 0-3
 }
 
 pub fn aggregate_risk(dims: &RiskDimensions) -> (f64, RiskBand) {
     let max_score = dims.reversibility.max(dims.blast_radius) as f64;
-    let mean_score = (dims.specification + dims.novelty + dims.dependency_fragility + dims.cost_variance) as f64 / 4.0;
-    
+    let mean_score =
+        (dims.specification + dims.novelty + dims.dependency_fragility + dims.cost_variance) as f64
+            / 4.0;
+
     // max (+) mean formula
     let final_score = (max_score * 0.6) + (mean_score * 0.4);
 

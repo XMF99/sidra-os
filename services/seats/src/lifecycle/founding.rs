@@ -6,7 +6,10 @@ use crate::registry::SeatRegistry;
 
 pub fn materialize_founding(registry: &mut SeatRegistry, now: u64) -> Result<Seat, String> {
     if registry.has_founding_seat() {
-        return Err("Founding Seat already exists! Cannot materialize a second founding Seat (ADR-0057)".to_string());
+        return Err(
+            "Founding Seat already exists! Cannot materialize a second founding Seat (ADR-0057)"
+                .to_string(),
+        );
     }
 
     let founding = Seat::materialize_founding(now);

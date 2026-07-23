@@ -17,7 +17,11 @@ pub struct TransportClient {
 }
 
 impl TransportClient {
-    pub fn new(endpoint: impl Into<String>, client_id: impl Into<String>, seat_id: impl Into<String>) -> Self {
+    pub fn new(
+        endpoint: impl Into<String>,
+        client_id: impl Into<String>,
+        seat_id: impl Into<String>,
+    ) -> Self {
         Self {
             endpoint: endpoint.into(),
             client_id: client_id.into(),
@@ -26,7 +30,11 @@ impl TransportClient {
     }
 
     pub fn prepare_request(&self, correlation_id: &str, goal: &str) -> Result<String, ClientError> {
-        let mut envelope = TransportEnvelope::request(correlation_id, Some(self.seat_id.clone()), goal.to_string());
+        let mut envelope = TransportEnvelope::request(
+            correlation_id,
+            Some(self.seat_id.clone()),
+            goal.to_string(),
+        );
         envelope.client_id = Some(self.client_id.clone());
         let encoded = TransportCodec::encode(&envelope)?;
         Ok(encoded)

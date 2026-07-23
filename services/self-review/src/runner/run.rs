@@ -1,8 +1,7 @@
 use crate::domain::health::AbsorbableVerdict;
 use crate::domain::proposal::StructureProposal;
 use crate::domain::review::{ReviewStatus, StructureReview};
-use crate::domain::values::{Confidence, DepartmentId, Quarter, QualityScore, ReviewId};
-use crate::health::assess::HealthAssessor;
+use crate::domain::values::{Confidence, DepartmentId, QualityScore, Quarter, ReviewId};
 use crate::proposal::write::ProposalWriter;
 use sidra_domain::EventInput;
 use sidra_store::{EventLogRepository, Vault};
@@ -36,12 +35,15 @@ impl StructureReviewRunner {
             event_type: "StructureReviewStarted".to_string(),
             aggregate_type: "self_review".to_string(),
             aggregate_id: review_id.0.clone(),
-            payload: format!("Started Structure Review {} for Quarter {}", review_id.0, q_val.0),
+            payload: format!(
+                "Started Structure Review {} for Quarter {}",
+                review_id.0, q_val.0
+            ),
             metadata: r#"{"actor":"self_review_engine"}"#.to_string(),
             timestamp: timestamp.to_string(),
         };
         EventLogRepository::append(conn, &input).map_err(|e| e.to_string())?;
-        drop(conn);
+        let _ = conn;
         drop(vault_guard);
 
         let mut proposals = Vec::new();
@@ -92,10 +94,12 @@ impl StructureReviewRunner {
             )
             .map_err(|e| e.to_string())?;
 
-            drop(conn);
+            let _ = conn;
             drop(vault_guard);
 
-            if let Some(prop) = ProposalWriter::raise_proposal_if_absorbable(vault, &health, timestamp)? {
+            if let Some(prop) =
+                ProposalWriter::raise_proposal_if_absorbable(vault, &health, timestamp)?
+            {
                 proposals.push(prop);
             }
             overall_healths.push(health);
@@ -117,7 +121,8 @@ impl StructureReviewRunner {
             aggregate_id: review_id.0.clone(),
             payload: format!(
                 "Concluded Structure Review {} with {} proposals raised",
-                review_id.0, proposals.len()
+                review_id.0,
+                proposals.len()
             ),
             metadata: r#"{"actor":"self_review_engine"}"#.to_string(),
             timestamp: timestamp.to_string(),

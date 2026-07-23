@@ -1,8 +1,8 @@
 //! M21 Seats and Identity — Seat Working Memory Aggregate
 //! Ref: SEATS_AND_IDENTITY_ARCHITECTURE.md §4.5, ADR-0059
 
-use serde::{Deserialize, Serialize};
 use super::values::{MemoryNamespace, SeatId};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SeatWorkingMemory {

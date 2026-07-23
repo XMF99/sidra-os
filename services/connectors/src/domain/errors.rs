@@ -37,10 +37,7 @@ pub enum ConnectorError {
     },
 
     #[error("Egress blocked: host '{host}' is not declared in egress.allow for connector '{connector_id}'")]
-    EgressBlocked {
-        connector_id: String,
-        host: String,
-    },
+    EgressBlocked { connector_id: String, host: String },
 
     #[error("OAuth error: {0}")]
     OAuthError(String),

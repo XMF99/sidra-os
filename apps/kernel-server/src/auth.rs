@@ -22,7 +22,9 @@ impl SeatAuthenticator {
         client_id: &str,
         credential_ref: &str,
     ) -> Result<SeatId, AuthError> {
-        let vault_guard = vault.lock().map_err(|e| AuthError::DatabaseError(e.to_string()))?;
+        let vault_guard = vault
+            .lock()
+            .map_err(|e| AuthError::DatabaseError(e.to_string()))?;
         let conn = vault_guard.connection();
 
         // Local default principal fallback if no enrollment table query yet or single-user desktop
@@ -38,9 +40,16 @@ impl SeatAuthenticator {
             .query(rusqlite::params![client_id])
             .map_err(|e| AuthError::DatabaseError(e.to_string()))?;
 
-        if let Some(row) = rows.next().map_err(|e| AuthError::DatabaseError(e.to_string()))? {
-            let seat_id_str: String = row.get(0).map_err(|e| AuthError::DatabaseError(e.to_string()))?;
-            let revoked_at: Option<i64> = row.get(1).map_err(|e| AuthError::DatabaseError(e.to_string()))?;
+        if let Some(row) = rows
+            .next()
+            .map_err(|e| AuthError::DatabaseError(e.to_string()))?
+        {
+            let seat_id_str: String = row
+                .get(0)
+                .map_err(|e| AuthError::DatabaseError(e.to_string()))?;
+            let revoked_at: Option<i64> = row
+                .get(1)
+                .map_err(|e| AuthError::DatabaseError(e.to_string()))?;
 
             if revoked_at.is_some() {
                 return Err(AuthError::EnrollmentRevoked(client_id.to_string()));

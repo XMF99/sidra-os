@@ -13,12 +13,12 @@ impl Tool for VectorSearchTool {
     }
 
     fn effect_class(&self) -> EffectClass {
-        EffectClass::Class0_Read
+        EffectClass::Class0Read
     }
 
     fn execute(&self, parameters_json: &str) -> Result<String, String> {
-        let val: serde_json::Value = serde_json::from_str(parameters_json)
-            .map_err(|e| format!("Invalid params: {}", e))?;
+        let val: serde_json::Value =
+            serde_json::from_str(parameters_json).map_err(|e| format!("Invalid params: {}", e))?;
         let query = val["query"].as_str().unwrap_or("");
         Ok(format!("Found 5 memory chunks matching query '{}'", query))
     }

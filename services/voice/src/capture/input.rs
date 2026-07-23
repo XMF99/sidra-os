@@ -1,8 +1,8 @@
 //! M19 Voice Directive — Kernel Audio Capture Session
 //! Ref: VOICE_DIRECTIVE_ARCHITECTURE.md §6.1, §5, ADR-0052
 
-use crate::domain::values::CaptureId;
 use super::state::CaptureState;
+use crate::domain::values::CaptureId;
 
 pub struct AudioCaptureSession {
     pub capture_id: CaptureId,
@@ -32,7 +32,10 @@ impl AudioCaptureSession {
 
     pub fn stop(&mut self) -> Result<(), String> {
         if self.state != CaptureState::Capturing {
-            return Err(format!("Cannot stop capture session in state {:?}", self.state));
+            return Err(format!(
+                "Cannot stop capture session in state {:?}",
+                self.state
+            ));
         }
         self.state = CaptureState::Transcribing;
         Ok(())

@@ -8,12 +8,15 @@ use std::sync::Arc;
 #[test]
 fn test_m5_exit_criterion_multi_provider_fallback_chain_failover() {
     // 1. Build a fallback chain: Primary fails, Secondary fails, Tertiary succeeds
-    let provider1: Arc<dyn ModelProvider> =
-        Arc::new(MockFailingProvider::new("primary_openai", "Rate limit exceeded 429"));
-    let provider2: Arc<dyn ModelProvider> =
-        Arc::new(MockFailingProvider::new("secondary_anthropic", "503 Service Unavailable"));
-    let provider3: Arc<dyn ModelProvider> =
-        Arc::new(MockSuccessProvider::new("tertiary_gemini"));
+    let provider1: Arc<dyn ModelProvider> = Arc::new(MockFailingProvider::new(
+        "primary_openai",
+        "Rate limit exceeded 429",
+    ));
+    let provider2: Arc<dyn ModelProvider> = Arc::new(MockFailingProvider::new(
+        "secondary_anthropic",
+        "503 Service Unavailable",
+    ));
+    let provider3: Arc<dyn ModelProvider> = Arc::new(MockSuccessProvider::new("tertiary_gemini"));
 
     let router = ModelRouter::new(vec![provider1, provider2, provider3]);
 

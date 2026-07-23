@@ -1,7 +1,6 @@
 /// Veto Override Actor Gate (ADR-0015, ADR-0042)
 ///
 /// Ref: STRUCTURE_ARCHITECTURE.md §5.3
-
 use sidra_domain::structure::{Veto, VetoScope, VetoVerdict};
 
 pub fn override_veto(
@@ -16,9 +15,10 @@ pub fn override_veto(
     }
 
     if veto.scope != VetoScope::Security {
-        return Err(format!(
+        return Err(
             "Veto override refusal: Only Security Office vetoes may be overridden by the Principal (Quality, Cost, Architecture vetoes have no override)."
-        ));
+                .to_string(),
+        );
     }
 
     if risk_accepted.trim().is_empty() {

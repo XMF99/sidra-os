@@ -106,9 +106,9 @@ fn validate_check_4(manifest: &ConnectorManifest) -> Result<(), ConnectorError> 
     for op in &manifest.operations {
         let action = op.capability.action().unwrap_or("");
         let expected_class = match action {
-            "read" => EffectClass::Class1_ReversibleLocal,
-            "write" => EffectClass::Class2_IrreversibleExternal,
-            "admin" => EffectClass::Class3_CriticalHumanSignature,
+            "read" => EffectClass::Class1ReversibleLocal,
+            "write" => EffectClass::Class2IrreversibleExternal,
+            "admin" => EffectClass::Class3CriticalHumanSignature,
             "*" => op.effect,
             _ => {
                 return Err(ConnectorError::InstallCheckFailed {
@@ -207,7 +207,10 @@ fn validate_check_7(raw_toml: &str) -> Result<(), ConnectorError> {
 }
 
 fn validate_check_8(manifest: &ConnectorManifest) -> Result<(), ConnectorError> {
-    if let AuthConfig::OAuth2 { authorize, token, .. } = &manifest.auth {
+    if let AuthConfig::OAuth2 {
+        authorize, token, ..
+    } = &manifest.auth
+    {
         let auth_url = Url::parse(authorize).map_err(|e| ConnectorError::InstallCheckFailed {
             rule_number: 8,
             rule_name: "oauth endpoints in egress".into(),
@@ -226,7 +229,10 @@ fn validate_check_8(manifest: &ConnectorManifest) -> Result<(), ConnectorError> 
             return Err(ConnectorError::InstallCheckFailed {
                 rule_number: 8,
                 rule_name: "oauth endpoints in egress".into(),
-                details: format!("OAuth authorize host '{}' is not in egress.allow", auth_host),
+                details: format!(
+                    "OAuth authorize host '{}' is not in egress.allow",
+                    auth_host
+                ),
             });
         }
 
@@ -243,7 +249,7 @@ fn validate_check_8(manifest: &ConnectorManifest) -> Result<(), ConnectorError> 
 
 fn validate_check_9(manifest: &ConnectorManifest) -> Result<(), ConnectorError> {
     for op in &manifest.operations {
-        if op.effect == EffectClass::Class0_Read {
+        if op.effect == EffectClass::Class0Read {
             return Err(ConnectorError::InstallCheckFailed {
                 rule_number: 9,
                 rule_name: "no class 0 network operation".into(),
@@ -263,8 +269,7 @@ pub fn is_host_allowed(host: &str, allowlist: &[String]) -> bool {
     let host_lower = host.to_lowercase();
     for entry in allowlist {
         let entry_lower = entry.to_lowercase();
-        if entry_lower.starts_with("*.") {
-            let suffix = &entry_lower[2..];
+        if let Some(suffix) = entry_lower.strip_prefix("*.") {
             if host_lower == suffix || host_lower.ends_with(&format!(".{}", suffix)) {
                 return true;
             }
@@ -276,6 +281,8 @@ pub fn is_host_allowed(host: &str, allowlist: &[String]) -> bool {
 }
 
 fn is_bare_tld(host: &str) -> bool {
-    const COMMON_TLDS: &[&str] = &["com", "net", "org", "io", "dev", "app", "gov", "edu", "co", "uk", "de"];
+    const COMMON_TLDS: &[&str] = &[
+        "com", "net", "org", "io", "dev", "app", "gov", "edu", "co", "uk", "de",
+    ];
     COMMON_TLDS.contains(&host)
 }

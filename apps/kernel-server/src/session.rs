@@ -66,6 +66,9 @@ impl ClientSession {
     }
 
     pub fn is_authenticated(&self) -> bool {
-        matches!(self.state, SessionState::Authenticated | SessionState::Subscribed | SessionState::Active)
+        matches!(
+            self.state,
+            SessionState::Authenticated | SessionState::Subscribed | SessionState::Active
+        )
     }
 }

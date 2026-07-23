@@ -28,5 +28,8 @@ fn test_refinery_migrations_rehearsal() {
         )
         .unwrap();
 
-    assert_eq!(proj_count, 1, "engagements_projection table must be created by V1 migration");
+    assert_eq!(
+        proj_count, 1,
+        "engagements_projection table must be created by V1 migration"
+    );
 }

@@ -1,9 +1,9 @@
 //! M22 Delegation and Separation of Duties — Delegation Aggregate
 //! Ref: DELEGATION_AND_SEPARATION_ARCHITECTURE.md §4.2, ADR-0061
 
+use super::values::{DelegationId, Scope};
 use serde::{Deserialize, Serialize};
 use sidra_seats::SeatId;
-use super::values::{DelegationId, Scope};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Delegation {
@@ -12,7 +12,7 @@ pub struct Delegation {
     pub delegatee: SeatId, // REQUIRED and != delegator (ADR-0061)
     pub scope: Scope,      // ⊆ delegator's Fence at grant; re-checked at use
     pub granted_at: u64,
-    pub expires_at: u64,    // REQUIRED, strictly after granted_at
+    pub expires_at: u64, // REQUIRED, strictly after granted_at
     pub granted_by: SeatId,
     pub decision_id: String,
     pub revoked_at: Option<u64>,
@@ -30,10 +30,15 @@ impl Delegation {
         decision_id: String,
     ) -> Result<Self, String> {
         if delegator == delegatee {
-            return Err("SelfDelegationViolation: A Seat cannot delegate to itself (ADR-0061)".to_string());
+            return Err(
+                "SelfDelegationViolation: A Seat cannot delegate to itself (ADR-0061)".to_string(),
+            );
         }
         if expires_at <= granted_at {
-            return Err("InvalidWindowViolation: Delegation expires_at must be strictly after granted_at".to_string());
+            return Err(
+                "InvalidWindowViolation: Delegation expires_at must be strictly after granted_at"
+                    .to_string(),
+            );
         }
 
         Ok(Self {

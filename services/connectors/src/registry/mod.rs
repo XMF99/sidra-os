@@ -72,7 +72,11 @@ impl ConnectorRegistry {
     }
 
     /// Uninstall a connector
-    pub fn uninstall_connector(&self, id: &ConnectorId, revoked_at: &str) -> Result<(), ConnectorError> {
+    pub fn uninstall_connector(
+        &self,
+        id: &ConnectorId,
+        revoked_at: &str,
+    ) -> Result<(), ConnectorError> {
         let mut manifests = self.manifests.lock().unwrap();
         let mut statuses = self.statuses.lock().unwrap();
 

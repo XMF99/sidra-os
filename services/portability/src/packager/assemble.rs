@@ -3,7 +3,6 @@ use crate::domain::attestation::BoundaryAttestation;
 use crate::domain::manifest::{FirmTemplate, TemplateManifest};
 use crate::domain::values::{TemplateId, TemplateVersion};
 use crate::exporter::select::TemplateSelection;
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;

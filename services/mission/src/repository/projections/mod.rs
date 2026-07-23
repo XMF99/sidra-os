@@ -21,12 +21,15 @@ pub struct ProjectionsState {
 
 pub fn apply_event(state: &mut ProjectionsState, event: &MissionEvent) {
     let m_id = event.mission_id.as_str().to_string();
-    let proj = state.missions.entry(m_id.clone()).or_insert_with(|| MissionProjection {
-        mission_id: m_id,
-        state: "Draft".to_string(),
-        risk_band: "Low".to_string(),
-        plan_version: 1,
-    });
+    let proj = state
+        .missions
+        .entry(m_id.clone())
+        .or_insert_with(|| MissionProjection {
+            mission_id: m_id,
+            state: "Draft".to_string(),
+            risk_band: "Low".to_string(),
+            plan_version: 1,
+        });
 
     match &event.payload {
         MissionEventPayload::MissionDrafted { .. } => {

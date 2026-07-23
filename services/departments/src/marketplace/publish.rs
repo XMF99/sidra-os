@@ -27,7 +27,9 @@ pub fn publish_pack(
     if !provenance_doc_content.contains("The MIT License")
         || !provenance_doc_content.contains("Claude-Code-Game-Studios")
     {
-        return Err("Publish gate refused: CCGS MIT attribution missing in PROVENANCE.md".to_string());
+        return Err(
+            "Publish gate refused: CCGS MIT attribution missing in PROVENANCE.md".to_string(),
+        );
     }
 
     let origin_line = "Source: Claude-Code-Game-Studios (MIT License)".to_string();

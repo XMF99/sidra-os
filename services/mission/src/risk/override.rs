@@ -16,7 +16,9 @@ pub fn apply_security_override(
     }
     // Division executive cannot lower an Office-raised band (ARCH §11.5 rule 3)
     if requested_band < current_band && actor != "security_office" {
-        return Err("Risk override refusal: Cannot lower Security Office raised risk band".to_string());
+        return Err(
+            "Risk override refusal: Cannot lower Security Office raised risk band".to_string(),
+        );
     }
     Ok(requested_band)
 }

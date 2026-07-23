@@ -60,13 +60,7 @@ impl OutcomeRecordReader {
             })
             .map_err(|e| e.to_string())?;
 
-        let mut results = Vec::new();
-        for r in rows {
-            if let Ok(row) = r {
-                results.push(row);
-            }
-        }
-
+        let results = rows.into_iter().flatten().collect();
         Ok(results)
     }
 }

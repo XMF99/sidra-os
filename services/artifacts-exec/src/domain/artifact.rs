@@ -1,9 +1,9 @@
 //! M20 Executable Artifacts — Aggregate & Lifecycle State
 //! Ref: EXECUTABLE_ARTIFACTS_ARCHITECTURE.md §4.2, ADR-0056
 
+use super::values::{ArtifactId, Capability, ModuleHash, WasmLimits};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
-use super::values::{ArtifactId, Capability, ModuleHash, WasmLimits};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ExecStatus {
@@ -42,7 +42,9 @@ impl ExecutableArtifact {
     ) -> Result<Self, String> {
         let wo_id = producing_work_order_id.into();
         if wo_id.trim().is_empty() {
-            return Err("producing_work_order_id is required and cannot be empty (ADR-0056)".to_string());
+            return Err(
+                "producing_work_order_id is required and cannot be empty (ADR-0056)".to_string(),
+            );
         }
 
         limits.validate()?;

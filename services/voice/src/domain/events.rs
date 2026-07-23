@@ -1,9 +1,9 @@
 //! M19 Voice Directive — Domain Events
 //! Ref: VOICE_DIRECTIVE_ARCHITECTURE.md §11.2, ADR-0052, ADR-0053
 
-use serde::{Deserialize, Serialize};
 use super::input_method::InputMethod;
 use super::values::{CaptureId, ModelId, ModelVersion};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct VoiceCaptureStarted {
@@ -38,14 +38,19 @@ pub struct VoiceAudioPurged {
 pub struct DirectiveCreatedEvent {
     pub directive_id: String,
     pub body: String,
-    pub source: String, // "principal"
+    pub source: String,            // "principal"
     pub input_method: InputMethod, // Voice or Typed
     pub capture_id: Option<CaptureId>,
     pub created_at: u64,
 }
 
 impl DirectiveCreatedEvent {
-    pub fn new_voice(directive_id: impl Into<String>, body: impl Into<String>, capture_id: CaptureId, now: u64) -> Self {
+    pub fn new_voice(
+        directive_id: impl Into<String>,
+        body: impl Into<String>,
+        capture_id: CaptureId,
+        now: u64,
+    ) -> Self {
         Self {
             directive_id: directive_id.into(),
             body: body.into(),

@@ -14,14 +14,12 @@ pub mod proposal;
 pub mod resolution;
 pub mod runner;
 
-pub use absorbability::{
-    compute::AbsorbabilityCalculator, neighbours::DivisionNeighbourResolver,
-};
+pub use absorbability::{compute::AbsorbabilityCalculator, neighbours::DivisionNeighbourResolver};
 pub use domain::{
     absorbability::AbsorbabilityResult,
     events::SelfReviewEvent,
-    health::{AbsorbableVerdict, DepartmentHealth},
-    proposal::{ProposalKind, ProposalResolution, StructureProposal},
+    health::{AbsorbableVerdict, DepartmentHealth, DepartmentHealthParams},
+    proposal::{ProposalKind, ProposalResolution, StructureProposal, StructureProposalParams},
     review::{ReviewStatus, StructureReview},
     values::{
         Confidence, DecisionId, DepartmentId, EvidenceRef, OverheadScore, QualityScore, Quarter,

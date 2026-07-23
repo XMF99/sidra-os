@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::values::{DeviceId, DevicePublicKey};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DeviceStatus {
@@ -19,7 +19,12 @@ pub struct CompanionDevice {
 }
 
 impl CompanionDevice {
-    pub fn new(device_id: DeviceId, pubkey: DevicePublicKey, label: String, paired_at: u64) -> Self {
+    pub fn new(
+        device_id: DeviceId,
+        pubkey: DevicePublicKey,
+        label: String,
+        paired_at: u64,
+    ) -> Self {
         Self {
             device_id,
             pubkey,

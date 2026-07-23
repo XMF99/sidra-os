@@ -73,7 +73,10 @@ impl BudgetSubCeiling {
         if !(0.0..=1.0).contains(&share) {
             return Err("share must be between 0.0 and 1.0");
         }
-        Ok(Self { share, ceiling_hard })
+        Ok(Self {
+            share,
+            ceiling_hard,
+        })
     }
 
     pub fn full_monthly(ceiling_hard: f64) -> Self {

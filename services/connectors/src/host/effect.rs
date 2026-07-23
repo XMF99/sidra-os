@@ -34,24 +34,22 @@ pub fn route_effect_policy(
     );
 
     match operation.effect {
-        EffectClass::Class0_Read => {
-            Err(ConnectorError::InstallCheckFailed {
-                rule_number: 9,
-                rule_name: "no class 0 network operation".into(),
-                details: "Network operations cannot be class 0".into(),
-            })
-        }
-        EffectClass::Class1_ReversibleLocal => match auth_res {
+        EffectClass::Class0Read => Err(ConnectorError::InstallCheckFailed {
+            rule_number: 9,
+            rule_name: "no class 0 network operation".into(),
+            details: "Network operations cannot be class 0".into(),
+        }),
+        EffectClass::Class1ReversibleLocal => match auth_res {
             Ok(None) => Ok(InvocationVerdict::Allowed),
             Ok(Some(req)) => Ok(InvocationVerdict::NeedsApproval(req)),
             Err(e) => Ok(InvocationVerdict::Fenced(e.to_string())),
         },
-        EffectClass::Class2_IrreversibleExternal => match auth_res {
+        EffectClass::Class2IrreversibleExternal => match auth_res {
             Ok(None) => Ok(InvocationVerdict::Allowed),
             Ok(Some(req)) => Ok(InvocationVerdict::NeedsApproval(req)),
             Err(e) => Ok(InvocationVerdict::Fenced(e.to_string())),
         },
-        EffectClass::Class3_CriticalHumanSignature => {
+        EffectClass::Class3CriticalHumanSignature => {
             // Class 3 ALWAYS requires approval
             let req = ApprovalRequest {
                 request_id: format!("req_{}", ulid::Ulid::new()),
@@ -59,7 +57,10 @@ pub fn route_effect_policy(
                 action: operation.name.as_str().to_string(),
                 resource: format!("{}:{}", connector_id, operation.name),
                 effect_class: operation.effect,
-                reason: format!("Class 3 critical operation '{}' ALWAYS requires human approval", operation.name),
+                reason: format!(
+                    "Class 3 critical operation '{}' ALWAYS requires human approval",
+                    operation.name
+                ),
             };
             Ok(InvocationVerdict::NeedsApproval(req))
         }

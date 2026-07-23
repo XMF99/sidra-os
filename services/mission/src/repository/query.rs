@@ -16,7 +16,11 @@ impl MissionQueryEngine {
         Self { store }
     }
 
-    pub fn get_mission(&self, actor: &str, mission_id: &str) -> Result<Option<MissionProjection>, String> {
+    pub fn get_mission(
+        &self,
+        actor: &str,
+        mission_id: &str,
+    ) -> Result<Option<MissionProjection>, String> {
         assert_read_allowed(actor, mission_id)?;
         let state: ProjectionsState = rebuild_projections(&self.store);
         Ok(state.missions.get(mission_id).cloned())

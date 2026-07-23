@@ -1,6 +1,6 @@
-use ed25519_dalek::{SigningKey, VerifyingKey, Signer, Verifier, Signature as EdSignature};
-use rand::rngs::OsRng;
 use crate::domain::values::{DevicePublicKey, Signature};
+use ed25519_dalek::{Signature as EdSignature, Signer, SigningKey, Verifier, VerifyingKey};
+use rand::rngs::OsRng;
 
 pub struct DeviceKeyPair {
     signing_key: SigningKey,

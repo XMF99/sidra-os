@@ -25,6 +25,9 @@ pub use domain::{
 };
 pub use fence::SeatFenceEngine;
 pub use integrity::EventChainIntegrityHarness;
-pub use lifecycle::{accept_seat, invite_seat, materialize_founding, provision_seat, resume_seat, retire_seat, suspend_seat};
+pub use lifecycle::{
+    accept_seat, invite_seat, materialize_founding, provision_seat, resume_seat, retire_seat,
+    suspend_seat, ProvisionSeatArgs,
+};
 pub use memory::SeatMemoryEngine;
 pub use registry::SeatRegistry;

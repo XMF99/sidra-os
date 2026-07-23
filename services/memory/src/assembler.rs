@@ -4,7 +4,10 @@ pub struct ContextWindowAssembler;
 
 impl ContextWindowAssembler {
     /// Assemble memory chunks into a deterministic ContextWindow budget max_token_budget
-    pub fn assemble_context(candidates: Vec<MemoryChunk>, max_token_budget: usize) -> ContextWindow {
+    pub fn assemble_context(
+        candidates: Vec<MemoryChunk>,
+        max_token_budget: usize,
+    ) -> ContextWindow {
         let mut assembled_items = Vec::new();
         let mut current_token_count = 0;
 

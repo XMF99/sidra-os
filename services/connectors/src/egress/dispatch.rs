@@ -16,11 +16,9 @@ pub fn dispatch_request(
     request: &OutboundRequest,
     allowlist: &[String],
 ) -> Result<DispatchResponse, ConnectorError> {
-    let parsed_url = Url::parse(&request.url).map_err(|e| {
-        ConnectorError::EgressBlocked {
-            connector_id: "url_parse".into(),
-            host: e.to_string(),
-        }
+    let parsed_url = Url::parse(&request.url).map_err(|e| ConnectorError::EgressBlocked {
+        connector_id: "url_parse".into(),
+        host: e.to_string(),
     })?;
 
     let host = parsed_url.host_str().unwrap_or("");
@@ -43,18 +41,19 @@ pub fn dispatch_request(
 
 /// Check redirect target host containment (T6.3)
 pub fn check_redirect_target(target_url: &str, allowlist: &[String]) -> Result<(), ConnectorError> {
-    let parsed = Url::parse(target_url).map_err(|e| {
-        ConnectorError::EgressBlocked {
-            connector_id: "redirect_parse".into(),
-            host: e.to_string(),
-        }
+    let parsed = Url::parse(target_url).map_err(|e| ConnectorError::EgressBlocked {
+        connector_id: "redirect_parse".into(),
+        host: e.to_string(),
     })?;
 
     let host = parsed.host_str().unwrap_or("");
     if !is_host_allowed(host, allowlist) {
         return Err(ConnectorError::EgressBlocked {
             connector_id: "redirect_blocked".into(),
-            host: format!("Redirect target host '{}' is outside declared egress.allow", host),
+            host: format!(
+                "Redirect target host '{}' is outside declared egress.allow",
+                host
+            ),
         });
     }
 

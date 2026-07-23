@@ -1,8 +1,6 @@
 use rusqlite::Connection;
 use sidra_agents::{Agent, AnalystAgent, WriterAgent};
-use sidra_domain::{
-    AgentMessage, Capability, EffectClass, EventInput, ProvenanceTag, TaskPlan, TaskStatus,
-};
+use sidra_domain::{AgentMessage, EventInput, ProvenanceTag, TaskPlan, TaskStatus};
 use sidra_models::ModelRouter;
 use sidra_security::PermissionBroker;
 use sidra_store::EventLogRepository;
@@ -22,7 +20,10 @@ impl Orchestrator {
         let mut tools: HashMap<String, Box<dyn Tool>> = HashMap::new();
         tools.insert("ingest_document".to_string(), Box::new(IngestTool));
         tools.insert("vector_search".to_string(), Box::new(VectorSearchTool));
-        tools.insert("format_executive_brief".to_string(), Box::new(FormatBriefTool));
+        tools.insert(
+            "format_executive_brief".to_string(),
+            Box::new(FormatBriefTool),
+        );
 
         Self {
             router,
@@ -31,6 +32,14 @@ impl Orchestrator {
             writer: WriterAgent,
             tools,
         }
+    }
+
+    pub fn analyst(&self) -> &AnalystAgent {
+        &self.analyst
+    }
+
+    pub fn writer(&self) -> &WriterAgent {
+        &self.writer
     }
 
     pub fn broker_mut(&mut self) -> &mut PermissionBroker {

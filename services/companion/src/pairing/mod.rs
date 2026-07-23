@@ -1,8 +1,8 @@
 pub mod key;
 pub mod verify;
 
-use crate::domain::values::{DeviceId, DevicePublicKey, PairingChallenge};
 use crate::domain::device::CompanionDevice;
+use crate::domain::values::{DeviceId, DevicePublicKey, PairingChallenge};
 use key::verify_signature;
 
 pub struct PairingService;
@@ -26,7 +26,13 @@ impl PairingService {
         if now > challenge.expires_at {
             return Err("challenge_expired");
         }
-        if !verify_signature(&pubkey, challenge.challenge_id.as_bytes(), &crate::domain::values::Signature { bytes: proof.to_vec() }) {
+        if !verify_signature(
+            &pubkey,
+            challenge.challenge_id.as_bytes(),
+            &crate::domain::values::Signature {
+                bytes: proof.to_vec(),
+            },
+        ) {
             return Err("invalid_proof");
         }
         Ok(CompanionDevice::new(device_id, pubkey, label, now))

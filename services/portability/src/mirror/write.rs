@@ -11,7 +11,10 @@ impl PortabilityMirrorWriter {
         version: &str,
         digest: &str,
     ) -> std::io::Result<()> {
-        let template_dir = output_dir.join("templates").join("exported").join(template_id);
+        let template_dir = output_dir
+            .join("templates")
+            .join("exported")
+            .join(template_id);
         fs::create_dir_all(&template_dir)?;
 
         let mut content = String::from("# Firm Template Export Mirror\n\n");

@@ -11,7 +11,7 @@ fn test_m7_exit_criterion_wasm_plugin_sandbox_capability_acquisition_and_isolati
     let fence = sidra_domain::Fence {
         allowed_directories: vec!["/workspace/plugins".to_string()],
         egress_allowlist: vec!["api.plugin-hub.org".to_string()],
-        max_effect_class: EffectClass::Class1_ReversibleLocal,
+        max_effect_class: EffectClass::Class1ReversibleLocal,
         spend_ceiling_usd: 10.0,
     };
     let fence_manager = FenceManager::new(fence);
@@ -40,7 +40,7 @@ fn test_m7_exit_criterion_wasm_plugin_sandbox_capability_acquisition_and_isolati
             &mut broker,
             &plugin_id,
             &plugin_id,
-            EffectClass::Class0_Read,
+            EffectClass::Class0Read,
         )
         .expect("Capability acquisition MUST succeed");
 
@@ -74,7 +74,10 @@ fn test_m7_exit_criterion_wasm_plugin_sandbox_capability_acquisition_and_isolati
     );
 
     assert!(
-        matches!(unauthorized_read, Err(PluginError::SandboxMemoryViolation { .. })),
+        matches!(
+            unauthorized_read,
+            Err(PluginError::SandboxMemoryViolation { .. })
+        ),
         "Unauthorized memory partition escape MUST be denied by WASM sandbox"
     );
 
@@ -90,7 +93,10 @@ fn test_m7_exit_criterion_wasm_plugin_sandbox_capability_acquisition_and_isolati
 
     assert!(loaded_logged, "Plugin loaded event MUST be logged to Vault");
     assert!(cap_logged, "Capability acquisition MUST be logged to Vault");
-    assert!(denial_logged, "Sandbox memory escape denial MUST be logged to Vault");
+    assert!(
+        denial_logged,
+        "Sandbox memory escape denial MUST be logged to Vault"
+    );
 
     // 8. Verify SHA-256 Event Chain Integrity
     assert!(

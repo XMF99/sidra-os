@@ -32,12 +32,11 @@ impl GatePreconditions {
                 let reg_by: String = row.get(6)?;
 
                 let cases = serde_json::from_str(&cases_str).unwrap_or_default();
-                let scoring_spec = serde_json::from_str(&spec_str).unwrap_or_else(|_| {
-                    crate::evalset::types::ScoringSpec {
+                let scoring_spec =
+                    serde_json::from_str(&spec_str).unwrap_or(crate::evalset::types::ScoringSpec {
                         pass_threshold: crate::domain::values::Score(0.70),
                         seed: 42,
-                    }
-                });
+                    });
 
                 Ok(EvaluationSet {
                     eval_set_id: crate::domain::values::EvalSetId(id),

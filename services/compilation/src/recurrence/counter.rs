@@ -1,5 +1,4 @@
 use crate::domain::observation::ProcedureObservation;
-use crate::domain::values::SignatureHash;
 use sidra_store::Vault;
 use std::sync::Mutex;
 
@@ -63,18 +62,16 @@ impl RecurrenceCounter {
         let mut distinct_engagements = Vec::new();
         let mut cap_set = std::collections::BTreeSet::new();
 
-        for r in rows {
-            if let Ok((m_id, e_id, caps_str)) = r {
-                if !distinct_missions.contains(&m_id) {
-                    distinct_missions.push(m_id);
-                }
-                if !distinct_engagements.contains(&e_id) {
-                    distinct_engagements.push(e_id);
-                }
-                let caps: Vec<String> = serde_json::from_str(&caps_str).unwrap_or_default();
-                for c in caps {
-                    cap_set.insert(c);
-                }
+        for (m_id, e_id, caps_str) in rows.flatten() {
+            if !distinct_missions.contains(&m_id) {
+                distinct_missions.push(m_id);
+            }
+            if !distinct_engagements.contains(&e_id) {
+                distinct_engagements.push(e_id);
+            }
+            let caps: Vec<String> = serde_json::from_str(&caps_str).unwrap_or_default();
+            for c in caps {
+                cap_set.insert(c);
             }
         }
 

@@ -31,11 +31,13 @@ impl ModelProvider for GeminiProvider {
         let tool_calls = request
             .tools
             .first()
-            .map(|t| vec![ToolCall {
-                id: format!("call_gemini_{}", Ulid::new()),
-                name: t.name.clone(),
-                arguments_json: r#"{"status":"processed"}"#.to_string(),
-            }])
+            .map(|t| {
+                vec![ToolCall {
+                    id: format!("call_gemini_{}", Ulid::new()),
+                    name: t.name.clone(),
+                    arguments_json: r#"{"status":"processed"}"#.to_string(),
+                }]
+            })
             .unwrap_or_default();
 
         let prompt_tokens = request.messages.iter().map(|m| m.content.len() / 4).sum();
@@ -49,7 +51,8 @@ impl ModelProvider for GeminiProvider {
                 prompt_tokens,
                 completion_tokens,
                 total_tokens: prompt_tokens + completion_tokens,
-                estimated_cost_usd: (prompt_tokens as f64 * 0.00000125) + (completion_tokens as f64 * 0.000005),
+                estimated_cost_usd: (prompt_tokens as f64 * 0.00000125)
+                    + (completion_tokens as f64 * 0.000005),
             },
             provider_name: self.name().to_string(),
         })

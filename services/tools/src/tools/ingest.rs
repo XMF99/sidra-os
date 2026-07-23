@@ -13,13 +13,16 @@ impl Tool for IngestTool {
     }
 
     fn effect_class(&self) -> EffectClass {
-        EffectClass::Class1_ReversibleLocal
+        EffectClass::Class1ReversibleLocal
     }
 
     fn execute(&self, parameters_json: &str) -> Result<String, String> {
-        let val: serde_json::Value = serde_json::from_str(parameters_json)
-            .map_err(|e| format!("Invalid params: {}", e))?;
+        let val: serde_json::Value =
+            serde_json::from_str(parameters_json).map_err(|e| format!("Invalid params: {}", e))?;
         let doc_text = val["content"].as_str().unwrap_or("");
-        Ok(format!("Ingested document successfully ({} bytes)", doc_text.len()))
+        Ok(format!(
+            "Ingested document successfully ({} bytes)",
+            doc_text.len()
+        ))
     }
 }

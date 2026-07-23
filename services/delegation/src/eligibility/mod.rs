@@ -1,11 +1,8 @@
 //! M22 Delegation and Separation of Duties — Eligibility Guard
 //! Ref: DELEGATION_AND_SEPARATION_ARCHITECTURE.md §9, §16, ADR-0060
 
+use crate::domain::{AuthoritySource, Delegation, DenyReason, ScopedAuthority};
 use sidra_seats::{Capability, SeatFence, SeatId};
-use crate::domain::{
-    ApprovalResolution, ApprovalVerdict, AuthoritySource, Delegation, DenyReason,
-    SelfApprovalRefused, ScopedAuthority,
-};
 
 pub struct EligibilityGuard;
 
@@ -27,19 +24,19 @@ impl EligibilityGuard {
         }
 
         // STEP 2: Authority check over ScopedAuthority
-        let scoped_auth = ScopedAuthority::compute(
-            approver_seat,
-            approver_own_fence,
-            active_delegations,
-            now,
-        );
+        let scoped_auth =
+            ScopedAuthority::compute(approver_seat, approver_own_fence, active_delegations, now);
 
         if !scoped_auth.holds_capability(required_capability) {
             return Err(DenyReason::InsufficientAuthority);
         }
 
         // Determine authority source (own Fence vs delegation)
-        if approver_own_fence.active && approver_own_fence.capabilities.contains(required_capability) {
+        if approver_own_fence.active
+            && approver_own_fence
+                .capabilities
+                .contains(required_capability)
+        {
             Ok(AuthoritySource::OwnFence)
         } else {
             Ok(AuthoritySource::Delegation)

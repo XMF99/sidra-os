@@ -16,7 +16,8 @@ impl StandardsStore {
     }
 
     pub fn register(&mut self, standard: Standard) {
-        self.standards.insert(standard.standard_id.clone(), standard);
+        self.standards
+            .insert(standard.standard_id.clone(), standard);
     }
 
     pub fn standards_for(&self, path_or_type: &str) -> Vec<Standard> {

@@ -7,6 +7,7 @@ use crate::manifest::parse::DepartmentPackManifest;
 use crate::manifest::validate::validate_pack_installation;
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct InstalledPacksRegistry {
     pub installed: HashMap<String, DepartmentPackManifest>,
     pub grants_count: usize, // Must be 0 post-install!
@@ -14,10 +15,7 @@ pub struct InstalledPacksRegistry {
 
 impl InstalledPacksRegistry {
     pub fn new() -> Self {
-        Self {
-            installed: HashMap::new(),
-            grants_count: 0,
-        }
+        Self::default()
     }
 
     pub fn install_pack(&mut self, manifest: DepartmentPackManifest) -> Result<String, String> {

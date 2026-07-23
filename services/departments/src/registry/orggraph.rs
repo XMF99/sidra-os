@@ -42,8 +42,10 @@ impl DepartmentRegistrar {
 
         // Rule 1 (ADR-0043): Division-local provider first
         if let Some(div_id) = requester_division {
-            let local_providers: Vec<&&DepartmentPackManifest> =
-                providers.iter().filter(|p| p.division_id == div_id).collect();
+            let local_providers: Vec<&&DepartmentPackManifest> = providers
+                .iter()
+                .filter(|p| p.division_id == div_id)
+                .collect();
             if local_providers.len() == 1 {
                 return Ok(local_providers[0].id.clone());
             }

@@ -30,7 +30,7 @@ impl BoundaryCheckEngine {
 
     pub fn scan_packaged_bytes(bytes: &[u8]) -> Result<(), BoundaryCheckError> {
         let text = String::from_utf8_lossy(bytes);
-        
+
         let forbidden_keywords = [
             "engagement_id",
             "event_hash",

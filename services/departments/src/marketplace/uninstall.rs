@@ -19,7 +19,10 @@ pub struct UninstallOutcome {
     pub firm_functional: bool,
 }
 
-pub fn uninstall_pack(department_id: &str, active_instances: &mut HashSet<String>) -> UninstallOutcome {
+pub fn uninstall_pack(
+    department_id: &str,
+    active_instances: &mut HashSet<String>,
+) -> UninstallOutcome {
     // 1. Retire all live instances
     active_instances.clear();
 

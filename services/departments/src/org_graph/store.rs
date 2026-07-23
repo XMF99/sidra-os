@@ -2,10 +2,11 @@
 //!
 //! Ref: IMPLEMENTATION_PLAN.md T2.2
 
-use super::manifest::{StructureManifest, validate_structure_manifest};
+use super::manifest::StructureManifest;
 use sidra_domain::structure::{Division, Office};
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct OrgGraphStore {
     pub divisions: HashMap<String, Division>,
     pub offices: HashMap<String, Office>,
@@ -14,11 +15,7 @@ pub struct OrgGraphStore {
 
 impl OrgGraphStore {
     pub fn new() -> Self {
-        Self {
-            divisions: HashMap::new(),
-            offices: HashMap::new(),
-            active_manifest: None,
-        }
+        Self::default()
     }
 
     pub fn is_null_structure(&self) -> bool {

@@ -1,7 +1,7 @@
-pub use sidra_companion::domain::values::{DeviceId, DevicePublicKey, Signature, ContentHash};
 pub use sidra_companion::domain::outbox::{ApprovalOutboxEntry, ApprovalVerdict};
-pub use sidra_companion::render::payload::{BriefRenderPayload, BriefNode, BriefSection};
+pub use sidra_companion::domain::values::{ContentHash, DeviceId, DevicePublicKey, Signature};
 pub use sidra_companion::pairing::key::DeviceKeyPair;
+pub use sidra_companion::render::payload::{BriefNode, BriefRenderPayload, BriefSection};
 
 pub struct BriefPainter;
 
@@ -22,7 +22,9 @@ impl BriefPainter {
                     BriefNode::ListItem(text) => lines.push(format!("* {}", text)),
                     BriefNode::Emphasis(text) => lines.push(format!("*{}*", text)),
                     BriefNode::CodeSpan(text) => lines.push(format!("`{}`", text)),
-                    BriefNode::LinkToTrace { label, trace_id } => lines.push(format!("[{}] (trace: {})", label, trace_id)),
+                    BriefNode::LinkToTrace { label, trace_id } => {
+                        lines.push(format!("[{}] (trace: {})", label, trace_id))
+                    }
                 }
             }
         }
@@ -30,13 +32,14 @@ impl BriefPainter {
     }
 }
 
+#[derive(Default)]
 pub struct ApprovalCapture {
     pub outbox: Vec<ApprovalOutboxEntry>,
 }
 
 impl ApprovalCapture {
     pub fn new() -> Self {
-        Self { outbox: Vec::new() }
+        Self::default()
     }
 
     pub fn capture_approval(

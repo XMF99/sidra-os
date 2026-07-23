@@ -6,7 +6,8 @@ use super::values::DivisionId;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-pub const ALLOWED_EXECUTIVE_TOOLS: [&str; 5] = ["retrieve", "delegate", "convene", "decide", "report"];
+pub const ALLOWED_EXECUTIVE_TOOLS: [&str; 5] =
+    ["retrieve", "delegate", "convene", "decide", "report"];
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DivisionExecutive {
@@ -17,7 +18,12 @@ pub struct DivisionExecutive {
 }
 
 impl DivisionExecutive {
-    pub fn new(division_id: DivisionId, agent_id: String, tools: HashSet<String>, appointed_at: u64) -> Result<Self, &'static str> {
+    pub fn new(
+        division_id: DivisionId,
+        agent_id: String,
+        tools: HashSet<String>,
+        appointed_at: u64,
+    ) -> Result<Self, &'static str> {
         if tools.len() != 5 {
             return Err("DivisionExecutive must declare exactly 5 tools (retrieve, delegate, convene, decide, report)");
         }

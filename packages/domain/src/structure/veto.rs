@@ -25,35 +25,40 @@ pub struct Veto {
     pub invoked_at: u64,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct VetoParams {
+    pub veto_id: String,
+    pub office_id: OfficeId,
+    pub scope: VetoScope,
+    pub subject_type: String,
+    pub subject_id: String,
+    pub author_division: String,
+    pub reviewer_agent_id: String,
+    pub verdict: VetoVerdict,
+    pub dissent_id: Option<String>,
+    pub invoked_at: u64,
+}
+
 impl Veto {
-    pub fn new(
-        veto_id: String,
-        office_id: OfficeId,
-        scope: VetoScope,
-        subject_type: String,
-        subject_id: String,
-        author_division: String,
-        reviewer_agent_id: String,
-        verdict: VetoVerdict,
-        dissent_id: Option<String>,
-        invoked_at: u64,
-    ) -> Result<Self, &'static str> {
-        if let VetoVerdict::Overridden { ref overridden_by } = verdict {
+    pub fn new(params: VetoParams) -> Result<Self, &'static str> {
+        if let VetoVerdict::Overridden { ref overridden_by } = params.verdict {
             if overridden_by != "principal" {
-                return Err("Only the Principal can override a firm-wide veto (Security Office only)");
+                return Err(
+                    "Only the Principal can override a firm-wide veto (Security Office only)",
+                );
             }
         }
         Ok(Self {
-            veto_id,
-            office_id,
-            scope,
-            subject_type,
-            subject_id,
-            author_division,
-            reviewer_agent_id,
-            verdict,
-            dissent_id,
-            invoked_at,
+            veto_id: params.veto_id,
+            office_id: params.office_id,
+            scope: params.scope,
+            subject_type: params.subject_type,
+            subject_id: params.subject_id,
+            author_division: params.author_division,
+            reviewer_agent_id: params.reviewer_agent_id,
+            verdict: params.verdict,
+            dissent_id: params.dissent_id,
+            invoked_at: params.invoked_at,
         })
     }
 }

@@ -1,5 +1,4 @@
 use crate::domain::values::{DeviceId, DeviceSeq, VersionVector};
-use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VectorDeltaRange {

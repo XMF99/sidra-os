@@ -72,27 +72,31 @@ pub struct Event {
     pub hash: String,
 }
 
+/// Input struct for computing Event hash
+#[derive(Debug, Clone, Copy)]
+pub struct EventHashInput<'a> {
+    pub prev_hash: &'a str,
+    pub sequence: i64,
+    pub event_id: &'a str,
+    pub event_type: &'a str,
+    pub aggregate_type: &'a str,
+    pub aggregate_id: &'a str,
+    pub payload: &'a str,
+    pub timestamp: &'a str,
+}
+
 impl Event {
     /// Compute cryptographic SHA-256 hash chaining previous hash and event contents
-    pub fn compute_hash(
-        prev_hash: &str,
-        sequence: i64,
-        event_id: &str,
-        event_type: &str,
-        aggregate_type: &str,
-        aggregate_id: &str,
-        payload: &str,
-        timestamp: &str,
-    ) -> String {
+    pub fn compute_hash(input: EventHashInput<'_>) -> String {
         let mut hasher = Sha256::new();
-        hasher.update(prev_hash.as_bytes());
-        hasher.update(sequence.to_string().as_bytes());
-        hasher.update(event_id.as_bytes());
-        hasher.update(event_type.as_bytes());
-        hasher.update(aggregate_type.as_bytes());
-        hasher.update(aggregate_id.as_bytes());
-        hasher.update(payload.as_bytes());
-        hasher.update(timestamp.as_bytes());
+        hasher.update(input.prev_hash.as_bytes());
+        hasher.update(input.sequence.to_string().as_bytes());
+        hasher.update(input.event_id.as_bytes());
+        hasher.update(input.event_type.as_bytes());
+        hasher.update(input.aggregate_type.as_bytes());
+        hasher.update(input.aggregate_id.as_bytes());
+        hasher.update(input.payload.as_bytes());
+        hasher.update(input.timestamp.as_bytes());
         format!("{:x}", hasher.finalize())
     }
 }
@@ -105,10 +109,14 @@ impl Event {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../bindings/src/index.ts")]
 pub enum EffectClass {
-    Class0_Read = 0,
-    Class1_ReversibleLocal = 1,
-    Class2_IrreversibleExternal = 2,
-    Class3_CriticalHumanSignature = 3,
+    #[serde(rename = "Class0Read")]
+    Class0Read = 0,
+    #[serde(rename = "Class1ReversibleLocal")]
+    Class1ReversibleLocal = 1,
+    #[serde(rename = "Class2IrreversibleExternal")]
+    Class2IrreversibleExternal = 2,
+    #[serde(rename = "Class3CriticalHumanSignature")]
+    Class3CriticalHumanSignature = 3,
 }
 
 /// Explicit Capability Grant per ADR-0006

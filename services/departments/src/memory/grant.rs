@@ -13,7 +13,12 @@ pub struct ReadScopeGrant {
 }
 
 impl ReadScopeGrant {
-    pub fn is_valid(&self, caller_ns: &MemoryNamespace, target_key: &str, current_time: u64) -> bool {
+    pub fn is_valid(
+        &self,
+        caller_ns: &MemoryNamespace,
+        target_key: &str,
+        current_time: u64,
+    ) -> bool {
         if current_time >= self.expires_at {
             return false;
         }

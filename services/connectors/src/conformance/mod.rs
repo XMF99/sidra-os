@@ -8,7 +8,9 @@ pub struct ConformanceSuite;
 
 impl ConformanceSuite {
     /// Run full conformance check over a connector manifest TOML string
-    pub fn verify_connector_conformance(manifest_toml: &str) -> Result<ConnectorManifest, ConnectorError> {
+    pub fn verify_connector_conformance(
+        manifest_toml: &str,
+    ) -> Result<ConnectorManifest, ConnectorError> {
         let manifest = parse_manifest_toml(manifest_toml)?;
         validate_install(&manifest, manifest_toml, true)?;
         Ok(manifest)

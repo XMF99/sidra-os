@@ -1,13 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum InputMethod {
+    #[default]
     Typed,
     Voice,
-}
-
-impl Default for InputMethod {
-    fn default() -> Self {
-        Self::Typed
-    }
 }

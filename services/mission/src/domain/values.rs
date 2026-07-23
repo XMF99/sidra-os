@@ -90,10 +90,7 @@ impl fmt::Display for ValueError {
                 kind,
                 expected,
                 found,
-            } => write!(
-                f,
-                "{kind} must start with `{expected}`, got `{found}`"
-            ),
+            } => write!(f, "{kind} must start with `{expected}`, got `{found}`"),
             ValueError::Malformed {
                 kind,
                 found,
@@ -129,11 +126,13 @@ fn validate_opaque(kind: &'static str, prefix: &'static str, raw: &str) -> Resul
     if raw.is_empty() {
         return Err(ValueError::Empty { kind });
     }
-    let body = raw.strip_prefix(prefix).ok_or_else(|| ValueError::WrongPrefix {
-        kind,
-        expected: prefix,
-        found: raw.to_owned(),
-    })?;
+    let body = raw
+        .strip_prefix(prefix)
+        .ok_or_else(|| ValueError::WrongPrefix {
+            kind,
+            expected: prefix,
+            found: raw.to_owned(),
+        })?;
     if body.len() != OPAQUE_BODY_LEN {
         return Err(ValueError::Malformed {
             kind,
@@ -161,11 +160,13 @@ fn validate_dotted(kind: &'static str, prefix: &'static str, raw: &str) -> Resul
     if raw.is_empty() {
         return Err(ValueError::Empty { kind });
     }
-    let rest = raw.strip_prefix(prefix).ok_or_else(|| ValueError::WrongPrefix {
-        kind,
-        expected: prefix,
-        found: raw.to_owned(),
-    })?;
+    let rest = raw
+        .strip_prefix(prefix)
+        .ok_or_else(|| ValueError::WrongPrefix {
+            kind,
+            expected: prefix,
+            found: raw.to_owned(),
+        })?;
     if rest.is_empty() {
         return Err(ValueError::Malformed {
             kind,
@@ -379,11 +380,13 @@ impl IdempotencyKey {
             found: raw.to_owned(),
             reason: "expected `<task-id>@v<version>`",
         })?;
-        let digits = version_part.strip_prefix('v').ok_or(ValueError::Malformed {
-            kind: KIND,
-            found: raw.to_owned(),
-            reason: "version must be written `v<number>`",
-        })?;
+        let digits = version_part
+            .strip_prefix('v')
+            .ok_or(ValueError::Malformed {
+                kind: KIND,
+                found: raw.to_owned(),
+                reason: "version must be written `v<number>`",
+            })?;
         if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
             return Err(ValueError::Malformed {
                 kind: KIND,
@@ -585,7 +588,12 @@ impl Money {
 
 impl fmt::Display for Money {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "${}.{:02}", self.minor_units / 100, self.minor_units % 100)
+        write!(
+            f,
+            "${}.{:02}",
+            self.minor_units / 100,
+            self.minor_units % 100
+        )
     }
 }
 
@@ -672,11 +680,13 @@ impl Duration {
             found: raw.to_owned(),
             permitted: "0..=18446744073709551615 seconds",
         })?;
-        let seconds = count.checked_mul(multiplier).ok_or(ValueError::OutOfRange {
-            kind: KIND,
-            found: raw.to_owned(),
-            permitted: "0..=18446744073709551615 seconds",
-        })?;
+        let seconds = count
+            .checked_mul(multiplier)
+            .ok_or(ValueError::OutOfRange {
+                kind: KIND,
+                found: raw.to_owned(),
+                permitted: "0..=18446744073709551615 seconds",
+            })?;
         Ok(Self { seconds })
     }
 }
@@ -777,22 +787,17 @@ impl fmt::Display for EffectClass {
 /// grants a wider effect class, skips a Guard, or escapes a budget ceiling (`ARCH` §9.5).
 ///
 /// Ordering is by urgency, so `P0 < P1 < P2 < P3` and the most urgent tier sorts first.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub enum PriorityTier {
     /// Something is broken, unsafe, or externally committed today. Rationed; see `ARCH` §9.2.
     P0,
     /// Has a hard deadline or an external commitment.
     P1,
     /// Normal work. The default.
+    #[default]
     P2,
     /// Runs when nothing else needs the capacity.
     P3,
-}
-
-impl Default for PriorityTier {
-    fn default() -> Self {
-        Self::P2
-    }
 }
 
 impl PriorityTier {
@@ -1081,20 +1086,17 @@ impl fmt::Display for AutonomyDepth {
 /// Ordering is by **permissiveness**, so `Full < Standard < Lean` and the most constrained
 /// variant sorts first. No intensity removes the independent reviewer required by ADR-0008,
 /// and Security Office reviews are not subject to intensity at all.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default,
+)]
 pub enum ReviewIntensity {
     /// Every optional gate runs.
     Full,
     /// Office reviews plus stage gates. The default.
+    #[default]
     Standard,
     /// Stage gates only; Office reviews where a manifest marks them required.
     Lean,
-}
-
-impl Default for ReviewIntensity {
-    fn default() -> Self {
-        Self::Standard
-    }
 }
 
 impl fmt::Display for ReviewIntensity {
@@ -1260,7 +1262,9 @@ impl ContractRef {
     pub fn parse(raw: impl Into<String>) -> Result<Self, ValueError> {
         let raw = raw.into();
         if raw.is_empty() {
-            return Err(ValueError::Empty { kind: "ContractRef" });
+            return Err(ValueError::Empty {
+                kind: "ContractRef",
+            });
         }
         Ok(Self(raw))
     }
@@ -1283,4 +1287,3 @@ impl FromStr for ContractRef {
         Self::parse(s)
     }
 }
-

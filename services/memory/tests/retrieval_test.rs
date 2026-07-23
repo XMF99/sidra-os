@@ -1,7 +1,5 @@
 use sidra_domain::MemoryChunk;
-use sidra_memory::{
-    ContextWindowAssembler, HybridSearchEngine, VectorStore, WorkingMemoryBuffer,
-};
+use sidra_memory::{ContextWindowAssembler, HybridSearchEngine, VectorStore, WorkingMemoryBuffer};
 use std::time::Instant;
 use ulid::Ulid;
 
@@ -12,7 +10,11 @@ fn test_m4_exit_criterion_50k_chunks_sub_50ms_hybrid_search() {
     // 1. Ingest 50,000 embedded memory chunks
     let mut chunks = Vec::with_capacity(50000);
     for i in 1..=50000 {
-        let embedding = vec![(i as f32) % 10.0, ((i * 2) as f32) % 10.0, ((i * 3) as f32) % 10.0];
+        let embedding = vec![
+            (i as f32) % 10.0,
+            ((i * 2) as f32) % 10.0,
+            ((i * 3) as f32) % 10.0,
+        ];
         chunks.push(MemoryChunk {
             chunk_id: Ulid::new().to_string(),
             source_id: format!("doc_{:05}", i % 500),
@@ -33,7 +35,11 @@ fn test_m4_exit_criterion_50k_chunks_sub_50ms_hybrid_search() {
     let elapsed = start_time.elapsed();
 
     // Assert top-k=10 returned
-    assert_eq!(results.len(), 10, "Hybrid search MUST return exactly top-k 10 items");
+    assert_eq!(
+        results.len(),
+        10,
+        "Hybrid search MUST return exactly top-k 10 items"
+    );
 
     // Assert sub-50ms performance requirement per ADR-0004 & M4 exit criteria
     println!("50,000 Chunks Hybrid Search Elapsed Time: {:?}", elapsed);
@@ -83,6 +89,9 @@ fn test_working_memory_lru_eviction() {
     );
 
     let items = working_memory.get_all();
-    assert_eq!(items[0].chunk_id, "chk_3", "Oldest items (1 & 2) MUST be evicted by LRU strategy");
+    assert_eq!(
+        items[0].chunk_id, "chk_3",
+        "Oldest items (1 & 2) MUST be evicted by LRU strategy"
+    );
     assert_eq!(items[2].chunk_id, "chk_5");
 }

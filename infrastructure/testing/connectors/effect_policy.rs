@@ -9,7 +9,7 @@ fn test_effect_class_routing_policy() {
     let op_read = Operation::new(
         OperationName::new("read_op"),
         Scope::parse("integration:github:read").unwrap(),
-        EffectClass::Class1_ReversibleLocal,
+        EffectClass::Class1ReversibleLocal,
         "GET",
         "/read",
     ).unwrap();
@@ -17,7 +17,7 @@ fn test_effect_class_routing_policy() {
     let op_write = Operation::new(
         OperationName::new("write_op"),
         Scope::parse("integration:github:write").unwrap(),
-        EffectClass::Class2_IrreversibleExternal,
+        EffectClass::Class2IrreversibleExternal,
         "POST",
         "/write",
     ).unwrap();
@@ -25,7 +25,7 @@ fn test_effect_class_routing_policy() {
     let op_admin = Operation::new(
         OperationName::new("admin_op"),
         Scope::parse("integration:github:admin").unwrap(),
-        EffectClass::Class3_CriticalHumanSignature,
+        EffectClass::Class3CriticalHumanSignature,
         "DELETE",
         "/admin",
     ).unwrap();

@@ -8,7 +8,9 @@ pub fn relocate_deliverable_after_review(
     is_reviewed: bool,
 ) -> Result<String, &'static str> {
     if !is_reviewed {
-        return Err("Deliverable must be accepted in review before relocation across department boundary");
+        return Err(
+            "Deliverable must be accepted in review before relocation across department boundary",
+        );
     }
     Ok(format!(
         "Relocating reviewed deliverable from '{source_path}' to '{target_path}'"

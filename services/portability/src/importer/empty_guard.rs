@@ -14,7 +14,9 @@ pub struct EmptyVaultGuard;
 
 impl EmptyVaultGuard {
     pub fn assert_empty(vault: &Mutex<Vault>) -> Result<(), EmptyGuardError> {
-        let vault_guard = vault.lock().map_err(|e| EmptyGuardError::DatabaseError(e.to_string()))?;
+        let vault_guard = vault
+            .lock()
+            .map_err(|e| EmptyGuardError::DatabaseError(e.to_string()))?;
         let conn = vault_guard.connection();
 
         // Check data-side tables for existing rows

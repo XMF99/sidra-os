@@ -64,12 +64,14 @@ impl HybridSearchEngine {
         // Convert HashMap entries to SearchResult array
         let mut results: Vec<SearchResult> = rrf_map
             .into_iter()
-            .map(|(_, (chunk, rrf_score, fts_rank, vector_rank))| SearchResult {
-                chunk,
-                rrf_score,
-                fts_rank,
-                vector_rank,
-            })
+            .map(
+                |(_, (chunk, rrf_score, fts_rank, vector_rank))| SearchResult {
+                    chunk,
+                    rrf_score,
+                    fts_rank,
+                    vector_rank,
+                },
+            )
             .collect();
 
         // Sort descending by final RRF score

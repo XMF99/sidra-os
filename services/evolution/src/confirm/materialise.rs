@@ -1,6 +1,5 @@
 use crate::domain::revision::CharterRevision;
 use crate::domain::values::{CharterVersion, DecisionId};
-use sidra_domain::Event;
 use sidra_store::{EventLogRepository, Vault};
 use std::sync::Mutex;
 use ulid::Ulid;
@@ -22,7 +21,8 @@ impl VersionMaterialiser {
 
         let new_ver_num = revision.base_version.0 + 1;
 
-        let charter_json = serde_json::to_string(&revision.proposed_charter).map_err(|e| e.to_string())?;
+        let charter_json =
+            serde_json::to_string(&revision.proposed_charter).map_err(|e| e.to_string())?;
 
         // Write one row to agent_versions
         conn.execute(

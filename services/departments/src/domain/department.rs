@@ -19,28 +19,31 @@ pub struct Department {
     pub state: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DepartmentParams {
+    pub id: DepartmentId,
+    pub division: Option<String>,
+    pub memory_namespace: MemoryNamespace,
+    pub capability_ceiling: CapabilityCeiling,
+    pub budget_sub_ceiling: BudgetSubCeiling,
+    pub fs_scope: FsScope,
+    pub provides_contracts: Vec<ContractName>,
+    pub requires_contracts: Vec<ContractName>,
+    pub pack_ref: ApplicationId,
+}
+
 impl Department {
-    pub fn new(
-        id: DepartmentId,
-        division: Option<String>,
-        memory_namespace: MemoryNamespace,
-        capability_ceiling: CapabilityCeiling,
-        budget_sub_ceiling: BudgetSubCeiling,
-        fs_scope: FsScope,
-        provides_contracts: Vec<ContractName>,
-        requires_contracts: Vec<ContractName>,
-        pack_ref: ApplicationId,
-    ) -> Self {
+    pub fn new(params: DepartmentParams) -> Self {
         Self {
-            id,
-            division,
-            memory_namespace,
-            capability_ceiling,
-            budget_sub_ceiling,
-            fs_scope,
-            provides_contracts,
-            requires_contracts,
-            pack_ref,
+            id: params.id,
+            division: params.division,
+            memory_namespace: params.memory_namespace,
+            capability_ceiling: params.capability_ceiling,
+            budget_sub_ceiling: params.budget_sub_ceiling,
+            fs_scope: params.fs_scope,
+            provides_contracts: params.provides_contracts,
+            requires_contracts: params.requires_contracts,
+            pack_ref: params.pack_ref,
             state: "active".to_string(),
         }
     }

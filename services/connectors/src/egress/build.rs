@@ -14,14 +14,15 @@ pub fn build_request(
     params: &HashMap<String, String>,
 ) -> Result<(OutboundRequest, String), ConnectorError> {
     // Primary declared host from egress.allow
-    let primary_host = manifest
-        .egress
-        .allow
-        .first()
-        .ok_or_else(|| ConnectorError::EgressBlocked {
-            connector_id: manifest.id.as_str().to_string(),
-            host: "empty egress.allow".to_string(),
-        })?;
+    let primary_host =
+        manifest
+            .egress
+            .allow
+            .first()
+            .ok_or_else(|| ConnectorError::EgressBlocked {
+                connector_id: manifest.id.as_str().to_string(),
+                host: "empty egress.allow".to_string(),
+            })?;
 
     // Perform path template variable substitution: e.g. /repos/{owner}/{repo}/issues
     let mut resolved_path = operation.path.clone();
@@ -47,7 +48,10 @@ pub fn build_request(
 fn inspect_parameter(key: &str, val: &str) -> Result<(), ConnectorError> {
     // Egress payload inspection (security model §7.5)
     let lower_val = val.to_lowercase();
-    if lower_val.contains("vault:") || lower_val.contains("secret:") || lower_val.contains("private_key") {
+    if lower_val.contains("vault:")
+        || lower_val.contains("secret:")
+        || lower_val.contains("private_key")
+    {
         return Err(ConnectorError::EgressBlocked {
             connector_id: "payload_inspection".into(),
             host: format!("Parameter '{}' contains restricted payload pattern", key),
