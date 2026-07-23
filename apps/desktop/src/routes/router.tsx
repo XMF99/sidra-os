@@ -1,5 +1,7 @@
 import { FC, useEffect, useState, ReactNode } from 'react';
 import { RouteErrorBoundary } from '../app/boundaries/RouteErrorBoundary';
+import { NotFound } from '../pages/NotFound';
+import { ROUTE_TABLE } from './routeTable';
 
 interface Props {
   children?: ReactNode;
@@ -20,10 +22,24 @@ export const HashRouter: FC<Props> = ({ fallbackComponent }) => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // Validate current hash against known route table paths
+  const isValidRoute = () => {
+    const rawPath = currentHash.replace(/^#/, '').split('?')[0] || '/';
+    if (rawPath === '/' || rawPath === '') return true;
+
+    return Object.values(ROUTE_TABLE).some((route) => {
+      const pattern = route.path.replace(/:[a-zA-Z0-9_]+/g, '[^/]+');
+      const regex = new RegExp(`^${pattern}$`);
+      return regex.test(rawPath);
+    });
+  };
+
+  const matched = isValidRoute();
+
   return (
     <RouteErrorBoundary>
       <div data-current-hash={currentHash} style={{ height: '100%', width: '100%' }}>
-        {fallbackComponent}
+        {matched ? fallbackComponent : <NotFound />}
       </div>
     </RouteErrorBoundary>
   );
