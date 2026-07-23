@@ -3,6 +3,7 @@ import { StateMachine } from './StateMachine';
 import { ExecutionQueue } from './ExecutionQueue';
 import { Scheduler } from './Scheduler';
 import { AgentRuntime } from '../agent-runtime/AgentRuntime';
+import { WorkflowRuntime } from '../workflow-runtime/WorkflowRuntime';
 
 export type EventListener = (event: RuntimeEvent) => void;
 
@@ -104,13 +105,18 @@ export class MissionRuntime {
     this.transitionState(missionId, 'running');
     record.progressPercent = 10;
 
-    // Trigger capability matching in AgentRuntime
+    // 1. Trigger capability matching in AgentRuntime
     const agentRuntime = AgentRuntime.getInstance();
     const assignedAgent = agentRuntime.assignMission(missionId, requiredCapability);
+
+    // 2. Trigger Workflow Engine orchestration
+    const workflowRuntime = WorkflowRuntime.getInstance();
+    workflowRuntime.startWorkflow('wf_standard_mission', missionId, { spendUSD: 150 });
 
     this.emitEvent('MissionStarted', missionId, record.context.correlationId, {
       assignedAgentId: assignedAgent?.id,
       assignedAgentName: assignedAgent?.name,
+      workflowId: 'wf_standard_mission',
     });
     return record;
   }
