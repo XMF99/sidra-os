@@ -1,6 +1,7 @@
 import { FC, useEffect, useState, ReactNode } from 'react';
 import { RouteErrorBoundary } from '../app/boundaries/RouteErrorBoundary';
 import { NotFound } from '../pages/NotFound';
+import { ComponentGallery } from '../pages/dev/ComponentGallery';
 import { ROUTE_TABLE } from './routeTable';
 
 interface Props {
@@ -21,6 +22,18 @@ export const HashRouter: FC<Props> = ({ fallbackComponent }) => {
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  const rawPath = currentHash.replace(/^#/, '').split('?')[0] || '/';
+
+  if (rawPath === '/dev/gallery') {
+    return (
+      <RouteErrorBoundary>
+        <div data-current-hash={currentHash} style={{ height: '100%', width: '100%' }}>
+          <ComponentGallery />
+        </div>
+      </RouteErrorBoundary>
+    );
+  }
 
   // Validate current hash against known route table paths
   const isValidRoute = () => {

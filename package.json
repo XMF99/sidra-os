@@ -9,6 +9,8 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "pnpm --filter @sidra/desktop tauri dev",
+    "tauri": "pnpm --filter @sidra/desktop tauri",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
