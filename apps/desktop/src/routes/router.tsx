@@ -3,6 +3,7 @@ import { RouteErrorBoundary } from '../app/boundaries/RouteErrorBoundary';
 import { NotFound } from '../pages/NotFound';
 import { ComponentGallery } from '../pages/dev/ComponentGallery';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
+import { DeveloperConsole } from '../developer-console/DeveloperConsole';
 import { ROUTE_TABLE } from './routeTable';
 
 interface Props {
@@ -25,6 +26,16 @@ export const HashRouter: FC<Props> = () => {
   }, []);
 
   const rawPath = currentHash.replace(/^#/, '').split('?')[0] || '/';
+
+  if (rawPath === '/developer' || rawPath === '/dev') {
+    return (
+      <RouteErrorBoundary>
+        <div data-current-hash={currentHash} style={{ height: '100%', width: '100%' }}>
+          <DeveloperConsole />
+        </div>
+      </RouteErrorBoundary>
+    );
+  }
 
   if (rawPath === '/dev/gallery') {
     return (
@@ -49,7 +60,7 @@ export const HashRouter: FC<Props> = () => {
   // Validate current hash against known route table paths
   const isValidRoute = () => {
     const rawPath = currentHash.replace(/^#/, '').split('?')[0] || '/';
-    if (rawPath === '/' || rawPath === '') return true;
+    if (rawPath === '/' || rawPath === '' || rawPath === '/developer' || rawPath === '/dev') return true;
 
     return Object.values(ROUTE_TABLE).some((route) => {
       const pattern = route.path.replace(/:[a-zA-Z0-9_]+/g, '[^/]+');

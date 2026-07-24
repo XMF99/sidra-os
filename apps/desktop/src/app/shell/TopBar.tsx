@@ -209,6 +209,26 @@ export const TopBar: FC = () => {
           <kbd style={{ padding: '0 4px', borderRadius: 'var(--sd-radius-sm)', border: '1px solid var(--sd-color-border)', fontSize: '10px' }}>⌘/</kbd>
         </button>
 
+        {/* Quick Action: Developer Console */}
+        <button
+          onClick={() => { window.location.hash = '#/developer'; }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--sd-space-1)',
+            padding: 'var(--sd-space-1) var(--sd-space-3)',
+            borderRadius: 'var(--sd-radius-md)',
+            backgroundColor: 'var(--sd-color-bg-inset)',
+            color: 'var(--sd-color-primary)',
+            border: '1px solid var(--sd-color-primary)',
+            fontSize: 'var(--sd-font-size-xs)',
+            fontWeight: 'var(--sd-font-weight-medium)',
+            cursor: 'pointer',
+          }}
+        >
+          <span>🛠️ Developer Console</span>
+        </button>
+
         {/* Quick Action: New Mission */}
         <button
           onClick={() => navigate.missionNew()}
