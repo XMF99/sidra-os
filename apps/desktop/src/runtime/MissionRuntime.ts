@@ -4,6 +4,7 @@ import { ExecutionQueue } from './ExecutionQueue';
 import { Scheduler } from './Scheduler';
 import { AgentRuntime } from '../agent-runtime/AgentRuntime';
 import { WorkflowRuntime } from '../workflow-runtime/WorkflowRuntime';
+import { OrganizationRuntime } from '../organization-runtime/OrganizationRuntime';
 
 export type EventListener = (event: RuntimeEvent) => void;
 
@@ -102,14 +103,22 @@ export class MissionRuntime {
 
   public startMission(missionId: string, requiredCapability = 'analysis'): MissionRunRecord {
     const record = this.getRecordOrThrow(missionId);
+
+    // 1. Enterprise Organization Policy & Permission Check
+    const orgRuntime = OrganizationRuntime.getInstance();
+    const policyAction = orgRuntime.evaluatePolicy('Budget', { spendUSD: 150 });
+    if (policyAction === 'deny') {
+      throw new Error(`Mission '${missionId}' denied by Enterprise Budget Policy.`);
+    }
+
     this.transitionState(missionId, 'running');
     record.progressPercent = 10;
 
-    // 1. Trigger capability matching in AgentRuntime
+    // 2. Trigger capability matching in AgentRuntime
     const agentRuntime = AgentRuntime.getInstance();
     const assignedAgent = agentRuntime.assignMission(missionId, requiredCapability);
 
-    // 2. Trigger Workflow Engine orchestration
+    // 3. Trigger Workflow Engine orchestration
     const workflowRuntime = WorkflowRuntime.getInstance();
     workflowRuntime.startWorkflow('wf_standard_mission', missionId, { spendUSD: 150 });
 
