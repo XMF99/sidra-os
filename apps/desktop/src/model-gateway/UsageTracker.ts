@@ -12,6 +12,8 @@ export class UsageTracker {
       provider: response.provider,
       inputTokens: response.inputTokens,
       outputTokens: response.outputTokens,
+      cachedTokens: response.cachedTokens,
+      reasoningTokens: response.reasoningTokens,
       latencyMs: response.latencyMs,
       timestamp: new Date().toISOString(),
     };

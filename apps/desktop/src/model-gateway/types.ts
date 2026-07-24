@@ -29,6 +29,18 @@ export interface MessagePrompt {
   content: string;
 }
 
+export interface ToolDefinition {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+}
+
+export interface ToolCallRequest {
+  id: string;
+  name: string;
+  arguments: Record<string, unknown>;
+}
+
 export interface CompletionRequest {
   agentId: string;
   missionId?: string;
@@ -36,9 +48,14 @@ export interface CompletionRequest {
   templateVariables?: Record<string, string>;
   messages: MessagePrompt[];
   temperature?: number;
+  topP?: number;
   maxTokens?: number;
+  stopSequences?: string[];
+  tools?: ToolDefinition[];
+  responseFormat?: 'text' | 'json_object';
   categoryHint?: 'coding' | 'documentation' | 'reasoning' | 'vision' | 'translation' | 'search' | string;
   bypassCache?: boolean;
+  onStreamChunk?: (chunk: string) => void;
 }
 
 export interface CompletionResponse {
@@ -46,8 +63,11 @@ export interface CompletionResponse {
   modelId: string;
   provider: ModelProviderKind;
   content: string;
+  toolCalls?: ToolCallRequest[];
   inputTokens: number;
   outputTokens: number;
+  cachedTokens?: number;
+  reasoningTokens?: number;
   latencyMs: number;
   cached: boolean;
   costUSD: number;
@@ -62,6 +82,8 @@ export interface UsageRecord {
   provider: ModelProviderKind;
   inputTokens: number;
   outputTokens: number;
+  cachedTokens?: number;
+  reasoningTokens?: number;
   latencyMs: number;
   timestamp: string;
 }
@@ -98,7 +120,15 @@ export interface GatewayEvent {
     | 'CacheHit'
     | 'CacheMiss'
     | 'UsageRecorded'
-    | 'CostRecorded';
+    | 'CostRecorded'
+    | 'ModelRequestStarted'
+    | 'ModelRequestCompleted'
+    | 'ModelRequestFailed'
+    | 'ModelStreamStarted'
+    | 'ModelStreamChunk'
+    | 'ModelStreamFinished'
+    | 'ToolRequested'
+    | 'ToolCompleted';
   timestamp: string;
   payload: Record<string, unknown>;
 }

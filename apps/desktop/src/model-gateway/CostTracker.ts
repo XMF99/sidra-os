@@ -29,6 +29,12 @@ export class CostTracker {
       .reduce((acc, r) => acc + r.totalCostUSD, 0);
   }
 
+  public getCostByMission(missionId: string): number {
+    return this.records
+      .filter((r) => r.missionId === missionId)
+      .reduce((acc, r) => acc + r.totalCostUSD, 0);
+  }
+
   public getRecords(): CostRecord[] {
     return [...this.records];
   }

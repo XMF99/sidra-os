@@ -51,7 +51,9 @@ export class ModelGateway {
   }
 
   public async complete(request: CompletionRequest): Promise<CompletionResponse> {
-    // 1. Template Resolution if promptId is provided
+    this.emitEvent('ModelRequestStarted', { agentId: request.agentId, missionId: request.missionId });
+
+    // 1. Template Resolution
     let messages = request.messages;
     if (request.promptId) {
       messages = this.templateRegistry.render(
@@ -59,44 +61,64 @@ export class ModelGateway {
         request.templateVariables || {}
       );
     }
+    const fullRequest = { ...request, messages };
 
     this.emitEvent('PromptSent', { agentId: request.agentId, missionId: request.missionId });
 
     // 2. Cache Lookup
-    const cacheKey = this.cache.hashPrompt(messages);
+    const cacheKey = this.cache.hashPrompt(fullRequest);
     if (!request.bypassCache) {
       const cachedResponse = this.cache.get(cacheKey);
       if (cachedResponse) {
         this.emitEvent('CacheHit', { cacheKey });
+        this.emitEvent('ModelRequestCompleted', { cached: true });
         return cachedResponse;
       }
     }
     this.emitEvent('CacheMiss', { cacheKey });
 
-    // 3. Routing Engine Selection
+    // 3. Model Routing
     const primaryModel: ModelInfo = this.routingEngine.selectModel(request.categoryHint);
     this.emitEvent('ModelSelected', { modelId: primaryModel.modelId, provider: primaryModel.provider });
 
-    // 4. Provider Execution with Fallback Cascade
-    const { response, selectedModel } = await RetryPolicy.executeWithFallback(
-      primaryModel,
-      { ...request, messages }
-    );
-
-    // 5. Cache Store
-    if (!request.bypassCache) {
-      this.cache.set(cacheKey, response);
+    if (request.onStreamChunk) {
+      this.emitEvent('ModelStreamStarted', { modelId: primaryModel.modelId });
     }
 
-    // 6. Usage & Cost Tracking
-    const usage = this.usageTracker.recordUsage(request, response);
-    const cost = this.costTracker.recordCost(request, response);
+    try {
+      // 4. Execution via RetryPolicy with Fallback & Circuit Breaker
+      const { response, selectedModel } = await RetryPolicy.executeWithFallback(
+        primaryModel,
+        fullRequest
+      );
 
-    this.emitEvent('UsageRecorded', { usageId: usage.id, tokens: response.inputTokens + response.outputTokens });
-    this.emitEvent('CostRecorded', { costId: cost.id, costUSD: response.costUSD });
-    this.emitEvent('ResponseReceived', { modelId: selectedModel.modelId, latencyMs: response.latencyMs });
+      if (request.onStreamChunk) {
+        this.emitEvent('ModelStreamFinished', { modelId: selectedModel.modelId });
+      }
 
-    return response;
+      if (response.toolCalls && response.toolCalls.length > 0) {
+        this.emitEvent('ToolRequested', { toolCount: response.toolCalls.length, tools: response.toolCalls.map((t) => t.name) });
+      }
+
+      // 5. Cache Store
+      if (!request.bypassCache) {
+        this.cache.set(cacheKey, response);
+      }
+
+      // 6. Usage & Cost Accounting
+      const usage = this.usageTracker.recordUsage(fullRequest, response);
+      const cost = this.costTracker.recordCost(fullRequest, response);
+
+      this.emitEvent('UsageRecorded', { usageId: usage.id, tokens: response.inputTokens + response.outputTokens });
+      this.emitEvent('CostRecorded', { costId: cost.id, costUSD: response.costUSD });
+      this.emitEvent('ResponseReceived', { modelId: selectedModel.modelId, latencyMs: response.latencyMs });
+      this.emitEvent('ModelRequestCompleted', { modelId: selectedModel.modelId, costUSD: response.costUSD });
+
+      return response;
+    } catch (err) {
+      this.emitEvent('ModelRequestFailed', { error: (err as Error).message });
+      throw err;
+    }
   }
 
   public getUsageTracker(): UsageTracker {

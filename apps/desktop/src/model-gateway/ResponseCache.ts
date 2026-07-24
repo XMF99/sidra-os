@@ -1,4 +1,4 @@
-import { CompletionResponse, MessagePrompt } from './types';
+import { CompletionResponse, CompletionRequest } from './types';
 
 export class ResponseCache {
   private static instance: ResponseCache;
@@ -11,8 +11,15 @@ export class ResponseCache {
     return ResponseCache.instance;
   }
 
-  public hashPrompt(messages: MessagePrompt[]): string {
-    const text = messages.map((m) => `${m.role}:${m.content}`).join('|');
+  public hashPrompt(request: CompletionRequest): string {
+    const text = [
+      request.categoryHint || '',
+      request.temperature || 0.7,
+      request.responseFormat || 'text',
+      JSON.stringify(request.tools || []),
+      ...request.messages.map((m) => `${m.role}:${m.content}`),
+    ].join('|');
+
     let hash = 0;
     for (let i = 0; i < text.length; i++) {
       hash = (hash << 5) - hash + text.charCodeAt(i);
