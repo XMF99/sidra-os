@@ -4,6 +4,7 @@ import { AgentRegistry } from './AgentRegistry';
 import { AgentMailbox } from './AgentMailbox';
 import { HeartbeatMonitor } from './HeartbeatMonitor';
 import { ModelGateway } from '../model-gateway/ModelGateway';
+import { KnowledgeRuntime } from '../knowledge-runtime/KnowledgeRuntime';
 
 export type AgentEventListener = (event: AgentRuntimeEvent) => void;
 
@@ -189,14 +190,19 @@ export class AgentRuntime {
 
   public async executeModelTask(agentId: string, objective: string, categoryHint = 'analysis') {
     const agent = this.getAgentOrThrow(agentId);
-    const gateway = ModelGateway.getInstance();
+    const knowledge = KnowledgeRuntime.getInstance();
 
+    // 1. Universal Knowledge Runtime Retrieval & Context Building
+    const retrieval = knowledge.retrieveContext(objective);
+
+    // 2. Model Gateway Execution with Citation-Augmented Context
+    const gateway = ModelGateway.getInstance();
     const response = await gateway.complete({
       agentId,
       missionId: agent.currentMissionId,
       categoryHint,
       messages: [
-        { role: 'system', content: `Agent ${agent.name} (${agent.role})` },
+        { role: 'system', content: `Agent ${agent.name} (${agent.role})\n\nContext:\n${retrieval.compressedContext}` },
         { role: 'user', content: objective },
       ],
     });
