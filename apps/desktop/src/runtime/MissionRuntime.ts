@@ -1,7 +1,10 @@
-import { ExecutionContext, MissionRunRecord, MissionState, RuntimeEvent } from './types';
+import { ExecutionContext, MissionRunRecord, MissionState, RuntimeEvent, MissionMetrics } from './types';
 import { StateMachine } from './StateMachine';
 import { ExecutionQueue } from './ExecutionQueue';
 import { Scheduler } from './Scheduler';
+import { MissionRegistry } from './MissionRegistry';
+import { MissionProgressEngine } from './MissionProgressEngine';
+import { MissionMetricsEngine } from './MissionMetricsEngine';
 import { AgentRuntime } from '../agent-runtime/AgentRuntime';
 import { WorkflowRuntime } from '../workflow-runtime/WorkflowRuntime';
 import { OrganizationRuntime } from '../organization-runtime/OrganizationRuntime';
@@ -15,10 +18,12 @@ export class MissionRuntime {
   private scheduler: Scheduler;
   private eventListeners = new Set<EventListener>();
   private eventLog: RuntimeEvent[] = [];
+  private metricsEngine = MissionMetricsEngine.getInstance();
 
   private constructor() {
     this.queue = new ExecutionQueue();
     this.scheduler = new Scheduler(this.queue);
+    this.createDefaultInitialMissions();
   }
 
   public static getInstance(): MissionRuntime {
@@ -35,7 +40,7 @@ export class MissionRuntime {
 
   private emitEvent(type: string, missionId: string, correlationId: string, payload?: Record<string, unknown>): void {
     const event: RuntimeEvent = {
-      id: `EV-RT-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      id: `EV-MSN-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       type,
       missionId,
       correlationId,
@@ -43,6 +48,9 @@ export class MissionRuntime {
       payload,
     };
     this.eventLog.unshift(event);
+    if (this.eventLog.length > 300) {
+      this.eventLog.pop();
+    }
     this.eventListeners.forEach((fn) => fn(event));
   }
 
@@ -50,7 +58,76 @@ export class MissionRuntime {
     return [...this.eventLog];
   }
 
-  public createMission(title: string, priority = 5, dependencies: string[] = []): MissionRunRecord {
+  private createDefaultInitialMissions(): void {
+    const registry = MissionRegistry.getInstance();
+    const softwareTemplate = registry.get('tmpl_software_launch');
+    if (softwareTemplate) {
+      this.instantiateTemplate('tmpl_software_launch', 'Enterprise Platform Alpha Release');
+    }
+  }
+
+  public instantiateTemplate(templateId: string, titleOverride?: string): MissionRunRecord {
+    const registry = MissionRegistry.getInstance();
+    const tmpl = registry.get(templateId);
+    if (!tmpl) throw new Error(`Mission Template '${templateId}' not found.`);
+
+    const id = `M-${Math.floor(100 + Math.random() * 900)}`;
+    const now = new Date().toISOString();
+
+    const context: ExecutionContext = {
+      missionId: id,
+      workspaceId: 'ws_main_firm',
+      actorId: 'founding_principal',
+      permissions: ['*'],
+      variables: { budgetLimitUSD: 5000 },
+      environment: { NODE_ENV: 'production' },
+      correlationId: `corr_${Math.random().toString(36).substring(2, 10)}`,
+      traceId: `tr_${Math.random().toString(36).substring(2, 10)}`,
+      executionTime: now,
+    };
+
+    const milestones = tmpl.milestones.map((m, idx) => ({
+      ...m,
+      id: `ms_${id}_${idx + 1}`,
+      objectives: m.objectives.map((o) => ({ ...o })),
+    }));
+
+    const record: MissionRunRecord = {
+      id,
+      title: titleOverride || tmpl.title,
+      category: tmpl.category,
+      description: tmpl.description,
+      priority: tmpl.priority,
+      state: 'draft',
+      context,
+      progressPercent: 0,
+      milestones,
+      deliverables: [],
+      assignedAgentIds: ['agent_code_expert', 'agent_qa_lead'],
+      linkedWorkflowIds: [...tmpl.defaultWorkflowIds],
+      linkedAutomationIds: [...tmpl.defaultAutomationIds],
+      requiredConnectorIds: [...tmpl.requiredConnectorIds],
+      dependencies: [],
+      deadline: '2026-08-15',
+      estimatedHoursRemaining: 24,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    this.records.set(id, record);
+    record.progressPercent = MissionProgressEngine.calculateProgress(record);
+    record.estimatedHoursRemaining = MissionProgressEngine.estimateRemainingHours(record);
+
+    this.emitEvent('MissionCreated', id, context.correlationId, { templateId });
+    return record;
+  }
+
+  public createMission(
+    title: string,
+    category = 'general',
+    priority: MissionRunRecord['priority'] = 'medium',
+    dependencies: string[] = []
+  ): MissionRunRecord {
     const id = `M-${Math.floor(100 + Math.random() * 900)}`;
     const now = new Date().toISOString();
 
@@ -69,63 +146,60 @@ export class MissionRuntime {
     const record: MissionRunRecord = {
       id,
       title,
+      category,
+      description: `Custom Mission '${title}' created in Sidra OS`,
+      priority,
       state: 'draft',
       context,
       progressPercent: 0,
+      milestones: [],
+      deliverables: [],
+      assignedAgentIds: [],
+      linkedWorkflowIds: [],
+      linkedAutomationIds: [],
+      requiredConnectorIds: [],
+      dependencies,
       createdAt: now,
       updatedAt: now,
     };
 
     this.records.set(id, record);
     this.scheduler.validateNoCycles(id, dependencies, this.records);
-
-    // Enqueue
-    this.transitionState(id, 'queued');
-    this.queue.enqueue({
-      missionId: id,
-      context,
-      priority,
-      dependencies,
-      enqueuedAt: now,
-    });
-    this.emitEvent('MissionQueued', id, context.correlationId, { priority, dependencies });
+    this.transitionState(id, 'planned');
+    this.emitEvent('MissionCreated', id, context.correlationId, { priority, dependencies });
 
     return record;
-  }
-
-  public startNextScheduled(): MissionRunRecord | undefined {
-    const nextItem = this.scheduler.getNextRunnableMission(this.records);
-    if (!nextItem) return undefined;
-
-    this.queue.dequeue();
-    return this.startMission(nextItem.missionId);
   }
 
   public startMission(missionId: string, requiredCapability = 'analysis'): MissionRunRecord {
     const record = this.getRecordOrThrow(missionId);
 
-    // 1. Enterprise Organization Policy & Permission Check
+    // 1. Policy check with OrganizationRuntime
     const orgRuntime = OrganizationRuntime.getInstance();
     const policyAction = orgRuntime.evaluatePolicy('Budget', { spendUSD: 150 });
     if (policyAction === 'deny') {
-      throw new Error(`Mission '${missionId}' denied by Enterprise Budget Policy.`);
+      throw new Error(`Mission '${missionId}' denied by Enterprise Policy.`);
     }
 
     this.transitionState(missionId, 'running');
-    record.progressPercent = 10;
 
-    // 2. Trigger capability matching in AgentRuntime
+    // 2. Coordinate Agent Runtime
     const agentRuntime = AgentRuntime.getInstance();
     const assignedAgent = agentRuntime.assignMission(missionId, requiredCapability);
+    if (assignedAgent && !record.assignedAgentIds.includes(assignedAgent.id)) {
+      record.assignedAgentIds.push(assignedAgent.id);
+    }
 
-    // 3. Trigger Workflow Engine orchestration
-    const workflowRuntime = WorkflowRuntime.getInstance();
-    workflowRuntime.startWorkflow('wf_standard_mission', missionId, { spendUSD: 150 });
+    // 3. Coordinate Workflow Runtime
+    if (record.linkedWorkflowIds.length > 0) {
+      const workflowRuntime = WorkflowRuntime.getInstance();
+      workflowRuntime.startWorkflow(record.linkedWorkflowIds[0], missionId, record.context.variables);
+    }
 
+    record.progressPercent = Math.max(record.progressPercent, 15);
     this.emitEvent('MissionStarted', missionId, record.context.correlationId, {
       assignedAgentId: assignedAgent?.id,
-      assignedAgentName: assignedAgent?.name,
-      workflowId: 'wf_standard_mission',
+      linkedWorkflows: record.linkedWorkflowIds,
     });
     return record;
   }
@@ -152,25 +226,27 @@ export class MissionRuntime {
     return record;
   }
 
-  public retryMission(missionId: string): MissionRunRecord {
+  public archiveMission(missionId: string): MissionRunRecord {
     const record = this.getRecordOrThrow(missionId);
-    this.transitionState(missionId, 'queued');
-    this.queue.enqueue({
-      missionId,
-      context: record.context,
-      priority: 5,
-      dependencies: [],
-      enqueuedAt: new Date().toISOString(),
-    });
-    this.emitEvent('MissionRetried', missionId, record.context.correlationId);
+    this.transitionState(missionId, 'archived');
+    this.emitEvent('MissionArchived', missionId, record.context.correlationId);
     return record;
+  }
+
+  public restartMission(missionId: string): MissionRunRecord {
+    this.transitionState(missionId, 'ready');
+    return this.startMission(missionId);
   }
 
   public completeMission(missionId: string, result?: unknown): MissionRunRecord {
     const record = this.getRecordOrThrow(missionId);
     this.transitionState(missionId, 'completed');
     record.progressPercent = 100;
+    record.completedAt = new Date().toISOString();
     record.result = result;
+
+    const duration = new Date(record.completedAt).getTime() - new Date(record.createdAt).getTime();
+    this.metricsEngine.recordMissionCompleted(Math.max(0, duration));
     this.emitEvent('MissionCompleted', missionId, record.context.correlationId, { result });
     return record;
   }
@@ -180,6 +256,23 @@ export class MissionRuntime {
     this.transitionState(missionId, 'failed');
     record.error = error;
     this.emitEvent('MissionFailed', missionId, record.context.correlationId, { error });
+    return record;
+  }
+
+  public toggleObjective(missionId: string, milestoneId: string, objectiveId: string): MissionRunRecord {
+    const record = this.getRecordOrThrow(missionId);
+    const ms = record.milestones.find((m) => m.id === milestoneId);
+    if (ms) {
+      const obj = ms.objectives.find((o) => o.id === objectiveId);
+      if (obj) {
+        obj.completed = !obj.completed;
+      }
+      ms.completed = ms.objectives.every((o) => o.completed);
+    }
+    record.progressPercent = MissionProgressEngine.calculateProgress(record);
+    record.estimatedHoursRemaining = MissionProgressEngine.estimateRemainingHours(record);
+    record.updatedAt = new Date().toISOString();
+    this.emitEvent('ObjectiveToggled', missionId, record.context.correlationId, { milestoneId, objectiveId });
     return record;
   }
 
@@ -196,6 +289,10 @@ export class MissionRuntime {
 
   public getAllRecords(): MissionRunRecord[] {
     return Array.from(this.records.values());
+  }
+
+  public getMetrics(): MissionMetrics {
+    return this.metricsEngine.getMetrics(this.getAllRecords());
   }
 
   private getRecordOrThrow(missionId: string): MissionRunRecord {
