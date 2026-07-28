@@ -1,32 +1,26 @@
 import { AgentState } from './types';
 
-export class InvalidAgentStateTransitionError extends Error {
-  constructor(from: AgentState, to: AgentState) {
-    super(`Invalid agent state transition from '${from}' to '${to}'`);
-    this.name = 'InvalidAgentStateTransitionError';
-  }
-}
-
 export class AgentStateMachine {
-  private static VALID_TRANSITIONS: Record<AgentState, AgentState[]> = {
-    offline: ['starting'],
-    starting: ['idle', 'failed'],
-    idle: ['busy', 'suspended', 'stopping'],
-    busy: ['idle', 'waiting', 'failed', 'suspended'],
-    waiting: ['busy', 'idle', 'failed'],
-    suspended: ['idle', 'stopping'],
-    stopping: ['offline'],
-    failed: ['starting', 'offline'],
+  private static validTransitions: Record<AgentState, AgentState[]> = {
+    created: ['initialized', 'offline'],
+    initialized: ['ready', 'offline'],
+    ready: ['assigned', 'running', 'paused', 'offline'],
+    assigned: ['running', 'waiting', 'blocked', 'cancelled'],
+    running: ['waiting', 'paused', 'blocked', 'completed', 'failed', 'cancelled'],
+    waiting: ['running', 'blocked', 'failed', 'cancelled'],
+    paused: ['running', 'ready', 'cancelled'],
+    blocked: ['running', 'waiting', 'failed', 'cancelled'],
+    completed: ['ready', 'archived'],
+    failed: ['initialized', 'ready', 'archived'],
+    cancelled: ['ready', 'archived'],
+    offline: ['created', 'initialized', 'ready'],
+    archived: ['created'],
   };
 
-  public static canTransition(from: AgentState, to: AgentState): boolean {
-    const allowed = AgentStateMachine.VALID_TRANSITIONS[from] || [];
-    return allowed.includes(to);
-  }
-
   public static validateTransition(from: AgentState, to: AgentState): void {
-    if (!AgentStateMachine.canTransition(from, to)) {
-      throw new InvalidAgentStateTransitionError(from, to);
+    const allowed = AgentStateMachine.validTransitions[from] || [];
+    if (!allowed.includes(to)) {
+      throw new Error(`Invalid Agent state transition from '${from}' to '${to}'.`);
     }
   }
 }
