@@ -6,6 +6,7 @@ import { AgentInspectorTab } from './tabs/AgentInspectorTab';
 import { KnowledgeInspectorTab } from './tabs/KnowledgeInspectorTab';
 import { OrganizationInspectorTab } from './tabs/OrganizationInspectorTab';
 import { ConnectorManagerTab } from './tabs/ConnectorManagerTab';
+import { AutomationManagerTab } from './tabs/AutomationManagerTab';
 import { RuntimeEventsTab } from './tabs/RuntimeEventsTab';
 import { DiagnosticsTab } from './tabs/DiagnosticsTab';
 import { LogsTab } from './tabs/LogsTab';
@@ -19,6 +20,7 @@ export type ConsoleTab =
   | 'knowledge'
   | 'organization'
   | 'connectors'
+  | 'automations'
   | 'events'
   | 'diagnostics'
   | 'logs'
@@ -35,6 +37,7 @@ export const DeveloperConsole: React.FC = () => {
     { id: 'knowledge', label: 'Knowledge Inspector' },
     { id: 'organization', label: 'Organization Inspector' },
     { id: 'connectors', label: 'Connector Manager' },
+    { id: 'automations', label: 'Automation Manager' },
     { id: 'events', label: 'Runtime Events' },
     { id: 'diagnostics', label: 'Diagnostics' },
     { id: 'logs', label: 'Logs' },
@@ -84,6 +87,7 @@ export const DeveloperConsole: React.FC = () => {
         {activeTab === 'knowledge' && <KnowledgeInspectorTab />}
         {activeTab === 'organization' && <OrganizationInspectorTab />}
         {activeTab === 'connectors' && <ConnectorManagerTab />}
+        {activeTab === 'automations' && <AutomationManagerTab />}
         {activeTab === 'events' && <RuntimeEventsTab />}
         {activeTab === 'diagnostics' && <DiagnosticsTab />}
         {activeTab === 'logs' && <LogsTab />}
