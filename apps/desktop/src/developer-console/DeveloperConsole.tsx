@@ -12,6 +12,7 @@ import { EventBusInspectorTab } from './tabs/EventBusInspectorTab';
 import { ObservabilityInspectorTab } from './tabs/ObservabilityInspectorTab';
 import { PolicyInspectorTab } from './tabs/PolicyInspectorTab';
 import { SecurityInspectorTab } from './tabs/SecurityInspectorTab';
+import { RecoveryInspectorTab } from './tabs/RecoveryInspectorTab';
 import { OrganizationInspectorTab } from './tabs/OrganizationInspectorTab';
 import { ConnectorManagerTab } from './tabs/ConnectorManagerTab';
 import { AutomationManagerTab } from './tabs/AutomationManagerTab';
@@ -34,6 +35,7 @@ export type ConsoleTab =
   | 'observability'
   | 'policy'
   | 'security'
+  | 'recovery'
   | 'organization'
   | 'connectors'
   | 'automations'
@@ -59,6 +61,7 @@ export const DeveloperConsole: React.FC = () => {
     { id: 'observability', label: 'Observability Dashboard' },
     { id: 'policy', label: 'Policy Manager' },
     { id: 'security', label: 'Security Manager' },
+    { id: 'recovery', label: 'Recovery Manager' },
     { id: 'organization', label: 'Organization Inspector' },
     { id: 'connectors', label: 'Connector Manager' },
     { id: 'automations', label: 'Automation Manager' },
@@ -117,6 +120,7 @@ export const DeveloperConsole: React.FC = () => {
         {activeTab === 'observability' && <ObservabilityInspectorTab />}
         {activeTab === 'policy' && <PolicyInspectorTab />}
         {activeTab === 'security' && <SecurityInspectorTab />}
+        {activeTab === 'recovery' && <RecoveryInspectorTab />}
         {activeTab === 'organization' && <OrganizationInspectorTab />}
         {activeTab === 'connectors' && <ConnectorManagerTab />}
         {activeTab === 'automations' && <AutomationManagerTab />}
