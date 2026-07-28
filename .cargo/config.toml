@@ -1,0 +1,9 @@
+[build]
+target-dir = "C:/sidra-target"
+
+[env]
+CC = "C:/winlibs/mingw64/bin/gcc.exe"
+AR = "C:/winlibs/mingw64/bin/ar.exe"
+
+[target.x86_64-pc-windows-gnu]
+linker = "C:/winlibs/mingw64/bin/gcc.exe"
