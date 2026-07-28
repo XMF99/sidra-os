@@ -2,11 +2,13 @@ import {
   WorkflowInstance,
   WorkflowEvent,
   WorkflowState,
+  WorkflowMetrics,
 } from './types';
 import { WorkflowRegistry } from './WorkflowRegistry';
 import { WorkflowStateMachine } from './WorkflowStateMachine';
 import { WorkflowScheduler } from './WorkflowScheduler';
-import { WorkflowExecutor } from './WorkflowExecutor';
+import { WorkflowMetricsEngine } from './WorkflowMetricsEngine';
+import { CompensationEngine } from './CompensationEngine';
 
 export type WorkflowEventListener = (event: WorkflowEvent) => void;
 
@@ -15,6 +17,8 @@ export class WorkflowRuntime {
   private instances = new Map<string, WorkflowInstance>();
   private listeners = new Set<WorkflowEventListener>();
   private eventLog: WorkflowEvent[] = [];
+  private metricsEngine = WorkflowMetricsEngine.getInstance();
+  private compensationEngine = CompensationEngine.getInstance();
 
   public static getInstance(): WorkflowRuntime {
     if (!WorkflowRuntime.instance) {
@@ -38,6 +42,9 @@ export class WorkflowRuntime {
       payload,
     };
     this.eventLog.unshift(event);
+    if (this.eventLog.length > 200) {
+      this.eventLog.pop();
+    }
     this.listeners.forEach((fn) => fn(event));
   }
 
@@ -45,7 +52,7 @@ export class WorkflowRuntime {
     return [...this.eventLog];
   }
 
-  public async startWorkflow(workflowId: string, missionId: string, initialVariables: Record<string, unknown> = {}): Promise<WorkflowInstance> {
+  public async startWorkflow(workflowId: string, missionId = 'm_default', initialVariables: Record<string, unknown> = {}): Promise<WorkflowInstance> {
     const registry = WorkflowRegistry.getInstance();
     const def = registry.get(workflowId);
     if (!def) {
@@ -58,6 +65,7 @@ export class WorkflowRuntime {
     const instance: WorkflowInstance = {
       id: instanceId,
       workflowId,
+      version: def.version || '1.0.0',
       missionId,
       state: 'ready',
       currentNodeId: def.startNodeId,
@@ -69,6 +77,7 @@ export class WorkflowRuntime {
     };
 
     this.instances.set(instanceId, instance);
+    this.metricsEngine.recordInstanceStarted();
     this.transitionState(instance, 'running');
     this.emitEvent('WorkflowStarted', instanceId, def.startNodeId);
 
@@ -105,18 +114,39 @@ export class WorkflowRuntime {
     return instance;
   }
 
+  public async pauseWorkflow(instanceId: string): Promise<void> {
+    const instance = this.getInstanceOrThrow(instanceId);
+    this.transitionState(instance, 'paused');
+    this.emitEvent('WorkflowPaused', instanceId);
+  }
+
+  public async resumeWorkflow(instanceId: string): Promise<void> {
+    const instance = this.getInstanceOrThrow(instanceId);
+    this.transitionState(instance, 'running');
+    this.emitEvent('WorkflowResumed', instanceId);
+    await this.stepUntilWaitOrComplete(instance);
+  }
+
+  public async cancelWorkflow(instanceId: string): Promise<void> {
+    const instance = this.getInstanceOrThrow(instanceId);
+    this.transitionState(instance, 'cancelled');
+    this.emitEvent('WorkflowCancelled', instanceId);
+  }
+
   public async runCompensation(instanceId: string): Promise<void> {
     const instance = this.getInstanceOrThrow(instanceId);
     const registry = WorkflowRegistry.getInstance();
     const def = registry.get(instance.workflowId)!;
 
     this.transitionState(instance, 'compensating');
+    this.metricsEngine.recordCompensation();
     this.emitEvent('CompensationStarted', instanceId);
 
-    await WorkflowExecutor.executeCompensation(instance, def);
+    await this.compensationEngine.executeCompensation(instance, def);
 
     this.emitEvent('CompensationCompleted', instanceId);
     this.transitionState(instance, 'failed');
+    this.metricsEngine.recordInstanceFailed();
     this.emitEvent('WorkflowFailed', instanceId);
   }
 
@@ -136,6 +166,8 @@ export class WorkflowRuntime {
       if (stepRes.nextState === 'completed') {
         this.transitionState(instance, 'completed');
         instance.completedAt = new Date().toISOString();
+        const duration = new Date(instance.completedAt).getTime() - new Date(instance.startedAt).getTime();
+        this.metricsEngine.recordInstanceCompleted(Math.max(0, duration));
         this.emitEvent('WorkflowCompleted', instance.id);
         break;
       }
@@ -154,6 +186,23 @@ export class WorkflowRuntime {
 
   public getInstanceRecord(instanceId: string): WorkflowInstance | undefined {
     return this.instances.get(instanceId);
+  }
+
+  public getAllInstances(): WorkflowInstance[] {
+    return Array.from(this.instances.values());
+  }
+
+  public getMetrics(): WorkflowMetrics {
+    const registry = WorkflowRegistry.getInstance();
+    const allInstances = this.getAllInstances();
+    const activeCount = allInstances.filter((i) => i.state === 'running' || i.state === 'waiting').length;
+    const pendingApprovalsCount = allInstances.reduce((acc, i) => acc + (i.pendingApprovals?.length || 0), 0);
+
+    return this.metricsEngine.getMetrics(
+      registry.getAll().length,
+      activeCount,
+      pendingApprovalsCount
+    );
   }
 
   private getInstanceOrThrow(instanceId: string): WorkflowInstance {

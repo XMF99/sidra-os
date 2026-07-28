@@ -11,14 +11,31 @@ export type WorkflowState =
 
 export type NodeType =
   | 'start'
+  | 'end'
   | 'task'
+  | 'service_task'
+  | 'human_task'
+  | 'ai_task'
+  | 'connector_task'
   | 'decision'
-  | 'parallel'
+  | 'switch'
   | 'merge'
+  | 'parallel'
   | 'delay'
+  | 'timer'
+  | 'event'
+  | 'sub_workflow'
   | 'approval'
-  | 'loop'
-  | 'end';
+  | 'loop';
+
+export interface HumanTaskConfig {
+  assigneeRole?: string;
+  assigneeUser?: string;
+  approvalTitle?: string;
+  approvalDescription?: string;
+  timeoutMinutes?: number;
+  autoApproveOnTimeout?: boolean;
+}
 
 export interface WorkflowNode {
   id: string;
@@ -26,7 +43,11 @@ export interface WorkflowNode {
   title?: string;
   nextNodes?: string[];
   capability?: string;
+  connectorId?: string;
+  subWorkflowId?: string;
   condition?: string;
+  switchCases?: Record<string, string>; // caseValue -> targetNodeId
+  humanTask?: HumanTaskConfig;
   compensationNodeId?: string;
   retryPolicy?: {
     maxRetries: number;
@@ -39,27 +60,49 @@ export interface WorkflowNode {
 export interface WorkflowDefinition {
   id: string;
   name: string;
+  version: string;
+  description: string;
   startNodeId: string;
   nodes: Map<string, WorkflowNode>;
+  category?: string;
+  tags?: string[];
+}
+
+export interface WorkflowHistoryRecord {
+  nodeId: string;
+  state: string;
+  timestamp: string;
+  output?: unknown;
+  durationMs?: number;
+  actor?: string;
 }
 
 export interface WorkflowInstance {
   id: string;
   workflowId: string;
+  version: string;
   missionId: string;
   state: WorkflowState;
   currentNodeId: string;
   activeNodeIds: string[];
   variables: Record<string, unknown>;
-  history: Array<{
-    nodeId: string;
-    state: string;
-    timestamp: string;
-    output?: unknown;
-  }>;
+  history: WorkflowHistoryRecord[];
   pendingApprovals?: string[];
   startedAt: string;
   completedAt?: string;
+  error?: string;
+  retryCount?: number;
+}
+
+export interface WorkflowMetrics {
+  totalDefinitions: number;
+  totalInstances: number;
+  activeInstances: number;
+  completedInstances: number;
+  failedInstances: number;
+  pendingApprovalsCount: number;
+  compensationsCount: number;
+  averageDurationMs: number;
 }
 
 export interface WorkflowEvent {
@@ -73,6 +116,8 @@ export interface WorkflowEvent {
     | 'ApprovalGranted'
     | 'ApprovalRejected'
     | 'WorkflowCompleted'
+    | 'WorkflowPaused'
+    | 'WorkflowResumed'
     | 'WorkflowCancelled'
     | 'WorkflowFailed'
     | 'CompensationStarted'

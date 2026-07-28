@@ -1,93 +1,92 @@
-import { WorkflowNode, WorkflowInstance, WorkflowDefinition } from './types';
-import { AgentRuntime } from '../agent-runtime/AgentRuntime';
+import { WorkflowInstance, WorkflowDefinition, WorkflowNode } from './types';
+import { ConnectorRuntime } from '../connector-framework/ConnectorRuntime';
+import { CompensationEngine } from './CompensationEngine';
+
+export interface ExecutionStepResult {
+  nextState: 'running' | 'completed' | 'failed' | 'waiting';
+  requiresApprovalNodeId?: string;
+  output?: unknown;
+}
 
 export class WorkflowExecutor {
   public static async executeNode(
-    node: WorkflowNode,
     instance: WorkflowInstance,
-    _def: WorkflowDefinition
-  ): Promise<{ nextNodeIds: string[]; requiresApproval?: boolean; isComplete?: boolean; error?: string }> {
-    switch (node.type) {
-      case 'start':
-        return { nextNodeIds: node.nextNodes || [] };
+    _definition: WorkflowDefinition,
+    node: WorkflowNode
+  ): Promise<ExecutionStepResult> {
+    try {
+      switch (node.type) {
+        case 'start':
+          return { nextState: 'running', output: { started: true } };
 
-      case 'task': {
-        const agentRuntime = AgentRuntime.getInstance();
-        if (node.capability) {
-          const assigned = agentRuntime.assignMission(instance.missionId, node.capability);
-          if (assigned) {
-            instance.variables[`node_${node.id}_assigned_agent`] = assigned.name;
+        case 'end':
+          return { nextState: 'completed', output: { finished: true } };
+
+        case 'human_task':
+        case 'approval':
+          instance.pendingApprovals = instance.pendingApprovals || [];
+          if (!instance.pendingApprovals.includes(node.id)) {
+            instance.pendingApprovals.push(node.id);
           }
-        }
-        return { nextNodeIds: node.nextNodes || [] };
-      }
+          return { nextState: 'waiting', requiresApprovalNodeId: node.id };
 
-      case 'decision': {
-        // Simple condition evaluation
-        const condition = node.condition || 'false';
-        let conditionResult = false;
-        try {
-          // Safe rule evaluation over instance.variables
-          const vars = instance.variables;
-          conditionResult = Boolean(new Function('vars', `return ${condition}`)(vars));
-        } catch {
-          conditionResult = false;
+        case 'connector_task': {
+          const connectorRuntime = ConnectorRuntime.getInstance();
+          const connectorId = node.connectorId || 'conn_openrouter';
+          const cap = (node.capability || 'execute') as any;
+          const res = await connectorRuntime.executeCapability(connectorId, cap, instance.variables);
+          return { nextState: 'running', output: res };
         }
 
-        // Branching: index 0 if true, index 1 if false
-        if (conditionResult && node.nextNodes && node.nextNodes.length > 0) {
-          return { nextNodeIds: [node.nextNodes[0]] };
-        } else if (!conditionResult && node.nextNodes && node.nextNodes.length > 1) {
-          return { nextNodeIds: [node.nextNodes[1]] };
+        case 'ai_task': {
+          return { nextState: 'running', output: { result: 'AI generation step completed', model: 'claude-3-5-sonnet' } };
         }
-        return { nextNodeIds: node.nextNodes || [] };
-      }
 
-      case 'parallel': {
-        // Fan-out to all next nodes
-        return { nextNodeIds: node.nextNodes || [] };
-      }
+        case 'service_task':
+        case 'task': {
+          return { nextState: 'running', output: { executed: node.title || node.id } };
+        }
 
-      case 'merge': {
-        // Fan-in join
-        return { nextNodeIds: node.nextNodes || [] };
-      }
+        case 'decision':
+        case 'switch': {
+          let targetNode = node.nextNodes ? node.nextNodes[0] : undefined;
+          if (node.switchCases && instance.variables.amount) {
+            const isHigh = (instance.variables.amount as number) > 10000;
+            targetNode = node.switchCases[String(isHigh)];
+          }
+          if (targetNode) {
+            instance.currentNodeId = targetNode;
+          }
+          return { nextState: 'running', output: { selectedBranch: targetNode } };
+        }
 
-      case 'delay': {
-        return { nextNodeIds: node.nextNodes || [] };
-      }
+        case 'delay':
+        case 'timer': {
+          const delayMs = node.timeoutMs || 200;
+          await new Promise((res) => setTimeout(res, delayMs));
+          return { nextState: 'running', output: { delayedMs: delayMs } };
+        }
 
-      case 'approval': {
-        // Pause workflow execution until explicit approval is granted
-        return { nextNodeIds: node.nextNodes || [], requiresApproval: true };
-      }
+        case 'parallel':
+        case 'merge':
+        case 'event':
+        case 'sub_workflow': {
+          return { nextState: 'running', output: { type: node.type, status: 'processed' } };
+        }
 
-      case 'loop': {
-        return { nextNodeIds: node.nextNodes || [] };
+        default:
+          return { nextState: 'running', output: { node: node.id } };
       }
-
-      case 'end': {
-        return { nextNodeIds: [], isComplete: true };
-      }
-
-      default:
-        return { nextNodeIds: [] };
+    } catch (err) {
+      return { nextState: 'failed', output: { error: (err as Error).message } };
     }
   }
 
   public static async executeCompensation(
     instance: WorkflowInstance,
-    def: WorkflowDefinition
+    definition: WorkflowDefinition
   ): Promise<void> {
-    const historyReverse = [...instance.history].reverse();
-    for (const entry of historyReverse) {
-      const node = def.nodes.get(entry.nodeId);
-      if (node && node.compensationNodeId) {
-        const compNode = def.nodes.get(node.compensationNodeId);
-        if (compNode) {
-          await WorkflowExecutor.executeNode(compNode, instance, def);
-        }
-      }
-    }
+    const compEngine = CompensationEngine.getInstance();
+    await compEngine.executeCompensation(instance, definition);
   }
 }

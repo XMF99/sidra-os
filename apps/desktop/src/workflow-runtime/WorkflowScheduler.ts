@@ -1,39 +1,34 @@
 import { WorkflowInstance, WorkflowDefinition } from './types';
-import { WorkflowExecutor } from './WorkflowExecutor';
+import { WorkflowExecutor, ExecutionStepResult } from './WorkflowExecutor';
 
 export class WorkflowScheduler {
   public static async stepInstance(
     instance: WorkflowInstance,
-    def: WorkflowDefinition
-  ): Promise<{ nextState: string; activeNodeIds: string[]; requiresApprovalNodeId?: string }> {
-    const currentNode = def.nodes.get(instance.currentNodeId);
+    definition: WorkflowDefinition
+  ): Promise<ExecutionStepResult> {
+    const currentNode = definition.nodes.get(instance.currentNodeId);
     if (!currentNode) {
-      return { nextState: 'failed', activeNodeIds: [] };
+      return { nextState: 'failed', output: { error: `Node '${instance.currentNodeId}' not found.` } };
     }
+
+    const startTime = Date.now();
+    const result = await WorkflowExecutor.executeNode(instance, definition, currentNode);
+    const durationMs = Date.now() - startTime;
 
     instance.history.push({
       nodeId: currentNode.id,
-      state: 'completed',
+      state: result.nextState,
       timestamp: new Date().toISOString(),
+      output: result.output,
+      durationMs,
     });
 
-    const result = await WorkflowExecutor.executeNode(currentNode, instance, def);
-
-    if (result.requiresApproval) {
-      if (!instance.pendingApprovals) instance.pendingApprovals = [];
-      instance.pendingApprovals.push(currentNode.id);
-      return { nextState: 'waiting', activeNodeIds: [currentNode.id], requiresApprovalNodeId: currentNode.id };
+    if (result.nextState === 'running') {
+      if (currentNode.nextNodes && currentNode.nextNodes.length > 0) {
+        instance.currentNodeId = currentNode.nextNodes[0];
+      }
     }
 
-    if (result.isComplete) {
-      return { nextState: 'completed', activeNodeIds: [] };
-    }
-
-    if (result.nextNodeIds.length > 0) {
-      instance.currentNodeId = result.nextNodeIds[0];
-      return { nextState: 'running', activeNodeIds: result.nextNodeIds };
-    }
-
-    return { nextState: 'completed', activeNodeIds: [] };
+    return result;
   }
 }
