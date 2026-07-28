@@ -15,15 +15,22 @@ export class DocumentRegistry {
     this.documents.set(doc.id, doc);
   }
 
+  public unregister(id: string): boolean {
+    return this.documents.delete(id);
+  }
+
   public get(id: string, requesterWorkspaceId?: string): DocumentRecord | undefined {
     const doc = this.documents.get(id);
     if (!doc) return undefined;
 
-    // Security check: isolate across workspaces
     if (requesterWorkspaceId && doc.workspaceId !== requesterWorkspaceId) {
       return undefined;
     }
     return doc;
+  }
+
+  public getById(id: string): DocumentRecord | undefined {
+    return this.documents.get(id);
   }
 
   public getByWorkspace(workspaceId: string): DocumentRecord[] {
@@ -32,5 +39,9 @@ export class DocumentRegistry {
 
   public getAll(): DocumentRecord[] {
     return Array.from(this.documents.values());
+  }
+
+  public getAllMap(): Map<string, DocumentRecord> {
+    return new Map(this.documents);
   }
 }

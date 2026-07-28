@@ -16,6 +16,14 @@ export class KnowledgeIndex {
     newChunks.forEach((c) => this.chunks.set(c.id, c));
   }
 
+  public clear(): void {
+    this.chunks.clear();
+  }
+
+  public getAllChunks(): DocumentChunk[] {
+    return Array.from(this.chunks.values());
+  }
+
   public search(
     query: string,
     requesterWorkspaceId?: string,
@@ -27,13 +35,11 @@ export class KnowledgeIndex {
     const matches: Array<{ chunk: DocumentChunk; score: number }> = [];
 
     this.chunks.forEach((chunk) => {
-      // ACL Workspace Security Verification
       if (requesterWorkspaceId) {
         const doc = docRegistry.get(chunk.documentId, requesterWorkspaceId);
         if (!doc) return;
       }
 
-      // BM25 / Full-text term match scoring
       let score = 0;
       const textLower = chunk.text.toLowerCase();
       queryTerms.forEach((term) => {

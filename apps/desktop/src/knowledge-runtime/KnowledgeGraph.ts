@@ -1,20 +1,13 @@
-export interface GraphNode {
-  id: string;
-  type: 'Project' | 'Mission' | 'Workflow' | 'Document' | 'Agent' | 'Department' | 'Artifact';
-  label: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface GraphEdge {
-  fromId: string;
-  toId: string;
-  relation: string;
-}
+import { KnowledgeGraphEntity, KnowledgeGraphRelationship } from './types';
 
 export class KnowledgeGraph {
   private static instance: KnowledgeGraph;
-  private nodes = new Map<string, GraphNode>();
-  private edges: GraphEdge[] = [];
+  private entities = new Map<string, KnowledgeGraphEntity>();
+  private relationships: KnowledgeGraphRelationship[] = [];
+
+  private constructor() {
+    this.seedDefaultGraph();
+  }
 
   public static getInstance(): KnowledgeGraph {
     if (!KnowledgeGraph.instance) {
@@ -23,27 +16,42 @@ export class KnowledgeGraph {
     return KnowledgeGraph.instance;
   }
 
-  public addNode(node: GraphNode): void {
-    this.nodes.set(node.id, node);
+  private seedDefaultGraph(): void {
+    const e1: KnowledgeGraphEntity = { id: 'ENT-ORG-01', type: 'Organization', name: 'Sidra OS Platform Firm' };
+    const e2: KnowledgeGraphEntity = { id: 'ENT-PROJ-01', type: 'Project', name: 'Desktop Alpha Monorepo' };
+    const e3: KnowledgeGraphEntity = { id: 'ENT-DOC-01', type: 'Document', name: 'Sidra OS Security Policy' };
+    const e4: KnowledgeGraphEntity = { id: 'ENT-MSN-01', type: 'Mission', name: 'Enterprise Platform Release' };
+    const e5: KnowledgeGraphEntity = { id: 'ENT-AGT-01', type: 'Agent', name: 'Auditor Agent Alpha' };
+
+    this.addEntity(e1);
+    this.addEntity(e2);
+    this.addEntity(e3);
+    this.addEntity(e4);
+    this.addEntity(e5);
+
+    this.addRelationship({ id: 'REL-01', sourceEntityId: 'ENT-PROJ-01', targetEntityId: 'ENT-ORG-01', relationshipType: 'BELONGS_TO' });
+    this.addRelationship({ id: 'REL-02', sourceEntityId: 'ENT-DOC-01', targetEntityId: 'ENT-PROJ-01', relationshipType: 'REFERENCES' });
+    this.addRelationship({ id: 'REL-03', sourceEntityId: 'ENT-MSN-01', targetEntityId: 'ENT-PROJ-01', relationshipType: 'PART_OF' });
+    this.addRelationship({ id: 'REL-04', sourceEntityId: 'ENT-AGT-01', targetEntityId: 'ENT-MSN-01', relationshipType: 'EXECUTES' });
   }
 
-  public addEdge(edge: GraphEdge): void {
-    this.edges.push(edge);
+  public addEntity(entity: KnowledgeGraphEntity): void {
+    this.entities.set(entity.id, entity);
   }
 
-  public getRelatedEntities(entityId: string): GraphNode[] {
-    const relatedIds = new Set<string>();
-    this.edges.forEach((e) => {
-      if (e.fromId === entityId) relatedIds.add(e.toId);
-      if (e.toId === entityId) relatedIds.add(e.fromId);
-    });
+  public addRelationship(rel: KnowledgeGraphRelationship): void {
+    this.relationships.push(rel);
+  }
 
-    const result: GraphNode[] = [];
-    relatedIds.forEach((id) => {
-      const node = this.nodes.get(id);
-      if (node) result.push(node);
-    });
+  public getEntity(id: string): KnowledgeGraphEntity | undefined {
+    return this.entities.get(id);
+  }
 
-    return result;
+  public getAllEntities(): KnowledgeGraphEntity[] {
+    return Array.from(this.entities.values());
+  }
+
+  public getAllRelationships(): KnowledgeGraphRelationship[] {
+    return [...this.relationships];
   }
 }
