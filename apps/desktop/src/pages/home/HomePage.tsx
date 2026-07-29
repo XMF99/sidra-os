@@ -1,135 +1,82 @@
 import React from 'react';
 import {
-  FolderPlus,
-  Play,
   Sparkles,
-  Gamepad2,
-  BookOpen,
-  Bell,
-  CheckCircle2,
-  Bot,
-  FileText,
-  ShieldCheck,
-  TrendingUp,
   FolderKanban,
+  Crosshair,
+  Bot,
+  Calendar as CalendarIcon,
+  Search,
+  Plus,
+  Star,
+  BookOpen,
+  TrendingUp,
 } from 'lucide-react';
 import { useShellStore } from '../../state/useShellStore';
-import { useNotifications } from '../../app/providers/NotificationProvider';
 
 export const HomePage: React.FC = () => {
-  const { setProjectWizardOpen, setMissionWizardOpen, openProjectWizardWithTemplate } = useShellStore();
-  const { setCenterOpen } = useNotifications();
+  const { setProjectWizardOpen, setMissionWizardOpen, openProjectWorkspace, setUniversalSearchOpen } = useShellStore();
 
-  // Mock workspace data for user experience
+  // 1. Today's Focus Data
+  const topPriorities = [
+    { id: 'tp-1', title: 'Complete GORA Architecture Spec Review', project: 'GORA Workspace', deadline: 'Today 5:00 PM', priority: 'Urgent' },
+    { id: 'tp-2', title: 'Deploy Vulkan Physics Collision Matrix', project: 'Game Studio Engine v2', deadline: 'Tomorrow', priority: 'High' },
+    { id: 'tp-3', title: 'Approve Departmental Budget Allocation', project: 'Enterprise ERP Suite', deadline: 'Jul 31', priority: 'Medium' },
+  ];
+
+  const aiRecommendations = [
+    'Assign QA Certification Bot to run automated regression suite on GORA release',
+    'Review 2 pending decision requests from Lead Architect Agent',
+  ];
+
+  // 2. Projects Data
   const recentProjects = [
-    {
-      id: 'p-1',
-      name: 'Game Studio Engine v2',
-      type: 'Game Studio',
-      status: 'In Progress',
-      progress: 68,
-      lastActive: '10 mins ago',
-      color: '#8b5cf6',
-    },
-    {
-      id: 'p-2',
-      name: 'Core Operating Platform',
-      type: 'Software',
-      status: 'Active',
-      progress: 85,
-      lastActive: '1 hour ago',
-      color: '#3b82f6',
-    },
-    {
-      id: 'p-3',
-      name: 'Enterprise ERP Suite',
-      type: 'ERP',
-      status: 'Planning',
-      progress: 30,
-      lastActive: 'Yesterday',
-      color: '#10b981',
-    },
+    { id: 'gora', name: 'GORA Workspace', type: 'Enterprise', progress: 78, status: 'Active', pinned: true, color: '#6366f1' },
+    { id: 'game_studio', name: 'Game Studio Engine v2', type: 'Game Studio', progress: 68, status: 'Active', pinned: true, color: '#8b5cf6' },
+    { id: 'erp', name: 'Enterprise ERP Suite', type: 'ERP', progress: 35, status: 'Planning', pinned: false, color: '#10b981' },
   ];
 
-  const todaysMissions = [
-    {
-      id: 'm-101',
-      title: 'Optimize Real-Time Physics Mesh Collision',
-      project: 'Game Studio Engine v2',
-      assignedAi: 'Lead Architect Agent',
-      priority: 'High',
-      status: 'Running',
-    },
-    {
-      id: 'm-102',
-      title: 'Refactor Identity Token Verification',
-      project: 'Core Operating Platform',
-      assignedAi: 'Full-Stack Dev Agent',
-      priority: 'Medium',
-      status: 'Completed',
-    },
-    {
-      id: 'm-103',
-      title: 'Generate Departmental Budget Report',
-      project: 'Enterprise ERP Suite',
-      assignedAi: 'Ops Controller Agent',
-      priority: 'Urgent',
-      status: 'Pending',
-    },
+  // 3. Mission Center Data
+  const assignedMissions = [
+    { id: 'm-1', title: 'Optimize Real-Time Physics Mesh Collision', status: 'Running', assignedAi: 'Lead Architect Agent', category: 'Assigned' },
+    { id: 'm-2', title: 'Refactor Identity Token Verification', status: 'Waiting Review', assignedAi: 'Full-Stack Dev Agent', category: 'Review' },
+    { id: 'm-3', title: 'Egress Connector Rate Limiter', status: 'Blocked', assignedAi: 'Ops Controller', category: 'Blocked' },
+    { id: 'm-4', title: 'Generate Q3 Performance Brief', status: 'Completed Today', assignedAi: 'Content Strategist AI', category: 'Completed' },
   ];
 
-  const recentAiActivity = [
-    {
-      id: 'a-1',
-      agent: 'Lead Architect Agent',
-      action: 'Completed execution plan for Physics Mesh Engine',
-      time: '12 mins ago',
-      type: 'plan',
-    },
-    {
-      id: 'a-2',
-      agent: 'QA Certification Bot',
-      action: 'Verified unit test suite coverage (98.4%)',
-      time: '45 mins ago',
-      type: 'verify',
-    },
-    {
-      id: 'a-3',
-      agent: 'Game Studio Assistant',
-      action: 'Generated 3D Shader shaders/water_surface.glsl',
-      time: '2 hours ago',
-      type: 'code',
-    },
+  // 4. AI Activity Data
+  const aiActivity = {
+    completedTasks: 18,
+    runningAgents: [
+      { name: 'Lead Architect Agent', task: 'Executing Physics Mesh Engine' },
+      { name: 'Game Studio Assistant', task: 'Rendering GLSL Shaders' },
+    ],
+    pendingDecisions: [
+      { id: 'pd-1', title: 'Authorize Staging Deployment Token', requester: 'Lead Architect' },
+    ],
+    suggestedActions: [
+      'Trigger synthetic load rehearsal for GORA Egress',
+    ],
+  };
+
+  // 5. Knowledge Data
+  const knowledgeItems = [
+    { id: 'k-1', title: 'GORA Architecture & Security Guardrails.pdf', type: 'Doc', time: '10m ago' },
+    { id: 'k-2', title: 'Vulkan Graphics Pipeline Spec.md', type: 'Spec', time: '1h ago' },
+    { id: 'k-3', title: 'Decision #42: Adopt Vulkan API as default driver', type: 'Decision', time: 'Today' },
   ];
 
-  const recentFiles = [
-    { id: 'f-1', name: 'Game_Studio_Architecture_Design.pdf', space: 'Game Studio Knowledge', size: '2.4 MB' },
-    { id: 'f-2', name: 'Q3_Product_Roadmap_Final.docx', space: 'Product Knowledge Space', size: '850 KB' },
-    { id: 'f-3', name: 'Shader_Pipeline_Specification.md', space: 'Engineering Vault', size: '120 KB' },
-  ];
-
-  const recentDecisions = [
-    {
-      id: 'd-1',
-      title: 'Adopt Vulkan API as default graphics driver for Game Studio',
-      by: 'Ahmed (Principal Seat)',
-      date: 'Today, 11:30 AM',
-      approved: true,
-    },
-    {
-      id: 'd-2',
-      title: 'Authorize AI Agent autonomous deployment in Staging',
-      by: 'Lead Architect Agent',
-      date: 'Yesterday',
-      approved: true,
-    },
+  // 7. Calendar Data
+  const todaySchedule = [
+    { time: '10:00 AM', title: 'Executive Sync with AI Lead Team', type: 'Meeting' },
+    { time: '02:00 PM', title: 'GORA Architecture Review & Sign-off', type: 'Milestone' },
+    { time: '04:30 PM', title: 'Q3 Product Roadmap Review', type: 'Deadline' },
   ];
 
   return (
     <div
       style={{
         padding: '32px',
-        maxWidth: '1280px',
+        maxWidth: '1400px',
         margin: '0 auto',
         display: 'flex',
         flexDirection: 'column',
@@ -137,13 +84,13 @@ export const HomePage: React.FC = () => {
         color: 'var(--sd-color-text, #f8fafc)',
       }}
     >
-      {/* Welcome Banner */}
+      {/* Executive Welcome & Primary Question */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          padding: '28px 32px',
+          alignItems: 'center',
+          padding: '32px',
           borderRadius: '20px',
           background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.08) 100%)',
           border: '1px solid var(--sd-color-border, rgba(255, 255, 255, 0.1))',
@@ -151,233 +98,190 @@ export const HomePage: React.FC = () => {
         }}
       >
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>
-            Welcome back, Ahmed 👋
+          <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--sd-color-primary, #6366f1)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Executive Workspace
+          </span>
+          <h1 style={{ fontSize: '32px', fontWeight: 700, margin: '4px 0 0 0', letterSpacing: '-0.02em' }}>
+            What should I work on right now?
           </h1>
           <p style={{ color: 'var(--sd-color-text-muted, #94a3b8)', fontSize: '15px', margin: '8px 0 0 0' }}>
-            What would you like to do today? Your AI team and project workspaces are active.
+            Welcome back, Ahmed. You have 3 high-priority focus items and 2 pending AI decisions today.
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            onClick={() => setUniversalSearchOpen(true)}
             style={{
-              padding: '6px 12px',
-              borderRadius: '20px',
-              backgroundColor: 'rgba(16, 185, 129, 0.15)',
-              color: '#10b981',
-              fontSize: '12px',
-              fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }} />
-            Beta 1 Active
-          </span>
-        </div>
-      </div>
-
-      {/* Primary Action Choices Grid */}
-      <div>
-        <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sd-color-text-muted, #94a3b8)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>
-          Quick Actions
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
-          {/* Action 1: Create Project */}
-          <button
-            onClick={() => setProjectWizardOpen(true)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '12px',
-              padding: '20px',
-              borderRadius: '14px',
-              backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
+              gap: '8px',
+              padding: '10px 18px',
+              borderRadius: '10px',
               border: '1px solid var(--sd-color-border, #334155)',
+              backgroundColor: 'var(--sd-color-bg-inset, #0f172a)',
               color: 'var(--sd-color-text, #f8fafc)',
+              fontSize: '13px',
+              fontWeight: 500,
               cursor: 'pointer',
-              textAlign: 'left',
-              transition: 'transform 0.15s ease, border-color 0.15s ease',
             }}
           >
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(99, 102, 241, 0.2)', color: '#6366f1' }}>
-              <FolderPlus size={22} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>Create Project</div>
-              <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '2px' }}>
-                Wizard with templates
-              </div>
-            </div>
+            <Search size={16} /> Quick Search (⌘/)
           </button>
 
-          {/* Action 2: Continue Recent Project */}
-          <button
-            onClick={() => {
-              window.location.hash = '#/projects';
-            }}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '12px',
-              padding: '20px',
-              borderRadius: '14px',
-              backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
-              border: '1px solid var(--sd-color-border, #334155)',
-              color: 'var(--sd-color-text, #f8fafc)',
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
-          >
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6' }}>
-              <Play size={22} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>Continue Project</div>
-              <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '2px' }}>
-                Game Studio Engine v2
-              </div>
-            </div>
-          </button>
-
-          {/* Action 3: Create Mission */}
           <button
             onClick={() => setMissionWizardOpen(true)}
             style={{
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '12px',
-              padding: '20px',
-              borderRadius: '14px',
-              backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
-              border: '1px solid var(--sd-color-border, #334155)',
-              color: 'var(--sd-color-text, #f8fafc)',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 20px',
+              borderRadius: '10px',
+              border: 'none',
+              backgroundColor: 'var(--sd-color-primary, #6366f1)',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: 600,
               cursor: 'pointer',
-              textAlign: 'left',
+              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
             }}
           >
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(16, 185, 129, 0.2)', color: '#10b981' }}>
-              <Sparkles size={22} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>Create Mission</div>
-              <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '2px' }}>
-                Type or Voice Directive
-              </div>
-            </div>
-          </button>
-
-          {/* Action 4: Open Game Studio */}
-          <button
-            onClick={() => openProjectWizardWithTemplate('Game Studio')}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '12px',
-              padding: '20px',
-              borderRadius: '14px',
-              backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
-              border: '1px solid var(--sd-color-border, #334155)',
-              color: 'var(--sd-color-text, #f8fafc)',
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
-          >
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(139, 92, 246, 0.2)', color: '#8b5cf6' }}>
-              <Gamepad2 size={22} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>Open Game Studio</div>
-              <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '2px' }}>
-                Project template
-              </div>
-            </div>
-          </button>
-
-          {/* Action 5: Search Knowledge */}
-          <button
-            onClick={() => {
-              window.location.hash = '#/knowledge';
-            }}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '12px',
-              padding: '20px',
-              borderRadius: '14px',
-              backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
-              border: '1px solid var(--sd-color-border, #334155)',
-              color: 'var(--sd-color-text, #f8fafc)',
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
-          >
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b' }}>
-              <BookOpen size={22} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>Search Knowledge</div>
-              <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '2px' }}>
-                Docs, briefs & memory
-              </div>
-            </div>
-          </button>
-
-          {/* Action 6: View Notifications */}
-          <button
-            onClick={() => setCenterOpen(true)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '12px',
-              padding: '20px',
-              borderRadius: '14px',
-              backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
-              border: '1px solid var(--sd-color-border, #334155)',
-              color: 'var(--sd-color-text, #f8fafc)',
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
-          >
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(236, 72, 153, 0.2)', color: '#ec4899' }}>
-              <Bell size={22} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>View Notifications</div>
-              <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '2px' }}>
-                3 unread alerts
-              </div>
-            </div>
+            <Plus size={18} /> New Mission
           </button>
         </div>
       </div>
 
-      {/* Main Grid: Projects & Missions */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px' }}>
-        {/* Section 1: Recent Projects */}
+      {/* SECTION 1: TODAY'S FOCUS */}
+      <div
+        style={{
+          backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
+          border: '1px solid var(--sd-color-border, #334155)',
+          borderRadius: '18px',
+          padding: '24px',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Sparkles size={22} style={{ color: 'var(--sd-color-primary, #6366f1)' }} /> Today's Focus & Priorities
+          </h2>
+          <span style={{ fontSize: '12px', color: '#94a3b8' }}>Current Sprint: Q3 Sprint 4 (Day 8 of 14)</span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
+          {/* Top 3 Priorities */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {topPriorities.map((item, idx) => (
+              <div
+                key={item.id}
+                style={{
+                  padding: '16px',
+                  borderRadius: '12px',
+                  backgroundColor: 'var(--sd-color-bg-inset, #0f172a)',
+                  border: '1px solid var(--sd-color-border, #334155)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--sd-color-primary, #6366f1)',
+                      color: '#fff',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {idx + 1}
+                  </span>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '14px' }}>{item.title}</div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                      {item.project} • Deadline: {item.deadline}
+                    </div>
+                  </div>
+                </div>
+
+                <span
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    backgroundColor: item.priority === 'Urgent' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                    color: item.priority === 'Urgent' ? '#ef4444' : '#f59e0b',
+                  }}
+                >
+                  {item.priority}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* AI Recommendations */}
+          <div
+            style={{
+              padding: '16px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(99, 102, 241, 0.08)',
+              border: '1px solid rgba(99, 102, 241, 0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--sd-color-primary, #6366f1)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Bot size={16} /> AI Recommendations
+            </div>
+            {aiRecommendations.map((rec, i) => (
+              <div key={i} style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: 1.4, paddingLeft: '8px', borderLeft: '2px solid var(--sd-color-primary, #6366f1)' }}>
+                {rec}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 2-COLUMN GRID: PROJECTS & MISSION CENTER */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* SECTION 2: PROJECTS */}
         <div
           style={{
             backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
             border: '1px solid var(--sd-color-border, #334155)',
-            borderRadius: '16px',
+            borderRadius: '18px',
             padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FolderKanban size={18} style={{ color: '#6366f1' }} /> Recent Projects
+              <FolderKanban size={20} style={{ color: '#3b82f6' }} /> Projects Workspace
             </h2>
-            <a href="#/projects" style={{ fontSize: '13px', color: '#6366f1', textDecoration: 'none', fontWeight: 500 }}>
-              View All
-            </a>
+            <button
+              onClick={() => setProjectWizardOpen(true)}
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'var(--sd-color-primary, #6366f1)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <Plus size={14} /> Create Project
+            </button>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -385,6 +289,7 @@ export const HomePage: React.FC = () => {
               <div
                 key={prj.id}
                 onClick={() => {
+                  openProjectWorkspace(prj.id);
                   window.location.hash = '#/projects';
                 }}
                 style={{
@@ -402,21 +307,17 @@ export const HomePage: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: prj.color }} />
                     <span style={{ fontWeight: 600, fontSize: '14px' }}>{prj.name}</span>
-                    <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '12px', backgroundColor: 'rgba(255, 255, 255, 0.08)', color: '#94a3b8' }}>
-                      {prj.type}
-                    </span>
+                    {prj.pinned && <Star size={12} style={{ color: '#f59e0b', fill: '#f59e0b' }} />}
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '6px' }}>
-                    Active {prj.lastActive}
-                  </div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{prj.type} Workspace</div>
                 </div>
 
-                <div style={{ width: '120px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px', color: '#94a3b8' }}>
+                <div style={{ width: '110px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
                     <span>Progress</span>
                     <span>{prj.progress}%</span>
                   </div>
-                  <div style={{ height: '6px', width: '100%', backgroundColor: '#334155', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ height: '6px', backgroundColor: '#334155', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${prj.progress}%`, backgroundColor: prj.color, borderRadius: '3px' }} />
                   </div>
                 </div>
@@ -425,30 +326,33 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Section 2: Today's Missions */}
+        {/* SECTION 3: MISSION CENTER */}
         <div
           style={{
             backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
             border: '1px solid var(--sd-color-border, #334155)',
-            borderRadius: '16px',
+            borderRadius: '18px',
             padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <CheckCircle2 size={18} style={{ color: '#10b981' }} /> Today's Missions
+              <Crosshair size={20} style={{ color: '#10b981' }} /> Mission Center
             </h2>
-            <a href="#/missions" style={{ fontSize: '13px', color: '#6366f1', textDecoration: 'none', fontWeight: 500 }}>
-              Mission Board
+            <a href="#/missions" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--sd-color-primary, #6366f1)', textDecoration: 'none' }}>
+              Mission Board →
             </a>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {todaysMissions.map((m) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {assignedMissions.map((m) => (
               <div
                 key={m.id}
                 style={{
-                  padding: '14px 16px',
+                  padding: '14px',
                   borderRadius: '12px',
                   backgroundColor: 'var(--sd-color-bg-inset, #0f172a)',
                   border: '1px solid var(--sd-color-border, #334155)',
@@ -459,8 +363,8 @@ export const HomePage: React.FC = () => {
               >
                 <div>
                   <div style={{ fontWeight: 500, fontSize: '13px' }}>{m.title}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Bot size={12} /> {m.assignedAi} • {m.project}
+                  <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                    {m.assignedAi}
                   </div>
                 </div>
 
@@ -470,8 +374,14 @@ export const HomePage: React.FC = () => {
                     fontWeight: 600,
                     padding: '3px 8px',
                     borderRadius: '6px',
-                    backgroundColor: m.status === 'Running' ? 'rgba(59, 130, 246, 0.2)' : m.status === 'Completed' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                    color: m.status === 'Running' ? '#3b82f6' : m.status === 'Completed' ? '#10b981' : '#f59e0b',
+                    backgroundColor:
+                      m.category === 'Assigned' ? 'rgba(59, 130, 246, 0.15)' :
+                      m.category === 'Review' ? 'rgba(245, 158, 11, 0.15)' :
+                      m.category === 'Blocked' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                    color:
+                      m.category === 'Assigned' ? '#3b82f6' :
+                      m.category === 'Review' ? '#f59e0b' :
+                      m.category === 'Blocked' ? '#ef4444' : '#10b981',
                   }}
                 >
                   {m.status}
@@ -482,83 +392,84 @@ export const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Secondary Row: AI Activity, Files, Decisions */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-        {/* Section 3: Recent AI Activity */}
+      {/* 3-COLUMN GRID: AI ACTIVITY, KNOWLEDGE, NOTIFICATIONS & CALENDAR */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+        {/* SECTION 4: AI ACTIVITY */}
         <div
           style={{
             backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
             border: '1px solid var(--sd-color-border, #334155)',
-            borderRadius: '16px',
-            padding: '24px',
+            borderRadius: '18px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '14px',
           }}
         >
-          <h2 style={{ fontSize: '15px', fontWeight: 600, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <TrendingUp size={18} style={{ color: '#8b5cf6' }} /> Recent AI Activity
+          <h2 style={{ fontSize: '15px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <TrendingUp size={18} style={{ color: '#8b5cf6' }} /> AI Team Telemetry
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {recentAiActivity.map((act) => (
-              <div key={act.id} style={{ display: 'flex', gap: '12px', fontSize: '12px' }}>
-                <div style={{ marginTop: '2px', color: '#8b5cf6' }}>
-                  <Bot size={16} />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 600 }}>{act.agent}</div>
-                  <div style={{ color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '2px' }}>{act.action}</div>
-                  <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>{act.time}</div>
-                </div>
+
+          <div style={{ fontSize: '12px', padding: '10px', borderRadius: '8px', backgroundColor: '#0f172a', color: '#10b981', fontWeight: 600 }}>
+            ✓ {aiActivity.completedTasks} Tasks Completed Today
+          </div>
+
+          <div style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8' }}>Running AI Agents:</div>
+          {aiActivity.runningAgents.map((ag, i) => (
+            <div key={i} style={{ fontSize: '12px', padding: '8px 10px', borderRadius: '6px', backgroundColor: '#0f172a' }}>
+              <div style={{ fontWeight: 600, color: '#f8fafc' }}>{ag.name}</div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>{ag.task}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* SECTION 5: KNOWLEDGE */}
+        <div
+          style={{
+            backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
+            border: '1px solid var(--sd-color-border, #334155)',
+            borderRadius: '18px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '14px',
+          }}
+        >
+          <h2 style={{ fontSize: '15px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <BookOpen size={18} style={{ color: '#f59e0b' }} /> Knowledge & Decisions
+          </h2>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {knowledgeItems.map((k) => (
+              <div key={k.id} style={{ padding: '8px 10px', borderRadius: '6px', backgroundColor: '#0f172a', fontSize: '12px' }}>
+                <div style={{ fontWeight: 500 }}>{k.title}</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>{k.type} • {k.time}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Section 4: Recent Files */}
+        {/* SECTION 6 & 7: NOTIFICATIONS & CALENDAR */}
         <div
           style={{
             backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
             border: '1px solid var(--sd-color-border, #334155)',
-            borderRadius: '16px',
-            padding: '24px',
+            borderRadius: '18px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '14px',
           }}
         >
-          <h2 style={{ fontSize: '15px', fontWeight: 600, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FileText size={18} style={{ color: '#3b82f6' }} /> Recent Workspace Files
+          <h2 style={{ fontSize: '15px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CalendarIcon size={18} style={{ color: '#ec4899' }} /> Schedule & Deadlines
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {recentFiles.map((file) => (
-              <div key={file.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', padding: '8px 10px', borderRadius: '8px', backgroundColor: 'var(--sd-color-bg-inset, #0f172a)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FileText size={14} style={{ color: '#94a3b8' }} />
-                  <div>
-                    <div style={{ fontWeight: 500 }}>{file.name}</div>
-                    <div style={{ fontSize: '10px', color: '#64748b' }}>{file.space}</div>
-                  </div>
-                </div>
-                <span style={{ fontSize: '11px', color: '#94a3b8' }}>{file.size}</span>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Section 5: Recent Decisions */}
-        <div
-          style={{
-            backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
-            border: '1px solid var(--sd-color-border, #334155)',
-            borderRadius: '16px',
-            padding: '24px',
-          }}
-        >
-          <h2 style={{ fontSize: '15px', fontWeight: 600, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={18} style={{ color: '#10b981' }} /> Recent Decisions
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {recentDecisions.map((dec) => (
-              <div key={dec.id} style={{ fontSize: '12px', padding: '10px', borderRadius: '8px', backgroundColor: 'var(--sd-color-bg-inset, #0f172a)', borderLeft: '3px solid #10b981' }}>
-                <div style={{ fontWeight: 500 }}>{dec.title}</div>
-                <div style={{ fontSize: '11px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '4px' }}>
-                  Approved by {dec.by} • {dec.date}
-                </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {todaySchedule.map((s, i) => (
+              <div key={i} style={{ padding: '8px 10px', borderRadius: '6px', backgroundColor: '#0f172a', fontSize: '12px', borderLeft: '3px solid #ec4899' }}>
+                <div style={{ fontWeight: 600 }}>{s.time} — {s.title}</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>{s.type}</div>
               </div>
             ))}
           </div>

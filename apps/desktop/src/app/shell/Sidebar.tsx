@@ -12,6 +12,8 @@ import {
   ScrollText,
   Settings,
   Terminal,
+  Pin,
+  Star,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -41,7 +43,7 @@ interface NavGroup {
 }
 
 export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
-  const { developerMode } = useShellStore();
+  const { developerMode, openProjectWorkspace } = useShellStore();
   const [activeHash, setActiveHash] = useState<string>(
     typeof window !== 'undefined' ? window.location.hash || '#/' : '#/'
   );
@@ -98,30 +100,42 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
 
   const navGroups: NavGroup[] = [
     {
-      title: 'Overview',
+      title: 'Pinned',
+      items: [
+        {
+          id: 'pin_gora',
+          label: 'GORA Workspace',
+          hash: '#/projects',
+          icon: Star,
+          capability: 'projects.view',
+          shortcut: '⌘1',
+          onNavigate: () => {
+            openProjectWorkspace('gora');
+            window.location.hash = '#/projects';
+          },
+        },
+        {
+          id: 'pin_missions',
+          label: 'Today\'s Focus Board',
+          hash: '#/missions',
+          icon: Pin,
+          capability: 'mission.view',
+          shortcut: '⌘2',
+          onNavigate: () => navigate.missions(),
+        },
+      ],
+    },
+    {
+      title: 'Workspaces',
       items: [
         {
           id: 'dashboard',
-          label: 'Home',
+          label: 'Executive Workspace',
           hash: '#/',
           icon: LayoutDashboard,
           capability: 'dashboard.view',
           shortcut: 'g d',
           onNavigate: () => navigate.dashboard(),
-        },
-      ],
-    },
-    {
-      title: 'Work',
-      items: [
-        {
-          id: 'missions',
-          label: 'Missions',
-          hash: '#/missions',
-          icon: Crosshair,
-          capability: 'mission.view',
-          shortcut: 'g m',
-          onNavigate: () => navigate.missions(),
         },
         {
           id: 'projects',
@@ -131,6 +145,24 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
           capability: 'projects.view',
           shortcut: 'g p',
           onNavigate: () => navigate.projects(),
+        },
+        {
+          id: 'missions',
+          label: 'Mission Center',
+          hash: '#/missions',
+          icon: Crosshair,
+          capability: 'mission.view',
+          shortcut: 'g m',
+          onNavigate: () => navigate.missions(),
+        },
+        {
+          id: 'agents',
+          label: 'AI Team',
+          hash: '#/agents',
+          icon: Bot,
+          capability: 'agents.view',
+          shortcut: 'g a',
+          onNavigate: () => navigate.agents(),
         },
       ],
     },
@@ -155,15 +187,6 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
           shortcut: 'g e',
           onNavigate: () => navigate.departments(),
         },
-        {
-          id: 'agents',
-          label: 'AI Team',
-          hash: '#/agents',
-          icon: Bot,
-          capability: 'agents.view',
-          shortcut: 'g a',
-          onNavigate: () => navigate.agents(),
-        },
       ],
     },
     {
@@ -171,7 +194,7 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
       items: [
         {
           id: 'knowledge',
-          label: 'Knowledge',
+          label: 'Knowledge Space',
           hash: '#/knowledge',
           icon: BookOpen,
           capability: 'knowledge.view',
@@ -186,6 +209,20 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
           capability: 'connectors.view',
           shortcut: 'g c',
           onNavigate: () => navigate.connectors(),
+        },
+      ],
+    },
+    {
+      title: 'Analytics',
+      items: [
+        {
+          id: 'analytics',
+          label: 'Performance Insights',
+          hash: '#/analytics',
+          icon: BarChart3,
+          capability: 'analytics.view',
+          shortcut: 'g l',
+          onNavigate: () => navigate.analytics(),
         },
       ],
     },
@@ -206,21 +243,12 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
                 },
               },
               {
-                id: 'analytics',
-                label: 'System Health',
-                hash: '#/analytics',
-                icon: BarChart3,
-                capability: 'analytics.view',
-                shortcut: 'g l',
-                onNavigate: () => navigate.analytics(),
-              },
-              {
                 id: 'events',
-                label: 'Event Log',
+                label: 'Event Stream',
                 hash: '#/events',
                 icon: ScrollText,
                 capability: 'events.view',
-                shortcut: 'g l',
+                shortcut: 'g e',
                 onNavigate: () => navigate.events(),
               },
             ],

@@ -13,6 +13,14 @@ interface ShellState {
   setMissionWizardOpen: (open: boolean) => void;
   selectedProjectTemplate?: string;
   openProjectWizardWithTemplate: (template?: string) => void;
+  rightPanelOpen: boolean;
+  setRightPanelOpen: (open: boolean) => void;
+  toggleRightPanel: () => void;
+  isUniversalSearchOpen: boolean;
+  setUniversalSearchOpen: (open: boolean) => void;
+  activeProjectWorkspaceId: string | null;
+  openProjectWorkspace: (id: string) => void;
+  closeProjectWorkspace: () => void;
 }
 
 const getInitialDevMode = (): boolean => {
@@ -48,5 +56,13 @@ export const useShellStore = create<ShellState>((set) => ({
   selectedProjectTemplate: undefined,
   openProjectWizardWithTemplate: (template) =>
     set({ isProjectWizardOpen: true, selectedProjectTemplate: template }),
+  rightPanelOpen: true,
+  setRightPanelOpen: (open) => set({ rightPanelOpen: open }),
+  toggleRightPanel: () => set((state) => ({ rightPanelOpen: !state.rightPanelOpen })),
+  isUniversalSearchOpen: false,
+  setUniversalSearchOpen: (open) => set({ isUniversalSearchOpen: open }),
+  activeProjectWorkspaceId: null,
+  openProjectWorkspace: (id) => set({ activeProjectWorkspaceId: id }),
+  closeProjectWorkspace: () => set({ activeProjectWorkspaceId: null }),
 }));
 

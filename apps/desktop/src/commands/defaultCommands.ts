@@ -114,22 +114,77 @@ export function registerDefaultCommands(): void {
 
   // 2. Actions Commands
   registry.register({
+    id: 'action.create_project',
+    title: 'Create Project',
+    subtitle: 'Launch 6-step project wizard with templates',
+    category: 'actions',
+    keywords: ['create', 'new', 'project', 'workspace', 'wizard'],
+    handler: () => {
+      window.dispatchEvent(new CustomEvent('sd:open-project-wizard'));
+    },
+  });
+
+  registry.register({
     id: 'action.new_mission',
-    title: 'New Mission',
+    title: 'Create Mission',
     subtitle: 'Create a new mission with objective wizard',
     category: 'actions',
     keywords: ['create', 'new', 'mission', 'task'],
     capability: 'mission.create',
     shortcut: '⌘N',
     handler: () => {
-      window.location.hash = '#/missions/new';
+      window.dispatchEvent(new CustomEvent('sd:open-mission-wizard'));
+    },
+  });
+
+  registry.register({
+    id: 'action.open_gora',
+    title: 'Open GORA Workspace',
+    subtitle: 'Global Operations & Resource Architecture',
+    category: 'actions',
+    keywords: ['gora', 'workspace', 'project', 'enterprise'],
+    handler: () => {
+      window.dispatchEvent(new CustomEvent('sd:open-project-gora'));
+    },
+  });
+
+  registry.register({
+    id: 'action.open_game_studio',
+    title: 'Open Game Studio',
+    subtitle: '3D/2D game development template workspace',
+    category: 'actions',
+    keywords: ['game', 'studio', 'template', 'graphics', 'physics'],
+    handler: () => {
+      window.dispatchEvent(new CustomEvent('sd:open-project-studio'));
+    },
+  });
+
+  registry.register({
+    id: 'action.assign_ai',
+    title: 'Assign AI Team',
+    subtitle: 'Roster and assign autonomous AI agents',
+    category: 'actions',
+    keywords: ['assign', 'ai', 'team', 'agents', 'roster'],
+    handler: () => {
+      window.location.hash = '#/agents';
+    },
+  });
+
+  registry.register({
+    id: 'action.start_planning',
+    title: 'Start Planning Session',
+    subtitle: 'Initiate strategic planning sprint',
+    category: 'actions',
+    keywords: ['plan', 'planning', 'sprint', 'strategy'],
+    handler: () => {
+      window.location.hash = '#/missions';
     },
   });
 
   registry.register({
     id: 'action.search_knowledge',
     title: 'Search Knowledge',
-    subtitle: 'Vector and semantic search across ingested files',
+    subtitle: 'Universal search across ingested files and memory',
     category: 'actions',
     keywords: ['find', 'search', 'docs', 'knowledge'],
     shortcut: '⌘/',
@@ -153,17 +208,28 @@ export function registerDefaultCommands(): void {
   });
 
   registry.register({
-    id: 'action.refresh_dashboard',
-    title: 'Refresh Dashboard Data',
-    subtitle: 'Refetch all read model queries',
+    id: 'action.toggle_right_panel',
+    title: 'Toggle Executive Activity Panel',
+    subtitle: 'Show or hide the live activity feed and AI roster',
     category: 'actions',
-    keywords: ['refresh', 'reload', 'sync', 'fetch'],
+    keywords: ['panel', 'right', 'activity', 'feed', 'sidebar'],
     handler: () => {
-      window.location.reload();
+      window.dispatchEvent(new CustomEvent('sd:toggle-right-panel'));
     },
   });
 
   // 3. Developer Commands
+  registry.register({
+    id: 'dev.console',
+    title: 'Open Developer Console',
+    subtitle: 'Engineering runtime inspector & debugging suite',
+    category: 'developer',
+    keywords: ['dev', 'console', 'debug', 'inspector'],
+    handler: () => {
+      window.location.hash = '#/developer';
+    },
+  });
+
   registry.register({
     id: 'dev.gallery',
     title: 'Open Component Gallery',

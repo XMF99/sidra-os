@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useShellStore } from '../../state/useShellStore';
+import { ProjectDetailWorkspace } from './ProjectDetailWorkspace';
 
 export interface ProjectItem {
   id: string;
@@ -77,10 +78,14 @@ const INITIAL_PROJECTS: ProjectItem[] = [
 ];
 
 export const ProjectsPage: React.FC = () => {
-  const { setProjectWizardOpen } = useShellStore();
+  const { setProjectWizardOpen, activeProjectWorkspaceId, openProjectWorkspace } = useShellStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+
+  if (activeProjectWorkspaceId) {
+    return <ProjectDetailWorkspace projectId={activeProjectWorkspaceId} />;
+  }
 
   const filteredProjects = INITIAL_PROJECTS.filter((p) => {
     const matchesSearch =
@@ -411,7 +416,7 @@ export const ProjectsPage: React.FC = () => {
               </button>
               <button
                 onClick={() => {
-                  alert(`Navigating to ${selectedProject.name} active workspace...`);
+                  openProjectWorkspace(selectedProject.id);
                   setSelectedProject(null);
                 }}
                 style={{

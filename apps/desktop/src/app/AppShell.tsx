@@ -2,10 +2,14 @@ import { FC, useState, useEffect, ReactNode } from 'react';
 import { Sidebar } from './shell/Sidebar';
 import { TopBar } from './shell/TopBar';
 import { StatusBar } from './shell/StatusBar';
+import { RightActivityPanel } from './shell/RightActivityPanel';
 import { RouteErrorBoundary } from './boundaries/RouteErrorBoundary';
 import { CommandPaletteModal } from '../commands/CommandPaletteModal';
+import { UniversalSearchModal } from '../components/search/UniversalSearchModal';
 import { ProjectWizardModal } from '../components/projects/ProjectWizardModal';
 import { MissionWizardModal } from '../components/missions/MissionWizardModal';
+import { QuickCreateFAB } from '../components/common/QuickCreateFAB';
+import { useShellStore } from '../state/useShellStore';
 
 interface Props {
   children?: ReactNode;
@@ -13,6 +17,7 @@ interface Props {
 
 export const AppShell: FC<Props> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
+  const { rightPanelOpen } = useShellStore();
 
   // Keyboard shortcut listener for ⌘B (toggle sidebar)
   useEffect(() => {
@@ -26,16 +31,19 @@ export const AppShell: FC<Props> = ({ children }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const sidebarWidth = sidebarCollapsed ? 'var(--sd-sidebar-w-collapsed)' : 'var(--sd-sidebar-w)';
+  const rightPanelWidth = rightPanelOpen ? '320px' : '0px';
+
   return (
     <div
       style={{
         display: 'grid',
         gridTemplateRows: 'var(--sd-topbar-h) 1fr var(--sd-statusbar-h)',
-        gridTemplateColumns: sidebarCollapsed ? 'var(--sd-sidebar-w-collapsed) 1fr' : 'var(--sd-sidebar-w) 1fr',
+        gridTemplateColumns: `${sidebarWidth} 1fr ${rightPanelWidth}`,
         gridTemplateAreas: `
-          "sidebar  topbar"
-          "sidebar  content"
-          "statusbar statusbar"
+          "sidebar  topbar   topbar"
+          "sidebar  content  rightpanel"
+          "statusbar statusbar statusbar"
         `,
         height: '100vh',
         width: '100vw',
@@ -72,6 +80,11 @@ export const AppShell: FC<Props> = ({ children }) => {
         <RouteErrorBoundary>{children}</RouteErrorBoundary>
       </main>
 
+      {/* Right Activity Panel Area */}
+      <div style={{ gridArea: 'rightpanel', height: '100%', overflow: 'hidden' }}>
+        <RightActivityPanel />
+      </div>
+
       {/* Status Bar Area */}
       <div style={{ gridArea: 'statusbar', height: '100%', overflow: 'hidden' }}>
         <StatusBar />
@@ -80,9 +93,11 @@ export const AppShell: FC<Props> = ({ children }) => {
       {/* Ambient Overlay Portal Container */}
       <div id="sd-portal-root" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1000 }}>
         <CommandPaletteModal />
+        <UniversalSearchModal />
         <div style={{ pointerEvents: 'auto' }}>
           <ProjectWizardModal />
           <MissionWizardModal />
+          <QuickCreateFAB />
         </div>
       </div>
     </div>

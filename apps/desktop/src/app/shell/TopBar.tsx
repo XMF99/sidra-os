@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { Search, Bell, Sun, Moon, Plus, ChevronDown, User, Shield } from 'lucide-react';
+import { Search, Bell, Sun, Moon, Plus, ChevronDown, User, Shield, Activity } from 'lucide-react';
 import { useTheme } from '../providers/ThemeProvider';
 import { useNotifications } from '../providers/NotificationProvider';
 import { useShellStore } from '../../state/useShellStore';
@@ -8,7 +8,7 @@ import { navigate } from '../../routes/navigate';
 export const TopBar: FC = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { setCenterOpen } = useNotifications();
-  const { setMissionWizardOpen, developerMode } = useShellStore();
+  const { setMissionWizardOpen, setProjectWizardOpen, openProjectWizardWithTemplate, openProjectWorkspace, toggleRightPanel, rightPanelOpen, developerMode } = useShellStore();
   const [activeHash, setActiveHash] = useState<string>(
     typeof window !== 'undefined' ? window.location.hash || '#/' : '#/'
   );
@@ -20,8 +20,33 @@ export const TopBar: FC = () => {
       setActiveHash(window.location.hash || '#/');
     };
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+
+    const handleOpenProjectWizard = () => setProjectWizardOpen(true);
+    const handleOpenMissionWizard = () => setMissionWizardOpen(true);
+    const handleOpenGora = () => {
+      openProjectWorkspace('gora');
+      window.location.hash = '#/projects';
+    };
+    const handleOpenStudio = () => {
+      openProjectWizardWithTemplate('Game Studio');
+    };
+    const handleToggleRightPanelEvent = () => toggleRightPanel();
+
+    window.addEventListener('sd:open-project-wizard', handleOpenProjectWizard);
+    window.addEventListener('sd:open-mission-wizard', handleOpenMissionWizard);
+    window.addEventListener('sd:open-project-gora', handleOpenGora);
+    window.addEventListener('sd:open-project-studio', handleOpenStudio);
+    window.addEventListener('sd:toggle-right-panel', handleToggleRightPanelEvent);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('sd:open-project-wizard', handleOpenProjectWizard);
+      window.removeEventListener('sd:open-mission-wizard', handleOpenMissionWizard);
+      window.removeEventListener('sd:open-project-gora', handleOpenGora);
+      window.removeEventListener('sd:open-project-studio', handleOpenStudio);
+      window.removeEventListener('sd:toggle-right-panel', handleToggleRightPanelEvent);
+    };
+  }, [setMissionWizardOpen, setProjectWizardOpen, openProjectWizardWithTemplate, openProjectWorkspace, toggleRightPanel]);
 
   // Compute breadcrumbs from route hash
   const getBreadcrumbs = () => {
@@ -252,6 +277,25 @@ export const TopBar: FC = () => {
         >
           <Plus size={14} />
           <span>New Mission</span>
+        </button>
+
+        {/* Executive Activity Panel Toggle */}
+        <button
+          onClick={toggleRightPanel}
+          aria-label="Toggle Activity Panel"
+          style={{
+            background: rightPanelOpen ? 'rgba(99, 102, 241, 0.15)' : 'none',
+            border: 'none',
+            color: rightPanelOpen ? 'var(--sd-color-primary, #6366f1)' : 'var(--sd-color-text-muted)',
+            cursor: 'pointer',
+            padding: 'var(--sd-space-2)',
+            borderRadius: 'var(--sd-radius-md)',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          title="Toggle Executive Activity Panel"
+        >
+          <Activity size={18} />
         </button>
 
         {/* Notifications Bell */}
