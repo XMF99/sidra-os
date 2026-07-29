@@ -4,6 +4,7 @@ import { NotFound } from '../pages/NotFound';
 import { ComponentGallery } from '../pages/dev/ComponentGallery';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { DeveloperConsole } from '../developer-console/DeveloperConsole';
+import { SetupWizard } from '../pages/setup/SetupWizard';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -27,6 +28,11 @@ interface Props {
 
 export function matchRouteComponent(rawPath: string): ReactNode {
   const cleanPath = rawPath.split('?')[0] || '/';
+
+  // Setup Wizard Route
+  if (cleanPath === '/setup' || cleanPath === '/welcome') {
+    return <SetupWizard />;
+  }
 
   // Exact & special routes
   if (cleanPath === '/' || cleanPath === '' || cleanPath === '/dashboard') {
@@ -161,4 +167,3 @@ export const HashRouter: FC<Props> = () => {
     </RouteErrorBoundary>
   );
 };
-
