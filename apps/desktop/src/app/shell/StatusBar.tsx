@@ -1,9 +1,11 @@
 import { FC } from 'react';
 import { useTauriBridge } from '../providers/TauriBridgeProvider';
+import { useShellStore } from '../../state/useShellStore';
 import { navigate } from '../../routes/navigate';
 
 export const StatusBar: FC = () => {
   const { tailStatus } = useTauriBridge();
+  const { developerMode } = useShellStore();
 
   return (
     <footer
@@ -14,7 +16,7 @@ export const StatusBar: FC = () => {
         justifyContent: 'space-between',
         height: '100%',
         width: '100%',
-        padding: '0 var(--sd-space-3)',
+        padding: '0 var(--sd-space-4)',
         backgroundColor: 'var(--sd-color-bg-surface-raised)',
         borderTop: '1px solid var(--sd-color-border)',
         fontSize: 'var(--sd-font-size-xs)',
@@ -25,7 +27,7 @@ export const StatusBar: FC = () => {
     >
       {/* Status Segments */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sd-space-4)' }}>
-        {/* Segment 1: Vault & Health */}
+        {/* Segment 1: Sidra Status */}
         <button
           onClick={() => navigate.dashboard()}
           style={{
@@ -39,7 +41,7 @@ export const StatusBar: FC = () => {
             cursor: 'pointer',
             padding: 0,
           }}
-          title="Vault state: Open & healthy"
+          title="Sidra OS Beta 1: Ready"
         >
           <span
             style={{
@@ -50,32 +52,10 @@ export const StatusBar: FC = () => {
               display: 'inline-block',
             }}
           />
-          <span>Vault: Ready</span>
+          <span>Sidra OS: Ready</span>
         </button>
 
-        {/* Segment 2: Event Tail State */}
-        <button
-          onClick={() => navigate.events()}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--sd-space-1)',
-            background: 'none',
-            border: 'none',
-            color: 'inherit',
-            fontSize: 'inherit',
-            cursor: 'pointer',
-            padding: 0,
-          }}
-          title="Click to view Event Log"
-        >
-          <span style={{ color: tailStatus === 'live' ? 'var(--sd-status-success)' : 'var(--sd-status-warning)' }}>
-            ●
-          </span>
-          <span>Event Tail: {tailStatus}</span>
-        </button>
-
-        {/* Segment 3: Running Missions */}
+        {/* Segment 2: Active Missions */}
         <button
           onClick={() => navigate.missions({ filter: 'running' })}
           style={{
@@ -86,12 +66,12 @@ export const StatusBar: FC = () => {
             cursor: 'pointer',
             padding: 0,
           }}
-          title="View running missions"
+          title="View active missions"
         >
-          Missions: <strong style={{ color: 'var(--sd-color-text)' }}>0 running</strong>
+          Missions: <strong style={{ color: 'var(--sd-color-text)' }}>1 active</strong>
         </button>
 
-        {/* Segment 4: Running Agents */}
+        {/* Segment 3: AI Team Agents */}
         <button
           onClick={() => navigate.agents({ filter: 'active' })}
           style={{
@@ -102,20 +82,42 @@ export const StatusBar: FC = () => {
             cursor: 'pointer',
             padding: 0,
           }}
-          title="View active agents"
+          title="View active AI team"
         >
-          Agents: <strong style={{ color: 'var(--sd-color-text)' }}>0 active</strong>
+          AI Team: <strong style={{ color: 'var(--sd-color-text)' }}>5 agents online</strong>
         </button>
 
-        {/* Segment 5: Sync State */}
+        {/* Segment 4: Sync State */}
         <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--sd-space-1)' }}>
-          <span>Sync: Idle</span>
+          <span>Sync: Up to date</span>
         </span>
+
+        {/* Segment 5: Developer Diagnostics (Developer Mode Only) */}
+        {developerMode && (
+          <button
+            onClick={() => navigate.events()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--sd-space-1)',
+              background: 'none',
+              border: 'none',
+              color: 'var(--sd-color-primary)',
+              fontSize: 'inherit',
+              cursor: 'pointer',
+              padding: 0,
+              fontWeight: 600,
+            }}
+            title="Developer Mode: Event Tail diagnostic"
+          >
+            <span>● Tail: {tailStatus}</span>
+          </button>
+        )}
       </div>
 
-      {/* Segment 6: Environment Tag */}
+      {/* Segment 6: App Release */}
       <div>
-        <span>Local · v4.0-alpha</span>
+        <span>Sidra OS Beta 1 {developerMode ? '(Dev Mode)' : ''}</span>
       </div>
     </footer>
   );

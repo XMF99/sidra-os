@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { getSystemStatus, executeGoal } from '../lib/api';
+import { useMutation } from '@tanstack/react-query';
+import { Crosshair, Plus, Sparkles, CheckCircle2, Bot } from 'lucide-react';
+import { executeGoal } from '../lib/api';
+import { useShellStore } from '../state/useShellStore';
+import { VoiceInputAffordance } from '../components/common/VoiceInputAffordance';
 
 export const Lobby: React.FC = () => {
+  const { developerMode, setMissionWizardOpen } = useShellStore();
   const [goalText, setGoalText] = useState('');
   const [activePlanResult, setActivePlanResult] = useState<any>(null);
-
-  const { data: systemInfo } = useQuery({
-    queryKey: ['systemStatus'],
-    queryFn: getSystemStatus,
-  });
 
   const goalMutation = useMutation({
     mutationFn: executeGoal,
@@ -28,181 +27,179 @@ export const Lobby: React.FC = () => {
     <div
       style={{
         flex: 1,
-        height: '100vh',
-        backgroundColor: 'var(--sd-color-surface-base)',
-        color: 'var(--sd-color-text-primary)',
-        padding: 'var(--sd-space-6)',
+        minHeight: '100vh',
+        backgroundColor: 'var(--sd-color-bg-app)',
+        color: 'var(--sd-color-text, #f8fafc)',
+        padding: '32px',
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
+        gap: '24px',
+        maxWidth: '1280px',
+        margin: '0 auto',
       }}
     >
       <header
         style={{
-          borderBottom: '1px solid var(--sd-color-border-subtle)',
-          paddingBottom: 'var(--sd-space-4)',
-          marginBottom: 'var(--sd-space-6)',
+          borderBottom: '1px solid var(--sd-color-border, #334155)',
+          paddingBottom: '20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
       >
         <div>
-          <h1 style={{ fontSize: '24px', margin: 0 }}>Lobby</h1>
-          <p style={{ color: 'var(--sd-color-text-secondary)', margin: '4px 0 0 0' }}>
-            Sidra OS Executive Atrium
+          <h1 style={{ fontSize: '26px', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Crosshair size={28} style={{ color: '#10b981' }} /> Mission Center
+          </h1>
+          <p style={{ color: 'var(--sd-color-text-muted, #94a3b8)', margin: '4px 0 0 0', fontSize: '14px' }}>
+            Dispatch objectives and monitor active mission execution across your AI team.
           </p>
         </div>
 
-        <div
+        <button
+          onClick={() => setMissionWizardOpen(true)}
           style={{
-            backgroundColor: 'var(--sd-color-surface-raised)',
-            border: '1px solid var(--sd-color-border-subtle)',
-            borderRadius: 'var(--sd-radius-md)',
-            padding: '8px 12px',
-            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 20px',
+            borderRadius: '10px',
+            border: 'none',
+            backgroundColor: 'var(--sd-color-primary, #6366f1)',
+            color: '#ffffff',
+            fontSize: '14px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
           }}
         >
-          Kernel Status: <strong>{systemInfo?.status ?? 'Ready'}</strong> ({systemInfo?.version})
-        </div>
+          <Plus size={18} /> New Mission
+        </button>
       </header>
 
       {/* Outcome Entry Form */}
-      <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }}>
-        <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>
-          State an outcome to initiate Executive work (spoken or typed):
-        </label>
-
-        {/* Voice Directive Affordance & Editable Transcript Container (ADR-0052, ADR-0053) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              value={goalText}
-              onChange={(e) => setGoalText(e.target.value)}
-              placeholder="Type a Directive or click Spoken Directive..."
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                borderRadius: '6px',
-                border: '1px solid var(--sd-color-border-subtle)',
-                backgroundColor: 'var(--sd-color-surface-raised)',
-                color: 'var(--sd-color-text-primary)',
-              }}
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                const spokenFixture = "Draft the reply to the vendor and flag commitment";
-                setGoalText(spokenFixture);
-              }}
-              style={{
-                padding: '10px 14px',
-                borderRadius: '6px',
-                border: '1px solid var(--sd-color-accent)',
-                backgroundColor: 'transparent',
-                color: 'var(--sd-color-accent)',
-                cursor: 'pointer',
-                fontWeight: 500,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-              title="Voice Directive Input (ADR-0052 local STT)"
-            >
-              🎤 Spoken Directive
-            </button>
-
-            <button
-              type="submit"
-              disabled={goalMutation.isPending}
-              style={{
-                padding: '10px 20px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: 'var(--sd-color-accent)',
-                color: '#ffffff',
-                cursor: 'pointer',
-                fontWeight: 500,
-              }}
-            >
-              {goalMutation.isPending ? 'Executing...' : 'Execute Outcome'}
-            </button>
-          </div>
-
-          {/* Confirm & Edit container when transcript is present (ADR-0053 invariant) */}
-          {goalText.length > 0 && (
-            <div
-              style={{
-                fontSize: '12px',
-                color: 'var(--sd-color-text-secondary)',
-                backgroundColor: 'var(--sd-color-surface-raised)',
-                padding: '8px 12px',
-                borderRadius: '4px',
-                borderLeft: '3px solid var(--sd-color-accent)',
-              }}
-            >
-              <strong>Confirm & Edit before Submit:</strong> Equivalence defined against confirmed text (ADR-0053).
-              Input method provenance: <code>{goalText.includes("vendor") ? "voice" : "typed"}</code>.
-            </div>
-          )}
+      <div
+        style={{
+          backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
+          border: '1px solid var(--sd-color-border, #334155)',
+          borderRadius: '16px',
+          padding: '24px',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <label style={{ fontSize: '15px', fontWeight: 600 }}>Dispatch Immediate Directive</label>
+          <VoiceInputAffordance
+            size="sm"
+            currentValue={goalText}
+            onTranscript={(text) => setGoalText(text)}
+          />
         </div>
-      </form>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '12px' }}>
+          <input
+            type="text"
+            value={goalText}
+            onChange={(e) => setGoalText(e.target.value)}
+            placeholder="State a mission goal or click Speak..."
+            style={{
+              flex: 1,
+              padding: '12px 16px',
+              borderRadius: '10px',
+              border: '1px solid var(--sd-color-border, #334155)',
+              backgroundColor: 'var(--sd-color-bg-inset, #0f172a)',
+              color: 'var(--sd-color-text, #f8fafc)',
+              fontSize: '14px',
+            }}
+          />
+
+          <button
+            type="submit"
+            disabled={goalMutation.isPending}
+            style={{
+              padding: '12px 24px',
+              borderRadius: '10px',
+              border: 'none',
+              backgroundColor: 'var(--sd-color-primary, #6366f1)',
+              color: '#ffffff',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <Sparkles size={16} />
+            {goalMutation.isPending ? 'Dispatching...' : 'Dispatch'}
+          </button>
+        </form>
+      </div>
 
       {/* Execution Results View */}
       {activePlanResult && (
         <div
           style={{
-            flex: 1,
-            backgroundColor: 'var(--sd-color-surface-raised)',
-            border: '1px solid var(--sd-color-border-subtle)',
-            borderRadius: '8px',
-            padding: '20px',
-            overflowY: 'auto',
+            backgroundColor: 'var(--sd-color-bg-surface-raised, #1e293b)',
+            border: '1px solid var(--sd-color-border, #334155)',
+            borderRadius: '16px',
+            padding: '24px',
           }}
         >
-          <h2 style={{ fontSize: '18px', marginTop: 0 }}>Active Task Plan: {activePlanResult.plan.plan_id}</h2>
-          <p>Goal: {activePlanResult.plan.goal}</p>
-          <p>Status: <strong>{activePlanResult.plan.status}</strong></p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <CheckCircle2 size={22} style={{ color: '#10b981' }} />
+            <h2 style={{ fontSize: '18px', margin: 0, fontWeight: 600 }}>
+              Active Task Execution: {activePlanResult.plan.goal}
+            </h2>
+          </div>
 
-          <h3 style={{ fontSize: '15px', marginTop: '16px' }}>Executed Plan Steps:</h3>
-          {activePlanResult.plan.steps.map((step: any) => (
-            <div
-              key={step.step_id}
-              style={{
-                backgroundColor: 'var(--sd-color-surface-overlay)',
-                border: '1px solid var(--sd-color-border-subtle)',
-                borderRadius: '6px',
-                padding: '12px',
-                marginBottom: '8px',
-              }}
-            >
-              <div style={{ fontWeight: 600 }}>{step.description} ({step.assigned_role})</div>
-              <div style={{ fontSize: '12px', color: 'var(--sd-color-text-secondary)', marginTop: '4px' }}>
-                Result: {step.result ?? 'Pending'}
+          <div style={{ fontSize: '13px', color: 'var(--sd-color-text-muted, #94a3b8)', marginBottom: '16px' }}>
+            Status: <strong style={{ color: '#10b981' }}>{activePlanResult.plan.status}</strong>
+          </div>
+
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>Executed Plan Steps:</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+            {activePlanResult.plan.steps.map((step: any) => (
+              <div
+                key={step.step_id}
+                style={{
+                  backgroundColor: 'var(--sd-color-bg-inset, #0f172a)',
+                  border: '1px solid var(--sd-color-border, #334155)',
+                  borderRadius: '10px',
+                  padding: '14px',
+                }}
+              >
+                <div style={{ fontWeight: 600, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Bot size={14} style={{ color: '#6366f1' }} /> {step.description} ({step.assigned_role})
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--sd-color-text-muted, #94a3b8)', marginTop: '4px' }}>
+                  Result: {step.result ?? 'Completed'}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
-          <h3 style={{ fontSize: '15px', marginTop: '16px' }}>Executive Brief Output with Provenance Metadata:</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>Executive Summary:</h3>
           {activePlanResult.messages.map((msg: any) => (
             <div
               key={msg.message_id}
               style={{
-                backgroundColor: 'var(--sd-color-surface-base)',
-                border: '1px solid var(--sd-color-accent)',
-                borderRadius: '6px',
-                padding: '12px',
+                backgroundColor: 'var(--sd-color-bg-inset, #0f172a)',
+                border: '1px solid var(--sd-color-primary, #6366f1)',
+                borderRadius: '10px',
+                padding: '16px',
                 whiteSpace: 'pre-wrap',
-                fontFamily: 'monospace',
                 fontSize: '13px',
+                lineHeight: 1.6,
               }}
             >
               {msg.content}
-              <div style={{ fontSize: '11px', color: 'var(--sd-color-text-muted)', marginTop: '8px' }}>
-                [Provenance Tag]: Author={msg.provenance.author_agent_id} ({msg.provenance.author_role}), Authorized={msg.provenance.authorized_by_principal ? 'Yes' : 'No'}, Token={msg.provenance.capability_id}
-              </div>
+
+              {developerMode && (
+                <div style={{ fontSize: '11px', color: '#8b5cf6', marginTop: '12px', paddingTop: '8px', borderTop: '1px solid #334155' }}>
+                  [Developer Mode Tag]: Author={msg.provenance.author_agent_id} ({msg.provenance.author_role}), Token={msg.provenance.capability_id}
+                </div>
+              )}
             </div>
           ))}
         </div>

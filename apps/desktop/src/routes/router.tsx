@@ -2,7 +2,8 @@ import { FC, useEffect, useState, ReactNode } from 'react';
 import { RouteErrorBoundary } from '../app/boundaries/RouteErrorBoundary';
 import { NotFound } from '../pages/NotFound';
 import { ComponentGallery } from '../pages/dev/ComponentGallery';
-import { DashboardPage } from '../pages/dashboard/DashboardPage';
+import { HomePage } from '../pages/home/HomePage';
+import { ProjectsPage } from '../pages/projects/ProjectsPage';
 import { DeveloperConsole } from '../developer-console/DeveloperConsole';
 import { SetupWizard } from '../pages/setup/SetupWizard';
 import { GameStudioManager } from '../pages/game-studio/GameStudioManager';
@@ -20,7 +21,6 @@ import { SeatsRoom } from '../rooms/SeatsRoom';
 import { Settings } from '../rooms/Settings';
 import { SystemHealthRoom } from '../rooms/SystemHealthRoom';
 import { Vault } from '../rooms/Vault';
-import { VoiceRoom } from '../rooms/VoiceRoom';
 
 interface Props {
   children?: ReactNode;
@@ -40,9 +40,9 @@ export function matchRouteComponent(rawPath: string): ReactNode {
     return <SetupWizard />;
   }
 
-  // Exact & special routes
-  if (cleanPath === '/' || cleanPath === '' || cleanPath === '/dashboard') {
-    return <DashboardPage />;
+  // Exact & home routes
+  if (cleanPath === '/' || cleanPath === '' || cleanPath === '/dashboard' || cleanPath === '/home') {
+    return <HomePage />;
   }
   if (cleanPath === '/developer' || cleanPath === '/dev') {
     return <DeveloperConsole />;
@@ -53,9 +53,6 @@ export function matchRouteComponent(rawPath: string): ReactNode {
 
   // Work & Missions
   if (cleanPath === '/missions' || cleanPath.startsWith('/missions/')) {
-    if (cleanPath === '/missions/new') {
-      return <VoiceRoom />;
-    }
     return <Lobby />;
   }
 
@@ -74,9 +71,9 @@ export function matchRouteComponent(rawPath: string): ReactNode {
     return <SeatsRoom />;
   }
 
-  // Projects & Archive
+  // Projects Workspace
   if (cleanPath === '/projects' || cleanPath.startsWith('/projects/')) {
-    return <Archive />;
+    return <ProjectsPage />;
   }
 
   // Knowledge & Vault
@@ -142,7 +139,7 @@ export function matchRouteComponent(rawPath: string): ReactNode {
     return <Vault />;
   }
   if (cleanPath === '/rooms/voice' || cleanPath === '/voice') {
-    return <VoiceRoom />;
+    return <Lobby />;
   }
 
   return <NotFound />;

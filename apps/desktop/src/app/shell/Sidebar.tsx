@@ -11,10 +11,12 @@ import {
   BarChart3,
   ScrollText,
   Settings,
+  Terminal,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
 import { useCan } from '../providers/PermissionProvider';
+import { useShellStore } from '../../state/useShellStore';
 import { navigate } from '../../routes/navigate';
 
 interface Props {
@@ -39,6 +41,7 @@ interface NavGroup {
 }
 
 export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
+  const { developerMode } = useShellStore();
   const [activeHash, setActiveHash] = useState<string>(
     typeof window !== 'undefined' ? window.location.hash || '#/' : '#/'
   );
@@ -74,7 +77,7 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
         else if (key === 'k') navigate.knowledge();
         else if (key === 'c') navigate.connectors();
         else if (key === 'a') navigate.agents();
-        else if (key === 'l') navigate.events();
+        else if (key === 'l' && developerMode) navigate.events();
         else if (key === 's') navigate.settings();
       } else if (key === 'g') {
         lastKey = 'g';
@@ -89,7 +92,7 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
       window.removeEventListener('keydown', handleKeyDown);
       clearTimeout(timer);
     };
-  }, []);
+  }, [developerMode]);
 
   const useCanCheck = useCan;
 
@@ -99,7 +102,7 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
       items: [
         {
           id: 'dashboard',
-          label: 'Dashboard',
+          label: 'Home',
           hash: '#/',
           icon: LayoutDashboard,
           capability: 'dashboard.view',
@@ -113,7 +116,7 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
       items: [
         {
           id: 'missions',
-          label: 'Mission Center',
+          label: 'Missions',
           hash: '#/missions',
           icon: Crosshair,
           capability: 'mission.view',
@@ -154,7 +157,7 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
         },
         {
           id: 'agents',
-          label: 'Agents',
+          label: 'AI Team',
           hash: '#/agents',
           icon: Bot,
           capability: 'agents.view',
@@ -186,29 +189,44 @@ export const Sidebar: FC<Props> = ({ collapsed, onToggleCollapse }) => {
         },
       ],
     },
-    {
-      title: 'Insight',
-      items: [
-        {
-          id: 'analytics',
-          label: 'Analytics',
-          hash: '#/analytics',
-          icon: BarChart3,
-          capability: 'analytics.view',
-          shortcut: 'g l',
-          onNavigate: () => navigate.analytics(),
-        },
-        {
-          id: 'events',
-          label: 'Event Log',
-          hash: '#/events',
-          icon: ScrollText,
-          capability: 'events.view',
-          shortcut: 'g l',
-          onNavigate: () => navigate.events(),
-        },
-      ],
-    },
+    ...(developerMode
+      ? [
+          {
+            title: 'Developer Mode',
+            items: [
+              {
+                id: 'developer',
+                label: 'Developer Console',
+                hash: '#/developer',
+                icon: Terminal,
+                capability: 'authed',
+                shortcut: 'g dev',
+                onNavigate: () => {
+                  window.location.hash = '#/developer';
+                },
+              },
+              {
+                id: 'analytics',
+                label: 'System Health',
+                hash: '#/analytics',
+                icon: BarChart3,
+                capability: 'analytics.view',
+                shortcut: 'g l',
+                onNavigate: () => navigate.analytics(),
+              },
+              {
+                id: 'events',
+                label: 'Event Log',
+                hash: '#/events',
+                icon: ScrollText,
+                capability: 'events.view',
+                shortcut: 'g l',
+                onNavigate: () => navigate.events(),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       title: 'System',
       items: [

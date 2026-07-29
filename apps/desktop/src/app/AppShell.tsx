@@ -4,6 +4,8 @@ import { TopBar } from './shell/TopBar';
 import { StatusBar } from './shell/StatusBar';
 import { RouteErrorBoundary } from './boundaries/RouteErrorBoundary';
 import { CommandPaletteModal } from '../commands/CommandPaletteModal';
+import { ProjectWizardModal } from '../components/projects/ProjectWizardModal';
+import { MissionWizardModal } from '../components/missions/MissionWizardModal';
 
 interface Props {
   children?: ReactNode;
@@ -78,6 +80,10 @@ export const AppShell: FC<Props> = ({ children }) => {
       {/* Ambient Overlay Portal Container */}
       <div id="sd-portal-root" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1000 }}>
         <CommandPaletteModal />
+        <div style={{ pointerEvents: 'auto' }}>
+          <ProjectWizardModal />
+          <MissionWizardModal />
+        </div>
       </div>
     </div>
   );

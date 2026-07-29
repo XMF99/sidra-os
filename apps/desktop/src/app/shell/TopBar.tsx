@@ -2,11 +2,13 @@ import { FC, useState, useEffect } from 'react';
 import { Search, Bell, Sun, Moon, Plus, ChevronDown, User, Shield } from 'lucide-react';
 import { useTheme } from '../providers/ThemeProvider';
 import { useNotifications } from '../providers/NotificationProvider';
+import { useShellStore } from '../../state/useShellStore';
 import { navigate } from '../../routes/navigate';
 
 export const TopBar: FC = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { setCenterOpen } = useNotifications();
+  const { setMissionWizardOpen, developerMode } = useShellStore();
   const [activeHash, setActiveHash] = useState<string>(
     typeof window !== 'undefined' ? window.location.hash || '#/' : '#/'
   );
@@ -209,29 +211,31 @@ export const TopBar: FC = () => {
           <kbd style={{ padding: '0 4px', borderRadius: 'var(--sd-radius-sm)', border: '1px solid var(--sd-color-border)', fontSize: '10px' }}>⌘/</kbd>
         </button>
 
-        {/* Quick Action: Developer Console */}
-        <button
-          onClick={() => { window.location.hash = '#/developer'; }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--sd-space-1)',
-            padding: 'var(--sd-space-1) var(--sd-space-3)',
-            borderRadius: 'var(--sd-radius-md)',
-            backgroundColor: 'var(--sd-color-bg-inset)',
-            color: 'var(--sd-color-primary)',
-            border: '1px solid var(--sd-color-primary)',
-            fontSize: 'var(--sd-font-size-xs)',
-            fontWeight: 'var(--sd-font-weight-medium)',
-            cursor: 'pointer',
-          }}
-        >
-          <span>🛠️ Developer Console</span>
-        </button>
+        {/* Quick Action: Developer Console (Developer Mode Only) */}
+        {developerMode && (
+          <button
+            onClick={() => { window.location.hash = '#/developer'; }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--sd-space-1)',
+              padding: 'var(--sd-space-1) var(--sd-space-3)',
+              borderRadius: 'var(--sd-radius-md)',
+              backgroundColor: 'var(--sd-color-bg-inset)',
+              color: 'var(--sd-color-primary)',
+              border: '1px solid var(--sd-color-primary)',
+              fontSize: 'var(--sd-font-size-xs)',
+              fontWeight: 'var(--sd-font-weight-medium)',
+              cursor: 'pointer',
+            }}
+          >
+            <span>🛠️ Developer Console</span>
+          </button>
+        )}
 
         {/* Quick Action: New Mission */}
         <button
-          onClick={() => navigate.missionNew()}
+          onClick={() => setMissionWizardOpen(true)}
           style={{
             display: 'flex',
             alignItems: 'center',

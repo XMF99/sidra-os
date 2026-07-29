@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSeats, createSeat, SeatDTO } from '../lib/api';
+import { useShellStore } from '../state/useShellStore';
 import { Users, UserPlus, Shield, Wallet, HardDrive, CheckCircle2, Lock } from 'lucide-react';
 
 export const SeatsRoom: React.FC = () => {
+  const { developerMode } = useShellStore();
   const [newSeatName, setNewSeatName] = useState('');
   const queryClient = useQueryClient();
 
@@ -54,10 +56,10 @@ export const SeatsRoom: React.FC = () => {
         <div>
           <h1 style={{ fontSize: '24px', margin: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Users color="var(--sd-color-accent)" />
-            <span>Seats & Human Identity (Milestone M21)</span>
+            <span>Seats & Team Identity</span>
           </h1>
           <p style={{ color: 'var(--sd-color-text-secondary)', margin: '4px 0 0 0', fontSize: '14px' }}>
-            Layer-1 First-Class Human Identity Substrate & Per-Seat Controls (ADR-0057, ADR-0058, ADR-0059)
+            Manage human seat allocations, authority roles, and budget controls {developerMode ? '(ADR-0057, M21)' : ''}
           </p>
         </div>
 
