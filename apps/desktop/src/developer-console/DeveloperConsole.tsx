@@ -14,6 +14,7 @@ import { PolicyInspectorTab } from './tabs/PolicyInspectorTab';
 import { SecurityInspectorTab } from './tabs/SecurityInspectorTab';
 import { RecoveryInspectorTab } from './tabs/RecoveryInspectorTab';
 import { OperationsInspectorTab } from './tabs/OperationsInspectorTab';
+import { CertificationInspectorTab } from './tabs/CertificationInspectorTab';
 import { OrganizationInspectorTab } from './tabs/OrganizationInspectorTab';
 import { ConnectorManagerTab } from './tabs/ConnectorManagerTab';
 import { AutomationManagerTab } from './tabs/AutomationManagerTab';
@@ -23,6 +24,7 @@ import { LogsTab } from './tabs/LogsTab';
 import { SettingsTab } from './tabs/SettingsTab';
 
 export type ConsoleTab =
+  | 'certification'
   | 'playground'
   | 'missions'
   | 'workflows'
@@ -47,9 +49,10 @@ export type ConsoleTab =
   | 'settings';
 
 export const DeveloperConsole: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ConsoleTab>('playground');
+  const [activeTab, setActiveTab] = useState<ConsoleTab>('certification');
 
   const tabs: Array<{ id: ConsoleTab; label: string }> = [
+    { id: 'certification', label: '🏅 System Certification' },
     { id: 'playground', label: 'AI Playground' },
     { id: 'missions', label: 'Mission Inspector' },
     { id: 'workflows', label: 'Workflow Inspector' },
@@ -110,6 +113,7 @@ export const DeveloperConsole: React.FC = () => {
 
       {/* Active Tab Panel */}
       <main className="flex-1 overflow-y-auto">
+        {activeTab === 'certification' && <CertificationInspectorTab />}
         {activeTab === 'playground' && <AIPlaygroundTab />}
         {activeTab === 'missions' && <MissionInspectorTab />}
         {activeTab === 'workflows' && <WorkflowInspectorTab />}
