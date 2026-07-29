@@ -1,0 +1,18 @@
+# THEKY P08.2 — Figma Production Readiness & Dev Mode Handoff Specs
+
+> **Program P08.2: Core Product UI Production**  
+> **Document:** 12-figma-production-ready.md  
+> **Governance Authority:** Supreme Governance ([ARCHITECTURE-LOCK.md](file:///c:/Users/a_ala/OneDrive/سطح%20المكتب/sidra-os/docs/02-architecture/ARCHITECTURE-LOCK.md))  
+> **Status:** RATIFIED PRODUCTION UI SPECIFICATION (LOCKED)  
+
+---
+
+## 1. Figma Production File Specifications
+
+All Core UI screens are published in production file `[PROD-02] 02-Desktop Shell UI`:
+
+* **Auto Layout Alignment:** 100% of frames use nested Auto Layout with fixed, hugging, or fill container constraints. Zero manual absolute positioning.
+* **Variable Collections Bound:** Colors and spacing bind to `sys-semantic` variable collection modes (`Dark Monastic`, `Executive Light`, `RTL Arabic`).
+* **Dev Mode Annotation:** Frames tagged with explicit token names and Rust IPC payload bindings matching `packages/domain/src/types.rs`.
+
+---
