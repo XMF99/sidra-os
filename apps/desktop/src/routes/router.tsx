@@ -5,6 +5,7 @@ import { ComponentGallery } from '../pages/dev/ComponentGallery';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { DeveloperConsole } from '../developer-console/DeveloperConsole';
 import { SetupWizard } from '../pages/setup/SetupWizard';
+import { GameStudioManager } from '../pages/game-studio/GameStudioManager';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -28,6 +29,11 @@ interface Props {
 
 export function matchRouteComponent(rawPath: string): ReactNode {
   const cleanPath = rawPath.split('?')[0] || '/';
+
+  // Game Studio Manager Route
+  if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
+    return <GameStudioManager />;
+  }
 
   // Setup Wizard Route
   if (cleanPath === '/setup' || cleanPath === '/welcome') {
