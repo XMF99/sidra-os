@@ -1,3 +1,5 @@
+import { invoke } from '@tauri-apps/api/core';
+
 export interface SystemHealthDTO {
   status: string;
   release: string;
@@ -78,230 +80,123 @@ export interface DailySummaryDTO {
   totalSpend: number;
 }
 
-// Fallback data generators for browser dev mode or missing read models
-const FALLBACK_HEALTH: SystemHealthDTO = {
-  status: 'Healthy',
-  release: '4.0-alpha',
-  active_services_count: 9,
-  db_status: 'SQLite WAL Mode Active',
-  event_count: 42,
-  memory_mb: 64,
-  storage_kb: 4096,
-  total_milestones: 14,
-  completed_milestones: 11,
-};
-
-const FALLBACK_EVENTS: EventLogEntryDTO[] = [
-  {
-    id: 'EV-104',
-    kind: 'mission.created',
-    correlationId: 'c8812f9b00214a119',
-    timestamp: 'Just now',
-    summary: 'Mission M-101 (Harden Egress Connectors) created by Principal',
-    actor: 'principal',
-  },
-  {
-    id: 'EV-103',
-    kind: 'security.broker_grant',
-    correlationId: 'c8812f9b00214a118',
-    timestamp: '5m ago',
-    summary: 'Capability cap_analyst_exec granted to Agent Auditor Alpha',
-    actor: 'system',
-  },
-  {
-    id: 'EV-102',
-    kind: 'vault.checkpoint',
-    correlationId: 'c8812f9b00214a117',
-    timestamp: '15m ago',
-    summary: 'Vault hash chain verification passed (0 integrity breaks)',
-    actor: 'vault',
-  },
-];
-
-const FALLBACK_MISSIONS: MissionDTO[] = [
-  {
-    id: 'M-101',
-    title: 'Harden Egress Connectors',
-    department: 'Security',
-    status: 'running',
-    progressPercent: 75,
-    elapsed: '14m',
-  },
-  {
-    id: 'M-102',
-    title: 'Audit Department Exchange Manifests',
-    department: 'Self-Review',
-    status: 'awaiting_approval',
-    progressPercent: 30,
-    elapsed: '45m',
-  },
-  {
-    id: 'M-103',
-    title: 'Ingest Platform Standard Docs',
-    department: 'Knowledge',
-    status: 'completed',
-    progressPercent: 100,
-    elapsed: '2h',
-  },
-];
-
-const FALLBACK_AGENTS: AgentDTO[] = [
-  {
-    id: 'A-01',
-    name: 'Auditor Agent Alpha',
-    role: 'Compliance Reviewer',
-    department: 'Self-Review',
-    status: 'active',
-    currentMissionId: 'M-102',
-  },
-  {
-    id: 'A-02',
-    name: 'Security Officer',
-    role: 'Fence Guard',
-    department: 'Security',
-    status: 'active',
-    currentMissionId: 'M-101',
-  },
-  {
-    id: 'A-03',
-    name: 'Ingest Worker',
-    role: 'Chunker',
-    department: 'Knowledge',
-    status: 'idle',
-  },
-];
-
-const FALLBACK_PROJECTS: ProjectDTO[] = [
-  {
-    id: 'P-01',
-    name: 'Desktop Alpha Sprint 1',
-    missionCount: 4,
-    docCount: 20,
-    isPinned: true,
-  },
-  {
-    id: 'P-02',
-    name: 'Core Kernel Security Hardening',
-    missionCount: 2,
-    docCount: 8,
-    isPinned: true,
-  },
-];
-
-const FALLBACK_DOCS: DocumentDTO[] = [
-  {
-    id: 'DOC-01',
-    title: '01-architecture.md',
-    source: 'docs/desktop-alpha/',
-    producingMissionId: 'M-103',
-    timestamp: '1h ago',
-  },
-  {
-    id: 'DOC-02',
-    title: '04-dashboard.md',
-    source: 'docs/desktop-alpha/',
-    producingMissionId: 'M-103',
-    timestamp: '2h ago',
-  },
-];
-
-const FALLBACK_PERF: PerformanceDTO = {
-  missionsCompleted: 14,
-  medianLatencyMs: 140,
-  agentUtilizationPercent: 68,
-  spendUSD: 42.50,
-  budgetUSD: 100.00,
-};
-
-const FALLBACK_NOTIFS: NotificationDTO[] = [
-  {
-    id: 'N-01',
-    title: 'Approval Requested',
-    body: 'Mission M-102 requires non-author approval from Principal seat.',
-    timestamp: '10m ago',
-    isRead: false,
-    needsAction: true,
-    actionKind: 'mission.approve',
-    targetRoute: '#/missions/M-102',
-  },
-];
-
 export const ipc = {
   async getSystemHealth(): Promise<SystemHealthDTO> {
-    if (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window) {
-      try {
-        const { invoke } = await import('@tauri-apps/api/core');
-        return await invoke<SystemHealthDTO>('app_get_system_health');
-      } catch (err) {
-        console.warn('[IPC] app_get_system_health failed, fallback used:', err);
-      }
-    }
-    return FALLBACK_HEALTH;
+    return await invoke<SystemHealthDTO>('app_get_system_health');
   },
 
   async verifyEventChain(): Promise<boolean> {
-    if (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window) {
-      try {
-        const { invoke } = await import('@tauri-apps/api/core');
-        return await invoke<boolean>('app_verify_event_chain');
-      } catch (err) {
-        console.warn('[IPC] app_verify_event_chain failed:', err);
-      }
-    }
-    return true;
+    return await invoke<boolean>('app_verify_event_chain');
   },
 
   async getEventLog(): Promise<EventLogEntryDTO[]> {
-    if (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window) {
-      try {
-        const { invoke } = await import('@tauri-apps/api/core');
-        const events = await invoke<Array<Record<string, unknown>>>('app_get_event_log');
-        if (Array.isArray(events) && events.length > 0) {
-          return events.map((ev, idx) => ({
-            id: `EV-${idx + 1}`,
-            kind: String(ev.event_type || ev.kind || 'system.event'),
-            correlationId: String(ev.correlation_id || ev.id || 'corr_gen'),
-            timestamp: 'Recent',
-            summary: String(ev.payload || ev.summary || 'Platform event logged'),
-            actor: 'system',
-          }));
-        }
-      } catch (err) {
-        console.warn('[IPC] app_get_event_log failed, fallback used:', err);
-      }
-    }
-    return FALLBACK_EVENTS;
+    const events = await invoke<Array<Record<string, any>>>('app_get_event_log');
+    return events.map((ev, idx) => ({
+      id: String(ev.id || ev.sequence || `EV-${idx + 1}`),
+      kind: String(ev.event_type || ev.kind || 'system.event'),
+      correlationId: String(ev.correlation_id || ev.aggregate_id || 'corr_gen'),
+      timestamp: ev.timestamp ? new Date(Number(ev.timestamp)).toLocaleTimeString() : 'Recent',
+      summary: String(ev.payload || ev.summary || 'Platform event logged'),
+      actor: String(ev.actor || 'system'),
+    }));
   },
 
   async getMissions(): Promise<MissionDTO[]> {
-    return FALLBACK_MISSIONS;
+    const events = await invoke<Array<Record<string, any>>>('app_get_event_log');
+    const missionEvents = events.filter(
+      (e) =>
+        e.event_type === 'DirectiveCreated' ||
+        e.event_type === 'PlanGenerated' ||
+        e.event_type === 'WorkOrderCreated' ||
+        e.event_type === 'TaskExecuted'
+    );
+
+    if (missionEvents.length === 0) {
+      return [];
+    }
+
+    return missionEvents.map((evt, idx) => ({
+      id: `M-${100 + idx + 1}`,
+      title: String(evt.payload || `Execution Objective ${idx + 1}`),
+      department: 'Operations',
+      status: 'running',
+      progressPercent: 100,
+      elapsed: 'Active',
+    }));
   },
 
   async getAgents(): Promise<AgentDTO[]> {
-    return FALLBACK_AGENTS;
+    const seats = await invoke<Array<Record<string, any>>>('app_list_seats');
+    return seats.map((seat) => ({
+      id: String(seat.id),
+      name: String(seat.display_name),
+      role: seat.is_founding ? 'Founding Principal' : 'Seat Member',
+      department: String(seat.memory_namespace || 'Security'),
+      status: String(seat.status).toLowerCase() === 'active' ? 'active' : 'idle',
+    }));
   },
 
   async getProjects(): Promise<ProjectDTO[]> {
-    return FALLBACK_PROJECTS;
+    const artifacts = await invoke<Array<Record<string, any>>>('app_list_artifacts');
+    if (artifacts.length === 0) {
+      return [];
+    }
+    return artifacts.map((art, idx) => ({
+      id: String(typeof art.id === 'object' ? art.id[0] : art.id || `P-${idx + 1}`),
+      name: String(art.name || `Workspace Artifact ${idx + 1}`),
+      missionCount: 1,
+      docCount: 1,
+      isPinned: true,
+    }));
   },
 
   async getDocuments(): Promise<DocumentDTO[]> {
-    return FALLBACK_DOCS;
+    const artifacts = await invoke<Array<Record<string, any>>>('app_list_artifacts');
+    if (artifacts.length === 0) {
+      return [];
+    }
+    return artifacts.map((art, idx) => ({
+      id: String(typeof art.id === 'object' ? art.id[0] : art.id || `DOC-${idx + 1}`),
+      title: String(art.wasm_filename || art.name),
+      source: `produced_by: ${art.produced_by_agent || 'system'}`,
+      producingMissionId: String(art.produced_by_work_order || 'wo_9001'),
+      timestamp: 'Live',
+    }));
   },
 
   async getPerformance(): Promise<PerformanceDTO> {
-    return FALLBACK_PERF;
+    const health = await invoke<SystemHealthDTO>('app_get_system_health');
+    return {
+      missionsCompleted: health.completed_milestones,
+      medianLatencyMs: 45,
+      agentUtilizationPercent: health.event_count > 0 ? 100 : 0,
+      spendUSD: 0.0,
+      budgetUSD: 100.0,
+    };
   },
 
   async getNotifications(): Promise<NotificationDTO[]> {
-    return FALLBACK_NOTIFS;
+    const events = await invoke<Array<Record<string, any>>>('app_get_event_log');
+    const auditEvents = events.filter(
+      (e) => e.event_type === 'ApprovalRequested' || e.event_type === 'SecurityVeto'
+    );
+    return auditEvents.map((evt, idx) => ({
+      id: `N-${idx + 1}`,
+      title: String(evt.event_type),
+      body: String(evt.payload || 'Action required'),
+      timestamp: 'Recent',
+      isRead: false,
+      needsAction: true,
+      targetRoute: '#/events',
+    }));
   },
 
   async getDailySummary(): Promise<DailySummaryDTO> {
+    const health = await invoke<SystemHealthDTO>('app_get_system_health');
     return {
-      narrative: 'Today 3 missions completed cleanly. 1 mission requires Principal approval. Overall spend remains well within the $100 budget ceiling.',
-      completedCount: 3,
-      totalSpend: 42.50,
+      narrative: `Sidra OS kernel running ${health.release}. Vault Database active with ${health.event_count} events recorded under SQLite WAL Mode (${health.completed_milestones}/${health.total_milestones} milestones verified complete).`,
+      completedCount: health.completed_milestones,
+      totalSpend: 0.0,
     };
   },
 };
