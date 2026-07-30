@@ -1,0 +1,12 @@
+#!/bin/sh
+# Pre-commit quality gate hook for Sidra OS / THEKY
+
+echo "[CI Gate] Running pre-commit domain purity gate..."
+python infrastructure/ci/gates/domain_purity_gate.py
+if [ $? -ne 0 ]; then
+  echo "[CI Gate Error] Domain Purity Gate failed!"
+  exit 1
+fi
+
+echo "[CI Gate] Pre-commit checks passed."
+exit 0

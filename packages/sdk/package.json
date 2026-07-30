@@ -1,0 +1,20 @@
+{
+  "name": "@sidra/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK & Typed IPC Bridge for Sidra OS / THEKY",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}

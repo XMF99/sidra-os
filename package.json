@@ -1,16 +1,23 @@
 {
   "name": "sidra-os",
   "version": "1.0.0",
-  "description": "Sidra OS",
+  "description": "Sidra OS / THEKY Workspace Root",
   "private": true,
   "packageManager": "pnpm@9.15.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "dev": "pnpm --filter @sidra/desktop tauri dev",
-    "tauri": "pnpm --filter @sidra/desktop tauri",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pnpm --recursive run build",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "clippy": "cargo clippy --workspace -- -D warnings",
+    "check": "cargo check --workspace",
+    "tauri": "pnpm --filter @sidra/desktop tauri"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
   }
 }

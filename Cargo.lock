@@ -41,6 +41,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ai-runtime"
+version = "0.1.0"
+dependencies = [
+ "permission-broker",
+ "serde",
+ "serde_json",
+ "sidra-domain",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "alloc-no-stdlib"
 version = "2.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1484,6 +1498,20 @@ dependencies = [
  "memchr",
  "pin-project-lite",
  "slab",
+]
+
+[[package]]
+name = "gateway"
+version = "0.1.0"
+dependencies = [
+ "permission-broker",
+ "serde",
+ "serde_json",
+ "sidra-domain",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -3051,6 +3079,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 
 [[package]]
+name = "permission-broker"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sidra-domain",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "phf"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3970,7 +4012,10 @@ dependencies = [
 name = "sidra-app"
 version = "0.1.0"
 dependencies = [
+ "ai-runtime",
  "dirs 5.0.1",
+ "gateway",
+ "permission-broker",
  "serde",
  "serde_json",
  "sidra-agents",
@@ -3990,6 +4035,7 @@ dependencies = [
  "sidra-voice",
  "tauri",
  "tauri-build",
+ "vault",
 ]
 
 [[package]]
@@ -5502,6 +5548,23 @@ dependencies = [
  "js-sys",
  "serde_core",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "vault"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "permission-broker",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sidra-domain",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

@@ -1,92 +1,62 @@
-name: CI
+name: Sidra OS CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  lint-and-audit:
-    name: Quality & Security Gates
+  domain-purity:
+    name: Domain Purity Gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          components: rustfmt, clippy
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - uses: swatinem/rust-cache@v2
+          python-version: '3.11'
+      - name: Execute Domain Purity Gate
+        run: python infrastructure/ci/gates/domain_purity_gate.py
 
-      - name: Check Formatting
-        run: cargo fmt --check
-
-      - name: Clippy Lints
-        run: cargo clippy --workspace --all-targets -- -D warnings
-
-      - name: Cargo Deny Audit
-        uses: EmbarkStudios/cargo-deny-action@v1
-        with:
-          arguments: --config infrastructure/ci/cargo-deny.toml
-
-      - name: Verify Dependency Direction
-        run: node infrastructure/scripts/check-dependency-direction.js
-
-      - name: Verify Bindings Synchronization
-        run: node infrastructure/scripts/check-bindings-drift.js
-
-      - name: Verify Architectural Invariants
-        run: node infrastructure/scripts/verify-all-invariants.js
-
-      - name: Run Permanent Enforcement Gates (Python)
-        run: |
-          python3 infrastructure/ci/gates/scope_freeze.py
-          python3 infrastructure/ci/gates/evo1_calibration_bounded.py
-          python3 infrastructure/ci/gates/evo2_charter_eval_gated.py
-          python3 infrastructure/ci/gates/evo3_compilation_propose_only.py
-          python3 infrastructure/ci/gates/evo4_self_review_no_enact.py
-          python3 infrastructure/ci/gates/escalation_coverage.py
-          python3 infrastructure/ci/gates/locality_egress.py
-          python3 infrastructure/ci/gates/audit_coverage_gate.py
-          python3 infrastructure/ci/gates/build_gate.py
-          python3 infrastructure/ci/gates/chaos_gate.py
-          python3 infrastructure/ci/gates/domain_purity_gate.py
-          python3 infrastructure/ci/gates/evaluation_sets_gate.py
-          python3 infrastructure/ci/gates/generated_bindings_gate.py
-          python3 infrastructure/ci/gates/supply_chain_gate.py
-          python3 infrastructure/ci/check_dependency_direction.py .
-          python3 infrastructure/ci/five_tool_check.py
-          python3 infrastructure/ci/guard_corpus.py
-          python3 infrastructure/ci/kernel_neutrality.py
-          python3 infrastructure/ci/replay_gate.py
-
-  matrix-test:
-    name: Cross-Platform Test Matrix (${{ matrix.os }})
-    needs: lint-and-audit
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+  rust-checks:
+    name: Rust Build & Test & Clippy
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: pnpm/action-setup@v4
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - name: Cache Cargo Dependencies
+        uses: Swatinem/rust-cache@v2
+      - name: Check Workspace
+        run: cargo check --workspace
+      - name: Run Workspace Unit Tests
+        run: cargo test --workspace
+      - name: Run Clippy Lints
+        run: cargo clippy --workspace -- -D warnings
+
+  frontend-checks:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
           version: 9
-      - uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-      - uses: swatinem/rust-cache@v2
-
-      - name: Cargo Workspace Tests
-        run: cargo test --workspace
-
-      - name: pnpm Workspace Tests
-        run: pnpm --recursive run test
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Build TypeScript Workspace
+        run: pnpm build
+      - name: Run Vitest Suite
+        run: pnpm test

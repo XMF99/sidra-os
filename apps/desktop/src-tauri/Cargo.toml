@@ -7,6 +7,10 @@ license.workspace = true
 
 [dependencies]
 sidra-domain = { path = "../../../packages/domain" }
+permission-broker = { path = "../../../packages/permission-broker" }
+vault = { path = "../../../packages/vault" }
+ai-runtime = { path = "../../../services/ai-runtime" }
+gateway = { path = "../../../services/gateway" }
 sidra-kernel = { path = "../../../services/kernel" }
 sidra-store = { path = "../../../services/store" }
 sidra-security = { path = "../../../services/security" }

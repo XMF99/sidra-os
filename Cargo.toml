@@ -7,6 +7,8 @@ resolver = "2"
 members = [
     "packages/domain",
     "packages/transport",
+    "packages/permission-broker",
+    "packages/vault",
     "services/store",
     "services/security",
     "services/models",
@@ -21,6 +23,8 @@ members = [
     "services/registry",
     "services/mission",
     "services/connectors",
+    "services/ai-runtime",
+    "services/gateway",
     "services/companion",
     "services/voice",
     "services/artifacts-exec",
