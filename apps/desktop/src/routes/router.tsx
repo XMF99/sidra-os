@@ -7,6 +7,7 @@ import { ProjectsPage } from '../pages/projects/ProjectsPage';
 import { DeveloperConsole } from '../developer-console/DeveloperConsole';
 import { SetupWizard } from '../pages/setup/SetupWizard';
 import { GameStudioManager } from '../pages/game-studio/GameStudioManager';
+import { AIWorkspacePage } from '../pages/ai/AIWorkspacePage';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -38,6 +39,10 @@ export function matchRouteComponent(rawPath: string): ReactNode {
   // Setup Wizard Route
   if (cleanPath === '/setup' || cleanPath === '/welcome') {
     return <SetupWizard />;
+  }
+
+  if (cleanPath === '/workspace' || cleanPath.startsWith('/workspace/') || cleanPath === '/ai' || cleanPath.startsWith('/ai/') || cleanPath === '/decisions') {
+    return <AIWorkspacePage />;
   }
 
   // Exact & home routes

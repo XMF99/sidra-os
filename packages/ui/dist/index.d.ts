@@ -10,6 +10,7 @@ export * from './buttons/Button.js';
 export * from './inputs/TextInput.js';
 export * from './inputs/Switch.js';
 export * from './feedback/Alert.js';
+export * from './feedback/Progress.js';
 export * from './enterprise/KPICard.js';
 export * from './enterprise/StatusBadge.js';
 export * from './ai/ChatBubble.js';

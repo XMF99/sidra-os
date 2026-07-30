@@ -21,6 +21,7 @@ export * from './inputs/Switch.js';
 
 // Feedback
 export * from './feedback/Alert.js';
+export * from './feedback/Progress.js';
 
 // Enterprise
 export * from './enterprise/KPICard.js';

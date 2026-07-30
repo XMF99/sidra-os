@@ -32,6 +32,7 @@ __exportStar(require("./inputs/TextInput.js"), exports);
 __exportStar(require("./inputs/Switch.js"), exports);
 // Feedback
 __exportStar(require("./feedback/Alert.js"), exports);
+__exportStar(require("./feedback/Progress.js"), exports);
 // Enterprise
 __exportStar(require("./enterprise/KPICard.js"), exports);
 __exportStar(require("./enterprise/StatusBadge.js"), exports);
