@@ -107,6 +107,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   completeOnboarding: () => {
     if (typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.setItem('sidra_onboarding_completed', 'true');
+      window.localStorage.setItem('sidra_setup_completed', 'true');
     }
     set({ completed: true });
   },
@@ -114,6 +115,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   resumeOnboarding: () => {
     if (typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.removeItem('sidra_onboarding_completed');
+      window.localStorage.removeItem('sidra_setup_completed');
     }
     set({ completed: false, currentStep: 1 });
   },

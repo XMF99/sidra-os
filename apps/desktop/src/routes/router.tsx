@@ -8,6 +8,7 @@ import { DeveloperConsole } from '../developer-console/DeveloperConsole';
 import { SetupWizard } from '../pages/setup/SetupWizard';
 import { GameStudioManager } from '../pages/game-studio/GameStudioManager';
 import { AIWorkspacePage } from '../pages/ai/AIWorkspacePage';
+import { ThekyConsolePage } from '../pages/console/ThekyConsolePage';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -31,14 +32,24 @@ interface Props {
 export function matchRouteComponent(rawPath: string): ReactNode {
   const cleanPath = rawPath.split('?')[0] || '/';
 
+  const isOnboardingCompleted =
+    typeof window !== 'undefined' && window.localStorage
+      ? window.localStorage.getItem('sidra_onboarding_completed') === 'true' ||
+        window.localStorage.getItem('sidra_setup_completed') === 'true'
+      : false;
+
+  // Setup / Onboarding Routes
+  if (cleanPath === '/setup' || cleanPath === '/welcome' || cleanPath === '/onboarding') {
+    return <SetupWizard />;
+  }
+
   // Game Studio Manager Route
   if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
     return <GameStudioManager />;
   }
 
-  // Setup Wizard Route
-  if (cleanPath === '/setup' || cleanPath === '/welcome') {
-    return <SetupWizard />;
+  if (cleanPath === '/console' || cleanPath === '/theky' || cleanPath.startsWith('/console/')) {
+    return <ThekyConsolePage />;
   }
 
   if (cleanPath === '/workspace' || cleanPath.startsWith('/workspace/') || cleanPath === '/ai' || cleanPath.startsWith('/ai/') || cleanPath === '/decisions') {
@@ -47,6 +58,9 @@ export function matchRouteComponent(rawPath: string): ReactNode {
 
   // Exact & home routes
   if (cleanPath === '/' || cleanPath === '' || cleanPath === '/dashboard' || cleanPath === '/home') {
+    if (!isOnboardingCompleted) {
+      return <SetupWizard />;
+    }
     return <HomePage />;
   }
   if (cleanPath === '/developer' || cleanPath === '/dev') {
