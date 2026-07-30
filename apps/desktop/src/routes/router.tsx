@@ -9,6 +9,8 @@ import { SetupWizard } from '../pages/setup/SetupWizard';
 import { GameStudioManager } from '../pages/game-studio/GameStudioManager';
 import { AIWorkspacePage } from '../pages/ai/AIWorkspacePage';
 import { ThekyConsolePage } from '../pages/console/ThekyConsolePage';
+import { MarketplacePage } from '../pages/marketplace/MarketplacePage';
+import { OrganizationSpacesPage } from '../pages/spaces/OrganizationSpacesPage';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -46,6 +48,14 @@ export function matchRouteComponent(rawPath: string): ReactNode {
   // Game Studio Manager Route
   if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
     return <GameStudioManager />;
+  }
+
+  if (cleanPath === '/marketplace' || cleanPath === '/capabilities' || cleanPath === '/blueprints' || cleanPath.startsWith('/marketplace/')) {
+    return <MarketplacePage />;
+  }
+
+  if (cleanPath === '/spaces' || cleanPath.startsWith('/spaces/')) {
+    return <OrganizationSpacesPage />;
   }
 
   if (cleanPath === '/console' || cleanPath === '/theky' || cleanPath.startsWith('/console/')) {
