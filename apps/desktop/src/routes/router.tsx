@@ -14,6 +14,8 @@ import { FirstExperienceHome } from '../pages/home/FirstExperienceHome';
 import { ProjectCommandCenterPage } from '../pages/projects/ProjectCommandCenterPage';
 import { UniversalTimelineView } from '../components/timeline/UniversalTimelineView';
 import { GlobalCommandCenterModal } from '../components/common/GlobalCommandCenterModal';
+import { IntelligenceCorePage } from '../pages/intelligence/IntelligenceCorePage';
+import { CognitiveEnginePage } from '../pages/cognitive/CognitiveEnginePage';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -51,6 +53,24 @@ export function matchRouteComponent(rawPath: string): ReactNode {
   // Game Studio Manager Route
   if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
     return <GameStudioManager />;
+  }
+
+  if (cleanPath === '/cognitive' || cleanPath === '/cognitive-modes' || cleanPath === '/perspectives' || cleanPath === '/meta-reasoning' || cleanPath === '/assumptions' || cleanPath.startsWith('/cognitive/')) {
+    return (
+      <>
+        <CognitiveEnginePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/intelligence' || cleanPath === '/dna' || cleanPath === '/memory' || cleanPath === '/graph' || cleanPath === '/decisions-journal' || cleanPath.startsWith('/intelligence/')) {
+    return (
+      <>
+        <IntelligenceCorePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/timeline') {
