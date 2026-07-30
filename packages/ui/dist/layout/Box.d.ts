@@ -9,6 +9,7 @@ export interface BoxProps {
     borderRadius?: string | number;
     className?: string;
     style?: CSSProperties;
+    onClick?: () => void;
     children?: ReactNode;
 }
 export declare const Box: FC<BoxProps>;

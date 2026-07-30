@@ -10,6 +10,7 @@ export interface BoxProps {
   borderRadius?: string | number;
   className?: string;
   style?: CSSProperties;
+  onClick?: () => void;
   children?: ReactNode;
 }
 
@@ -23,11 +24,13 @@ export const Box: FC<BoxProps> = ({
   borderRadius,
   className,
   style,
+  onClick,
   children,
 }) => {
   return (
     <Component
       className={className}
+      onClick={onClick}
       style={{
         padding,
         margin,
