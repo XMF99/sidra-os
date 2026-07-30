@@ -6,8 +6,8 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "build": "echo 'stub build'",
-    "test": "echo 'stub test'"
+    "build": "tsc",
+    "test": "vitest run"
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.1.0",
