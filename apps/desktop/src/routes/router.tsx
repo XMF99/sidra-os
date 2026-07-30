@@ -22,6 +22,8 @@ import { AiEcosystemPage } from '../pages/ecosystem/AiEcosystemPage';
 import { CapabilityPlatformPage } from '../pages/capability-platform/CapabilityPlatformPage';
 import { BusinessSolutionPage } from '../pages/solution-composer/BusinessSolutionPage';
 import { EnterprisePlatformPage } from '../pages/enterprise-composer/EnterprisePlatformPage';
+import { AutonomousOrgPage } from '../pages/autonomous-org/AutonomousOrgPage';
+import { PlatformCertificationPage } from '../pages/certification/PlatformCertificationPage';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -59,6 +61,24 @@ export function matchRouteComponent(rawPath: string): ReactNode {
   // Game Studio Manager Route
   if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
     return <GameStudioManager />;
+  }
+
+  if (cleanPath === '/certification' || cleanPath === '/integration-health' || cleanPath === '/platform-flow' || cleanPath.startsWith('/certification/')) {
+    return (
+      <>
+        <PlatformCertificationPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/autonomous-org' || cleanPath === '/command-center' || cleanPath === '/workforce' || cleanPath === '/department-runtime' || cleanPath === '/daily-briefing' || cleanPath === '/autonomous-decisions' || cleanPath === '/operational-analytics' || cleanPath.startsWith('/autonomous-org/')) {
+    return (
+      <>
+        <AutonomousOrgPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/enterprise-composer' || cleanPath === '/enterprises' || cleanPath === '/departments' || cleanPath === '/org-chart' || cleanPath === '/master-blueprints' || cleanPath === '/enterprise-templates' || cleanPath === '/enterprise-analytics' || cleanPath.startsWith('/enterprise-composer/')) {
