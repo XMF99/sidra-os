@@ -16,6 +16,12 @@ import { UniversalTimelineView } from '../components/timeline/UniversalTimelineV
 import { GlobalCommandCenterModal } from '../components/common/GlobalCommandCenterModal';
 import { IntelligenceCorePage } from '../pages/intelligence/IntelligenceCorePage';
 import { CognitiveEnginePage } from '../pages/cognitive/CognitiveEnginePage';
+import { DigitalTwinPage } from '../pages/digital-twin/DigitalTwinPage';
+import { ExecutiveControlTowerPage } from '../pages/orchestrator/ExecutiveControlTowerPage';
+import { AiEcosystemPage } from '../pages/ecosystem/AiEcosystemPage';
+import { CapabilityPlatformPage } from '../pages/capability-platform/CapabilityPlatformPage';
+import { BusinessSolutionPage } from '../pages/solution-composer/BusinessSolutionPage';
+import { EnterprisePlatformPage } from '../pages/enterprise-composer/EnterprisePlatformPage';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -53,6 +59,60 @@ export function matchRouteComponent(rawPath: string): ReactNode {
   // Game Studio Manager Route
   if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
     return <GameStudioManager />;
+  }
+
+  if (cleanPath === '/enterprise-composer' || cleanPath === '/enterprises' || cleanPath === '/departments' || cleanPath === '/org-chart' || cleanPath === '/master-blueprints' || cleanPath === '/enterprise-templates' || cleanPath === '/enterprise-analytics' || cleanPath.startsWith('/enterprise-composer/')) {
+    return (
+      <>
+        <EnterprisePlatformPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/solutions' || cleanPath === '/solution-composer' || cleanPath === '/blueprints' || cleanPath === '/solution-templates' || cleanPath === '/impact-analytics' || cleanPath.startsWith('/solutions/')) {
+    return (
+      <>
+        <BusinessSolutionPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/capability-platform' || cleanPath === '/capabilities' || cleanPath === '/composer' || cleanPath === '/capability-graph' || cleanPath === '/capability-templates' || cleanPath === '/capability-analytics' || cleanPath.startsWith('/capability-platform/')) {
+    return (
+      <>
+        <CapabilityPlatformPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/ecosystem' || cleanPath === '/providers' || cleanPath === '/router' || cleanPath === '/mcp' || cleanPath === '/connectors' || cleanPath === '/prompts' || cleanPath === '/cost' || cleanPath.startsWith('/ecosystem/')) {
+    return (
+      <>
+        <AiEcosystemPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/orchestrator' || cleanPath === '/control-tower' || cleanPath === '/contracts' || cleanPath === '/decomposition' || cleanPath === '/recovery' || cleanPath.startsWith('/orchestrator/')) {
+    return (
+      <>
+        <ExecutiveControlTowerPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/digital-twin' || cleanPath === '/simulation' || cleanPath === '/what-if' || cleanPath === '/resource-optimizer' || cleanPath === '/opportunities' || cleanPath.startsWith('/digital-twin/')) {
+    return (
+      <>
+        <DigitalTwinPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/cognitive' || cleanPath === '/cognitive-modes' || cleanPath === '/perspectives' || cleanPath === '/meta-reasoning' || cleanPath === '/assumptions' || cleanPath.startsWith('/cognitive/')) {
