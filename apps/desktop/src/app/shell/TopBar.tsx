@@ -1,9 +1,10 @@
 import { FC, useState, useEffect } from 'react';
-import { Search, Bell, Sun, Moon, Plus, ChevronDown, User, Shield, Activity } from 'lucide-react';
+import { Bell, Sun, Moon, Plus, ChevronDown, User, Shield, Activity } from 'lucide-react';
 import { useTheme } from '../providers/ThemeProvider';
 import { useNotifications } from '../providers/NotificationProvider';
 import { useShellStore } from '../../state/useShellStore';
 import { navigate } from '../../routes/navigate';
+import { UnifiedIntelligenceBar } from '../../components/intelligence/UnifiedIntelligenceBar';
 
 export const TopBar: FC = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -213,28 +214,8 @@ export const TopBar: FC = () => {
 
       {/* Right Actions & Profile */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sd-space-3)' }}>
-        {/* Global Search Button */}
-        <button
-          onClick={() => {
-            window.dispatchEvent(new CustomEvent('sd:open-search'));
-          }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--sd-space-2)',
-            padding: 'var(--sd-space-1) var(--sd-space-3)',
-            borderRadius: 'var(--sd-radius-md)',
-            backgroundColor: 'var(--sd-color-bg-inset)',
-            border: '1px solid var(--sd-color-border)',
-            color: 'var(--sd-color-text-muted)',
-            fontSize: 'var(--sd-font-size-xs)',
-            cursor: 'pointer',
-          }}
-        >
-          <Search size={14} />
-          <span>Search...</span>
-          <kbd style={{ padding: '0 4px', borderRadius: 'var(--sd-radius-sm)', border: '1px solid var(--sd-color-border)', fontSize: '10px' }}>⌘/</kbd>
-        </button>
+        {/* Unified Intelligence Bar */}
+        <UnifiedIntelligenceBar />
 
         {/* Quick Action: Developer Console (Developer Mode Only) */}
         {developerMode && (

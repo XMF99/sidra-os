@@ -2,7 +2,6 @@ import { FC, useEffect, useState, ReactNode } from 'react';
 import { RouteErrorBoundary } from '../app/boundaries/RouteErrorBoundary';
 import { NotFound } from '../pages/NotFound';
 import { ComponentGallery } from '../pages/dev/ComponentGallery';
-import { HomePage } from '../pages/home/HomePage';
 import { ProjectsPage } from '../pages/projects/ProjectsPage';
 import { DeveloperConsole } from '../developer-console/DeveloperConsole';
 import { SetupWizard } from '../pages/setup/SetupWizard';
@@ -11,6 +10,10 @@ import { AIWorkspacePage } from '../pages/ai/AIWorkspacePage';
 import { ThekyConsolePage } from '../pages/console/ThekyConsolePage';
 import { MarketplacePage } from '../pages/marketplace/MarketplacePage';
 import { OrganizationSpacesPage } from '../pages/spaces/OrganizationSpacesPage';
+import { FirstExperienceHome } from '../pages/home/FirstExperienceHome';
+import { ProjectCommandCenterPage } from '../pages/projects/ProjectCommandCenterPage';
+import { UniversalTimelineView } from '../components/timeline/UniversalTimelineView';
+import { GlobalCommandCenterModal } from '../components/common/GlobalCommandCenterModal';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -50,20 +53,58 @@ export function matchRouteComponent(rawPath: string): ReactNode {
     return <GameStudioManager />;
   }
 
+  if (cleanPath === '/timeline') {
+    return (
+      <>
+        <UniversalTimelineView />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath.startsWith('/projects/')) {
+    return (
+      <>
+        <ProjectCommandCenterPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
   if (cleanPath === '/marketplace' || cleanPath === '/capabilities' || cleanPath === '/blueprints' || cleanPath.startsWith('/marketplace/')) {
-    return <MarketplacePage />;
+    return (
+      <>
+        <MarketplacePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/spaces' || cleanPath.startsWith('/spaces/')) {
-    return <OrganizationSpacesPage />;
+    return (
+      <>
+        <OrganizationSpacesPage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/console' || cleanPath === '/theky' || cleanPath.startsWith('/console/')) {
-    return <ThekyConsolePage />;
+    return (
+      <>
+        <ThekyConsolePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/workspace' || cleanPath.startsWith('/workspace/') || cleanPath === '/ai' || cleanPath.startsWith('/ai/') || cleanPath === '/decisions') {
-    return <AIWorkspacePage />;
+    return (
+      <>
+        <AIWorkspacePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   // Exact & home routes
@@ -71,7 +112,12 @@ export function matchRouteComponent(rawPath: string): ReactNode {
     if (!isOnboardingCompleted) {
       return <SetupWizard />;
     }
-    return <HomePage />;
+    return (
+      <>
+        <FirstExperienceHome />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
   if (cleanPath === '/developer' || cleanPath === '/dev') {
     return <DeveloperConsole />;

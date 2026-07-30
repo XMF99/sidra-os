@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Bot, Activity, Sparkles, ChevronRight } from 'lucide-react';
 import { useShellStore } from '../../state/useShellStore';
+import { useContextEngineStore } from '../../state/useContextEngineStore';
 
 export const RightActivityPanel: React.FC = () => {
   const { rightPanelOpen, toggleRightPanel } = useShellStore();
   const [activeTab, setActiveTab] = useState<'feed' | 'agents' | 'notifications'>('feed');
+
+  const { activeSpaceType } = useContextEngineStore();
 
   if (!rightPanelOpen) return null;
 
@@ -71,7 +74,7 @@ export const RightActivityPanel: React.FC = () => {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Activity size={18} style={{ color: 'var(--sd-color-primary, #6366f1)' }} />
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>Executive Panel</span>
+          <span style={{ fontWeight: 600, fontSize: '13px' }}>{activeSpaceType || 'Executive'} Intelligence</span>
         </div>
         <button
           onClick={toggleRightPanel}
