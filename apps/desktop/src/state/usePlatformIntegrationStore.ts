@@ -18,7 +18,7 @@ export interface PipelineStageEvent {
 
 export interface CertificationReportData {
   platformCoveragePercent: number;
-  readinessScore: number; // 100/100
+  readinessScore: number; // dynamically calculated
   compatibilityRating: '100% Certified';
   technicalDebtCount: number;
   operationalRisksCount: number;
@@ -77,9 +77,19 @@ const DEFAULT_PIPELINE_EVENTS: PipelineStageEvent[] = [
   { stage: '18. Continuous Learning', inputPayload: 'Telemetry & ROI Impact Update', outputPayload: 'Updated Organization DNA', passedVerification: true },
 ];
 
+function computeDynamicReadinessScore(subsystems: SubsystemStatus[], pipeline: PipelineStageEvent[]): number {
+  if (subsystems.length === 0) return 0;
+  const avgHealth = Math.round(subsystems.reduce((acc, s) => acc + s.healthScore, 0) / subsystems.length);
+  const passedPipelineCount = pipeline.filter((p) => p.passedVerification).length;
+  const pipelineRatio = pipeline.length > 0 ? passedPipelineCount / pipeline.length : 1;
+  return Math.round(avgHealth * pipelineRatio);
+}
+
+const initialReadiness = computeDynamicReadinessScore(DEFAULT_SUBSYSTEMS, DEFAULT_PIPELINE_EVENTS);
+
 const DEFAULT_REPORT: CertificationReportData = {
   platformCoveragePercent: 100,
-  readinessScore: 100,
+  readinessScore: initialReadiness,
   compatibilityRating: '100% Certified',
   technicalDebtCount: 0,
   operationalRisksCount: 0,
@@ -92,22 +102,30 @@ export const usePlatformIntegrationStore = create<PlatformIntegrationState>((set
   certificationReport: DEFAULT_REPORT,
 
   runEndToEndIntegrationTest: () =>
-    set((state) => ({
-      subsystems: state.subsystems.map((s) => ({ ...s, status: 'Certified', healthScore: 100 })),
-      certificationReport: {
-        ...state.certificationReport,
-        readinessScore: 100,
-        certifiedAt: new Date().toISOString(),
-      },
-    })),
+    set((state) => {
+      const updatedSubsystems = state.subsystems.map((s) => ({ ...s, status: 'Certified' as const, healthScore: 100 }));
+      const dynamicScore = computeDynamicReadinessScore(updatedSubsystems, state.pipelineFlow);
+      return {
+        subsystems: updatedSubsystems,
+        certificationReport: {
+          ...state.certificationReport,
+          readinessScore: dynamicScore,
+          certifiedAt: new Date().toISOString(),
+        },
+      };
+    }),
 
   runLargeScaleStressSimulation: () =>
-    set((state) => ({
-      subsystems: state.subsystems.map((s) => ({ ...s, status: 'Certified', latencyMs: Math.max(10, s.latencyMs - 2) })),
-      certificationReport: {
-        ...state.certificationReport,
-        readinessScore: 100,
-        certifiedAt: new Date().toISOString(),
-      },
-    })),
+    set((state) => {
+      const updatedSubsystems = state.subsystems.map((s) => ({ ...s, status: 'Certified' as const, latencyMs: Math.max(10, s.latencyMs - 2) }));
+      const dynamicScore = computeDynamicReadinessScore(updatedSubsystems, state.pipelineFlow);
+      return {
+        subsystems: updatedSubsystems,
+        certificationReport: {
+          ...state.certificationReport,
+          readinessScore: dynamicScore,
+          certifiedAt: new Date().toISOString(),
+        },
+      };
+    }),
 }));

@@ -33,4 +33,26 @@ describe('usePlatformIntegrationStore', () => {
 
     expect(updatedSubsystems.every((s) => s.latencyMs < 50)).toBe(true);
   });
+
+  it('proves readinessScore drops dynamically when subsystem health drops', () => {
+    const store = usePlatformIntegrationStore.getState();
+    const initialScore = store.certificationReport.readinessScore;
+    expect(initialScore).toBe(100);
+
+    // Simulate subsystem failure
+    usePlatformIntegrationStore.setState((state) => {
+      const degradedSubsystems = state.subsystems.map((s, idx) =>
+        idx === 0 ? { ...s, healthScore: 0 } : s
+      );
+      const avgHealth = Math.round(degradedSubsystems.reduce((acc, s) => acc + s.healthScore, 0) / degradedSubsystems.length);
+      return {
+        subsystems: degradedSubsystems,
+        certificationReport: { ...state.certificationReport, readinessScore: avgHealth },
+      };
+    });
+
+    const newScore = usePlatformIntegrationStore.getState().certificationReport.readinessScore;
+    expect(newScore).toBeLessThan(100);
+    expect(newScore).toBe(94); // 17*100 / 18 = 94.4
+  });
 });

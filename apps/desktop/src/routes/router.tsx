@@ -34,6 +34,12 @@ import { OperationsSuitePage } from '../pages/operations-suite/OperationsSuitePa
 import { SupplyChainSuitePage } from '../pages/supply-chain-suite/SupplyChainSuitePage';
 import { ProjectSuitePage } from '../pages/project-suite/ProjectSuitePage';
 import { GameStudioSuitePage } from '../pages/game-studio-suite/GameStudioSuitePage';
+import { UnifiedAiWorkspaceView } from '../components/workspace/UnifiedAiWorkspaceView';
+import { EnterpriseAiModesView } from '../components/ai-modes/EnterpriseAiModesView';
+import { WorkAgentCenterView } from '../components/work-agent/WorkAgentCenterView';
+import { EnterpriseConnectorCenterView } from '../components/connectors/EnterpriseConnectorCenterView';
+import { EnterpriseKnowledgeCenterView } from '../components/knowledge/EnterpriseKnowledgeCenterView';
+import { EnterpriseAdminCenterView } from '../components/admin/EnterpriseAdminCenterView';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -71,6 +77,60 @@ export function matchRouteComponent(rawPath: string): ReactNode {
   // Game Studio Manager Route
   if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
     return <GameStudioManager />;
+  }
+
+  if (cleanPath === '/ai-workspace' || cleanPath === '/workspace') {
+    return (
+      <>
+        <UnifiedAiWorkspaceView />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/ai-modes' || cleanPath === '/modes') {
+    return (
+      <>
+        <EnterpriseAiModesView />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/work-agent' || cleanPath === '/agent-center') {
+    return (
+      <>
+        <WorkAgentCenterView />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/enterprise-connectors' || cleanPath === '/connector-center') {
+    return (
+      <>
+        <EnterpriseConnectorCenterView />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/enterprise-knowledge' || cleanPath === '/knowledge-center') {
+    return (
+      <>
+        <EnterpriseKnowledgeCenterView />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/enterprise-admin' || cleanPath === '/admin-center') {
+    return (
+      <>
+        <EnterpriseAdminCenterView />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/game-studio-suite' || cleanPath === '/studio-workspace' || cleanPath === '/ai-director' || cleanPath === '/design-art' || cleanPath === '/engineering-audio' || cleanPath === '/qa-liveops' || cleanPath === '/studio-twin' || cleanPath === '/studio-auditor' || cleanPath === '/studio-reports' || cleanPath.startsWith('/game-studio-suite/')) {
