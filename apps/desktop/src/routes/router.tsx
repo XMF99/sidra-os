@@ -24,6 +24,16 @@ import { BusinessSolutionPage } from '../pages/solution-composer/BusinessSolutio
 import { EnterprisePlatformPage } from '../pages/enterprise-composer/EnterprisePlatformPage';
 import { AutonomousOrgPage } from '../pages/autonomous-org/AutonomousOrgPage';
 import { PlatformCertificationPage } from '../pages/certification/PlatformCertificationPage';
+import { ExecutiveSuitePage } from '../pages/executive-suite/ExecutiveSuitePage';
+import { FinanceSuitePage } from '../pages/finance-suite/FinanceSuitePage';
+import { HumanCapitalSuitePage } from '../pages/human-capital-suite/HumanCapitalSuitePage';
+import { CrmSuitePage } from '../pages/crm-suite/CrmSuitePage';
+import { SalesSuitePage } from '../pages/sales-suite/SalesSuitePage';
+import { MarketingSuitePage } from '../pages/marketing-suite/MarketingSuitePage';
+import { OperationsSuitePage } from '../pages/operations-suite/OperationsSuitePage';
+import { SupplyChainSuitePage } from '../pages/supply-chain-suite/SupplyChainSuitePage';
+import { ProjectSuitePage } from '../pages/project-suite/ProjectSuitePage';
+import { GameStudioSuitePage } from '../pages/game-studio-suite/GameStudioSuitePage';
 
 // Room components
 import { Archive } from '../rooms/Archive';
@@ -61,6 +71,96 @@ export function matchRouteComponent(rawPath: string): ReactNode {
   // Game Studio Manager Route
   if (cleanPath === '/studio' || cleanPath === '/game-studio' || cleanPath === '/gamestudio') {
     return <GameStudioManager />;
+  }
+
+  if (cleanPath === '/game-studio-suite' || cleanPath === '/studio-workspace' || cleanPath === '/ai-director' || cleanPath === '/design-art' || cleanPath === '/engineering-audio' || cleanPath === '/qa-liveops' || cleanPath === '/studio-twin' || cleanPath === '/studio-auditor' || cleanPath === '/studio-reports' || cleanPath.startsWith('/game-studio-suite/')) {
+    return (
+      <>
+        <GameStudioSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/project-suite' || cleanPath === '/portfolio-workspace' || cleanPath === '/ai-pmo' || cleanPath === '/programs-projects' || cleanPath === '/resource-financials' || cleanPath === '/project-twin' || cleanPath === '/portfolio-auditor' || cleanPath === '/project-reports' || cleanPath.startsWith('/project-suite/')) {
+    return (
+      <>
+        <ProjectSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/supply-chain-suite' || cleanPath === '/supply-workspace' || cleanPath === '/ai-csco' || cleanPath === '/procurement-suppliers' || cleanPath === '/warehouse-logistics' || cleanPath === '/supply-twin' || cleanPath === '/supply-auditor' || cleanPath === '/supply-reports' || cleanPath.startsWith('/supply-chain-suite/')) {
+    return (
+      <>
+        <SupplyChainSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/operations-suite' || cleanPath === '/operations-workspace' || cleanPath === '/ai-coo' || cleanPath === '/execution-control' || cleanPath === '/resource-workflows' || cleanPath === '/operations-twin' || cleanPath === '/operations-auditor' || cleanPath === '/operations-reports' || cleanPath.startsWith('/operations-suite/')) {
+    return (
+      <>
+        <OperationsSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/marketing-suite' || cleanPath === '/marketing-workspace' || cleanPath === '/ai-cmo' || cleanPath === '/campaigns' || cleanPath === '/audience-content' || cleanPath === '/marketing-twin' || cleanPath === '/marketing-auditor' || cleanPath === '/marketing-reports' || cleanPath.startsWith('/marketing-suite/')) {
+    return (
+      <>
+        <MarketingSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/sales-suite' || cleanPath === '/sales-workspace' || cleanPath === '/ai-cro' || cleanPath === '/opportunity-quotes' || cleanPath === '/contracts' || cleanPath === '/sales-twin' || cleanPath === '/revenue-auditor' || cleanPath === '/revenue-reports' || cleanPath.startsWith('/sales-suite/')) {
+    return (
+      <>
+        <SalesSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/crm-suite' || cleanPath === '/customer-workspace' || cleanPath === '/ai-cco' || cleanPath === '/sales-pipeline' || cleanPath === '/customer-success' || cleanPath === '/crm-twin' || cleanPath === '/crm-auditor' || cleanPath === '/crm-reports' || cleanPath.startsWith('/crm-suite/')) {
+    return (
+      <>
+        <CrmSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/human-capital-suite' || cleanPath === '/people-workspace' || cleanPath === '/ai-chro' || cleanPath === '/recruitment' || cleanPath === '/employee-lifecycle' || cleanPath === '/people-twin' || cleanPath === '/people-auditor' || cleanPath === '/hr-reports' || cleanPath.startsWith('/human-capital-suite/')) {
+    return (
+      <>
+        <HumanCapitalSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/finance-suite' || cleanPath === '/financial-workspace' || cleanPath === '/ai-cfo' || cleanPath === '/general-ledger' || cleanPath === '/ar-ap' || cleanPath === '/financial-twin' || cleanPath === '/financial-auditor' || cleanPath === '/financial-reports' || cleanPath.startsWith('/finance-suite/')) {
+    return (
+      <>
+        <FinanceSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
+  }
+
+  if (cleanPath === '/executive-suite' || cleanPath === '/ceo-workspace' || cleanPath === '/executive-board' || cleanPath === '/war-room' || cleanPath === '/executive-decisions' || cleanPath === '/executive-briefing' || cleanPath === '/financial-snapshot' || cleanPath === '/enterprise-radar' || cleanPath === '/executive-memory' || cleanPath.startsWith('/executive-suite/')) {
+    return (
+      <>
+        <ExecutiveSuitePage />
+        <GlobalCommandCenterModal />
+      </>
+    );
   }
 
   if (cleanPath === '/certification' || cleanPath === '/integration-health' || cleanPath === '/platform-flow' || cleanPath.startsWith('/certification/')) {
