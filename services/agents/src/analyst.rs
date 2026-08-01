@@ -24,11 +24,15 @@ impl Agent for AnalystAgent {
         };
 
         // Query model router for plan guidance
-        let _resp = router.complete_with_fallback(&req);
+        let completion_res = router.complete_with_fallback(&req);
+        let completion_text = match completion_res {
+            Ok(resp) => resp.content,
+            Err(err) => format!("Fallback guidance error: {}", err),
+        };
 
         let step1 = TaskStep {
             step_id: format!("step_{}", Ulid::new()),
-            description: "Ingest target document and generate chunks".to_string(),
+            description: format!("Model Guidance: {}", completion_text),
             assigned_role: "analyst".to_string(),
             status: TaskStatus::Pending,
             result: None,
@@ -36,7 +40,7 @@ impl Agent for AnalystAgent {
 
         let step2 = TaskStep {
             step_id: format!("step_{}", Ulid::new()),
-            description: "Perform hybrid vector search over memory store".to_string(),
+            description: "Execute domain workspace action".to_string(),
             assigned_role: "analyst".to_string(),
             status: TaskStatus::Pending,
             result: None,
@@ -45,3 +49,4 @@ impl Agent for AnalystAgent {
         create_default_task_plan(goal, vec![step1, step2])
     }
 }
+

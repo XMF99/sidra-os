@@ -7,8 +7,9 @@ mod ipc;
 use ipc::{
     app_create_seat, app_execute_artifact, app_execute_goal, app_get_delegations,
     app_get_event_log, app_get_milestones, app_get_plugins, app_get_status, app_get_system_health,
-    app_list_artifacts, app_list_seats, app_verify_event_chain, voice_begin_capture,
-    voice_cancel_capture, voice_model_status, voice_stop_capture, AppState,
+    app_list_artifacts, app_list_seats, app_provision_workspace, app_send_workspace_message,
+    app_verify_event_chain, voice_begin_capture, voice_cancel_capture, voice_model_status,
+    voice_stop_capture, AppState,
 };
 
 fn main() {
@@ -32,8 +33,11 @@ fn main() {
             voice_stop_capture,
             voice_cancel_capture,
             voice_model_status,
-            app_get_delegations
+            app_get_delegations,
+            app_provision_workspace,
+            app_send_workspace_message
         ])
         .run(tauri::generate_context!())
         .expect("error while running sidra-app desktop application");
 }
+

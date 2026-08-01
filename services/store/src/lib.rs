@@ -8,6 +8,7 @@ pub mod projections;
 pub mod seat_store;
 pub mod vault;
 pub mod voice_store;
+pub mod workspace_store;
 
 pub use artifact_exec_store::ArtifactExecStoreRepository;
 pub use delegation_store::DelegationStoreRepository;
@@ -17,3 +18,5 @@ pub use projections::{EngagementsProjection, Projection, ProjectionEngine};
 pub use seat_store::SeatStoreRepository;
 pub use vault::Vault;
 pub use voice_store::VoiceStoreRepository;
+pub use workspace_store::{InstalledApp, Workspace, WorkspaceRepository};
+

@@ -42,9 +42,14 @@ impl Orchestrator {
         &self.writer
     }
 
+    pub fn broker(&self) -> &PermissionBroker {
+        &self.broker
+    }
+
     pub fn broker_mut(&mut self) -> &mut PermissionBroker {
         &mut self.broker
     }
+
 
     /// Decompose goal and execute multi-step multi-agent task workflow
     pub fn execute_goal(
